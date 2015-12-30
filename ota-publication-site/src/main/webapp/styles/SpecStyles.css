@@ -1,0 +1,42 @@
+/**
+ * Copyright (C) 2015 OpenTravel Alliance (info@opentravel.org)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+.tblwrap {width: 75%;}
+
+.h1short { font: normal 32px/37px times new roman, serif; color: #274683; margin-bottom: 0px; }
+.techtext { font-family: courier new, monospace; font-size:1em; }
+.commentheader { text-decoration:underline; }
+.commentspacing { margin-bottom:4px; }
+
+#grouptable {font-family: arial, helvetica, sans serif; margin:auto; border-collapse:collapse;}
+#grouptable td, table th {font-size:1em; border: 1px solid black; padding:3px 7px 2px 7px;}
+#grouptable th.sel {font-size:14px; line-height:18px; height:20px; text-align:left; padding-top:5px; padding-bottom:4px; background-color:#006699; color:#ffffff;}
+#grouptable th.nsel {font-size:14px; line-height:18px; height:20px; text-align:left; padding-top:5px; padding-bottom:4px; background-color:#cccccc; color:#ffffff;}
+
+#browsetable {font-family: arial, helvetica, sans serif; margin:auto; border-collapse:collapse;}
+#browsetable td, table th {font-size:1em; border:none; padding:3px 7px 2px 7px;}
+#browsetable th {font-size:14px; line-height:18px; height:20px; text-align:left; padding-top:5px; padding-bottom:4px; background-color:#006699; color:#ffffff;}
+#browsetable td.fileSize {text-align:right;}
+
+.reportContentWrap{float:left; width:100%; margin-bottom:50px; border-top:7px solid #e0e0e0; padding-top:0px;}
+
+#reporttable {font-family: arial, helvetica, sans serif; margin:auto; border-collapse:collapse;}
+#reporttable table {width: 100%;}
+#reporttable td, th {font-size:10px; vertical-align:top; font-size:1em; border:1px solid black; padding:3px 3px 2px 3px;}
+#reporttable th {line-height:18px; height:20px; text-align:left; padding-top:5px; padding-bottom:4px; background-color:#006699; color:#ffffff;}
+#reporttable th.centertext {text-align:center;}
+#reporttable td.centertext {text-align:center;}
+#reporttable td.divider {background-color:#cccccc;}

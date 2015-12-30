@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Copyright (C) 2015 OpenTravel Alliance (info@opentravel.org)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	
+	<!-- Page Layouts -->
+	<definition name="baseLayout" template="/WEB-INF/tiles/baseLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/tiles/header.jsp" />
+		<put-attribute name="sidebar" value="/WEB-INF/tiles/sidebar.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp" />
+	</definition>
+	<definition name="adminLayout" template="/WEB-INF/tiles/baseLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/tiles/adminHeader.jsp" />
+		<put-attribute name="sidebar" value="/WEB-INF/tiles/adminSidebar.jsp" />
+		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp" />
+	</definition>
+	<definition name="reportLayout" template="/WEB-INF/tiles/reportLayout.jsp">
+		<put-attribute name="header" value="/WEB-INF/tiles/adminHeader.jsp" />
+	</definition>
+	
+	<!-- Specification Public Pages -->
+	<definition name="specificationMain" extends="baseLayout">
+		<put-attribute name="title" value="Specifications" />
+		<put-attribute name="licenseAgreement" value="/WEB-INF/jsp/specification/licenseAgreement.jsp" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/publicationMain.jsp" />
+	</definition>
+	<definition name="specificationReleaseNotes" extends="baseLayout">
+		<put-attribute name="title" value="Specification Release Notes" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/releaseNotes.jsp" />
+	</definition>
+	<definition name="specificationComment10" extends="baseLayout">
+		<put-attribute name="title" value="Comment 1.0 Specification" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentSpec.jsp" />
+	</definition>
+	<definition name="artifactComment10" extends="baseLayout">
+		<put-attribute name="title" value="Comment 1.0 Artifact" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentArtifact.jsp" />
+	</definition>
+	<definition name="specificationComment20" extends="baseLayout">
+		<put-attribute name="title" value="Comment 2.0 Specification2" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentSpec.jsp" />
+	</definition>
+	<definition name="artifactComment20" extends="baseLayout">
+		<put-attribute name="title" value="Comment 2.0 Artifact" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentArtifact.jsp" />
+	</definition>
+	<definition name="commentThankYou" extends="baseLayout">
+		<put-attribute name="title" value="Thank You" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentThankYou.jsp" />
+	</definition>
+	<definition name="modelViewer" extends="baseLayout">
+		<put-attribute name="title" value="Model Viewer" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/modelViewer.jsp" />
+	</definition>
+	<definition name="onlinePublications" extends="baseLayout">
+		<put-attribute name="title" value="Browse Publications" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/onlinePublications.jsp" />
+	</definition>
+	<definition name="onlinePublicationDetails" extends="baseLayout">
+		<put-attribute name="title" value="Browse Publications" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/onlinePublicationDetails.jsp" />
+	</definition>
+	<definition name="downloadRegister" extends="baseLayout">
+		<put-attribute name="title" value="Browse Publications" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/downloadRegister.jsp" />
+	</definition>
+	<definition name="downloadNotFound" extends="baseLayout">
+		<put-attribute name="title" value="Not Found" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/downloadNotFound.jsp" />
+	</definition>
+	<definition name="pastSpecifications" extends="baseLayout">
+		<put-attribute name="title" value="Past Specifications" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/pastSpecs.jsp" />
+	</definition>
+	<definition name="specificationFAQ" extends="baseLayout">
+		<put-attribute name="title" value="Specification FAQ" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/faq.jsp" />
+	</definition>
+	
+	<!-- Admin Pages -->
+	<definition name="adminMain" extends="adminLayout">
+		<put-attribute name="title" value="Specification Admin" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/adminMain.jsp" />
+	</definition>
+	<definition name="uploadSpecification" extends="adminLayout">
+		<put-attribute name="title" value="Upload Specification" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/uploadSpecification.jsp" />
+	</definition>
+	<definition name="viewSpecification" extends="adminLayout">
+		<put-attribute name="title" value="View Specification" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/viewSpecification.jsp" />
+	</definition>
+	<definition name="updateSpecification" extends="adminLayout">
+		<put-attribute name="title" value="Update Specification" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/updateSpecification.jsp" />
+	</definition>
+	<definition name="deleteSpecification" extends="adminLayout">
+		<put-attribute name="title" value="Delete Specification" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/deleteSpecification.jsp" />
+	</definition>
+	<definition name="specificationComments" extends="reportLayout">
+		<put-attribute name="title" value="Specification Comments" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/specificationComments.jsp" />
+	</definition>
+	<definition name="specificationDownloads" extends="reportLayout">
+		<put-attribute name="title" value="Specification Downloads" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/specificationDownloads.jsp" />
+	</definition>
+	<definition name="viewRegistrants" extends="adminLayout">
+		<put-attribute name="title" value="Web Site Registrants" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/viewRegistrants.jsp" />
+	</definition>
+	<definition name="registrantView" extends="reportLayout">
+		<put-attribute name="title" value="Registrant Info" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/registrantView.jsp" />
+	</definition>
+	<definition name="registrantDownloads" extends="reportLayout">
+		<put-attribute name="title" value="Download History" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/registrantDownloads.jsp" />
+	</definition>
+	<definition name="changeCredentials" extends="adminLayout">
+		<put-attribute name="title" value="Change Admin Credentials" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/changeCredentials.jsp" />
+	</definition>
+	
+</tiles-definitions>

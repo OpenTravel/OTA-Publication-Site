@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2015 OpenTravel Alliance (info@opentravel.org)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<Context reloadable="true">
+
+	<Resource name="jdbc/otapubs" description="OpenTravel Publication Database" auth="Container"
+		type="javax.sql.DataSource" driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://localhost:3306/otapubs"
+		username="otadmin" password="otadmin"
+		maxActive="10" maxIdle="3" maxWait="10000"
+		validationQuery="select 1" />
+	
+	<Realm className="org.apache.catalina.realm.DataSourceRealm"
+           userTable="USERS" userNameCol="USERNAME" userCredCol="PASSWORD"
+           userRoleTable="USER_ROLES" roleNameCol="ROLENAME"
+           localDataSource="true" dataSourceName="jdbc/otapubs"
+           digest="SHA1" />
+     
+</Context>
