@@ -91,15 +91,12 @@ public class PublicationController extends BaseController {
         	
         	if (spec != null) {
         		publication10 = pDao.getPublication( spec, PublicationType.OTA_1_0 );
-        		
-        		if (publication10 != null) {
-            		publication20 = pDao.getPublication( spec, PublicationType.OTA_2_0 );
-        		}
         	}
-        	
-        	if (publication10 == null) {
+    		if (publication10 == null) {
         		publication10 = pDao.getLatestPublication( PublicationType.OTA_1_0 );
-        		publication20 = pDao.getLatestPublication( PublicationType.OTA_2_0 );
+    		}
+        	if (publication10 != null) {
+        		publication20 = pDao.getPublication( publication10.getName(), PublicationType.OTA_2_0 );
         	}
     		
         	model.addAttribute( "publication10", publication10 );
@@ -134,8 +131,6 @@ public class PublicationController extends BaseController {
         	Publication publication = pDao.getPublication( spec, pubType );
     		Registrant registrant = getCurrentRegistrant( session );
     		
-        	model.addAttribute( "publicationType",
-        			((pubType == PublicationType.OTA_1_0) ? "1.0" : "2.0") );
         	model.addAttribute( "publication", publication );
     		
     		if (registrant == null) {
@@ -151,7 +146,7 @@ public class PublicationController extends BaseController {
     }
     
     @RequestMapping({ "/Comment10Spec.html", "/Comment10Spec.htm" })
-    public String doComment10SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    public String comment10SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @RequestParam(value = "processComment", required = false) boolean processComment,
             @RequestParam(value = "firstName", required = false) String firstName,
@@ -171,14 +166,23 @@ public class PublicationController extends BaseController {
     	String targetPage = "specificationComment10";
 		boolean commentSuccess = false;
     	try {
-    		Registrant registrant = getCurrentRegistrant( session );
-    		
         	if (newSession) session.removeAttribute( "registrantId" );
-        	handleRegistrantInfo( processComment && (registrant == null), firstName, lastName, title, company,
+    		Registrant registrant = getCurrentRegistrant( session );
+    		boolean processRegistrant = processComment && (registrant == null);
+    		
+        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
     				phone, email, otaMember, model, session );
+    		registrant = (Registrant) model.asMap().get( "registrant" );
         	
+    		// If the registrant was created successfully, commit it and start a new
+    		// transaction for the comment
+    		if (processRegistrant && (registrant != null)) {
+    			DAOFactoryManager.getFactory().commitTransaction();
+    			DAOFactoryManager.getFactory().beginTransaction();
+    			registrant = getCurrentRegistrant( session );
+    		}
+    		
         	if (processComment) {
-        		registrant = (Registrant) model.asMap().get( "registrant" );
         		commentSuccess = addSchemaComment( itemId, commentType, commentText, suggestedChange,
         				commentXPath, modifyXPath, newAnnotations, registrant, model, session );
         	}
@@ -192,7 +196,7 @@ public class PublicationController extends BaseController {
             	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
             	Publication publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
             	
-        		model.addAttribute( "publicationType", "1.0" );
+        		model.addAttribute( "publication", publication );
         		model.addAttribute( "publicationItems",
         				pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
@@ -208,6 +212,7 @@ public class PublicationController extends BaseController {
     
     @RequestMapping({ "/Comment20Spec.html", "/Comment20Spec.htm" })
     public String comment20SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
             @RequestParam(value = "processComment", required = false) boolean processComment,
             @RequestParam(value = "firstName", required = false) String firstName,
             @RequestParam(value = "lastName", required = false) String lastName,
@@ -226,13 +231,23 @@ public class PublicationController extends BaseController {
     	String targetPage = "specificationComment20";
 		boolean commentSuccess = false;
     	try {
+        	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
+    		boolean processRegistrant = processComment && (registrant == null);
     		
-        	handleRegistrantInfo( processComment && (registrant == null), firstName, lastName, title, company,
+        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
     				phone, email, otaMember, model, session );
+    		registrant = (Registrant) model.asMap().get( "registrant" );
+        	
+    		// If the registrant was created successfully, commit it and start a new
+    		// transaction for the comment
+    		if (processRegistrant && (registrant != null)) {
+    			DAOFactoryManager.getFactory().commitTransaction();
+    			DAOFactoryManager.getFactory().beginTransaction();
+    			registrant = getCurrentRegistrant( session );
+    		}
         	
         	if (processComment) {
-        		registrant = (Registrant) model.asMap().get( "registrant" );
         		commentSuccess = addSchemaComment( itemId, commentType, commentText, suggestedChange,
         				commentXPath, modifyXPath, newAnnotations, registrant, model, session );
         	}
@@ -246,7 +261,7 @@ public class PublicationController extends BaseController {
             	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
             	Publication publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
             	
-        		model.addAttribute( "publicationType", "2.0" );
+        		model.addAttribute( "publication", publication );
         		model.addAttribute( "publicationItems",
         				pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
@@ -262,6 +277,7 @@ public class PublicationController extends BaseController {
     
     @RequestMapping({ "/Comment10Artifact.html", "/Comment10Artifact.html" })
     public String comment10ArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
             @RequestParam(value = "processComment", required = false) boolean processComment,
             @RequestParam(value = "firstName", required = false) String firstName,
             @RequestParam(value = "lastName", required = false) String lastName,
@@ -279,13 +295,23 @@ public class PublicationController extends BaseController {
     	String targetPage = "artifactComment10";
 		boolean commentSuccess = false;
     	try {
+        	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
+    		boolean processRegistrant = processComment && (registrant == null);
     		
-        	handleRegistrantInfo( processComment && (registrant == null), firstName, lastName, title, company,
+        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
     				phone, email, otaMember, model, session );
+    		registrant = (Registrant) model.asMap().get( "registrant" );
         	
+    		// If the registrant was created successfully, commit it and start a new
+    		// transaction for the comment
+    		if (processRegistrant && (registrant != null)) {
+    			DAOFactoryManager.getFactory().commitTransaction();
+    			DAOFactoryManager.getFactory().beginTransaction();
+    			registrant = getCurrentRegistrant( session );
+    		}
+    		
         	if (processComment) {
-        		registrant = (Registrant) model.asMap().get( "registrant" );
         		commentSuccess = addArtifactComment( itemId, commentType, commentText, suggestedChange,
         				pageNumbers, lineNumbers, registrant, model, session );
         	}
@@ -299,7 +325,7 @@ public class PublicationController extends BaseController {
             	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
             	Publication publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
             	
-        		model.addAttribute( "publicationType", "1.0" );
+        		model.addAttribute( "publication", publication );
         		model.addAttribute( "publicationItems",
         				pDao.getPublicationItems( publication, PublicationItemType.ARTIFACT ) );
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
@@ -315,6 +341,7 @@ public class PublicationController extends BaseController {
     
     @RequestMapping({ "/Comment20Artifact.html", "/Comment20Artifact.htm" })
     public String comment20ArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
             @RequestParam(value = "processComment", required = false) boolean processComment,
             @RequestParam(value = "firstName", required = false) String firstName,
             @RequestParam(value = "lastName", required = false) String lastName,
@@ -332,13 +359,23 @@ public class PublicationController extends BaseController {
     	String targetPage = "artifactComment20";
 		boolean commentSuccess = false;
     	try {
+        	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
+    		boolean processRegistrant = processComment && (registrant == null);
     		
-        	handleRegistrantInfo( processComment && (registrant == null), firstName, lastName, title, company,
+        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
     				phone, email, otaMember, model, session );
+    		registrant = (Registrant) model.asMap().get( "registrant" );
         	
+    		// If the registrant was created successfully, commit it and start a new
+    		// transaction for the comment
+    		if (processRegistrant && (registrant != null)) {
+    			DAOFactoryManager.getFactory().commitTransaction();
+    			DAOFactoryManager.getFactory().beginTransaction();
+    			registrant = getCurrentRegistrant( session );
+    		}
+    		
         	if (processComment) {
-        		registrant = (Registrant) model.asMap().get( "registrant" );
         		commentSuccess = addArtifactComment( itemId, commentType, commentText, suggestedChange,
         				pageNumbers, lineNumbers, registrant, model, session );
         	}
@@ -352,7 +389,7 @@ public class PublicationController extends BaseController {
             	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
             	Publication publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
             	
-        		model.addAttribute( "publicationType", "2.0" );
+        		model.addAttribute( "publication", publication );
         		model.addAttribute( "publicationItems",
         				pDao.getPublicationItems( publication, PublicationItemType.ARTIFACT ) );
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
@@ -429,8 +466,6 @@ public class PublicationController extends BaseController {
     		}
    			itemList = (selectedGroup == null) ? null : selectedGroup.getPublicationItems();
     		
-        	model.addAttribute( "publicationType",
-        			((pubType == PublicationType.OTA_1_0) ? "1.0" : "2.0") );
         	model.addAttribute( "publication", publication );
         	model.addAttribute( "selectedGroup", selectedGroup.getId() );
         	model.addAttribute( "groupList", groupList );
@@ -503,8 +538,7 @@ public class PublicationController extends BaseController {
         		model.asMap().clear();
         		
         	} else {
-            	model.addAttribute( "publicationType",
-            			((pubType == PublicationType.OTA_1_0) ? "1.0" : "2.0") );
+        		model.addAttribute( "publication", publication );
         		model.addAttribute( "pubName", pubName );
         		model.addAttribute( "pubType", pubType );
         		model.addAttribute( "filename", filename );
@@ -647,7 +681,7 @@ public class PublicationController extends BaseController {
 					session.setAttribute( "registrantId", registrantId );
 					
 				} catch (ValidationException e) {
-					addValidationErrors( e.getValidationResults(), model );
+		    		addValidationErrors( e, model );
 		    		model.addAttribute( "firstName", firstName );
 		    		model.addAttribute( "lastName", lastName );
 		    		model.addAttribute( "title", title );
@@ -693,7 +727,7 @@ public class PublicationController extends BaseController {
     			.setSubmittedBy( registrant )
     			.build();
     		
-    		if (comment.getPublicationItem() != null) {
+    		if ((comment.getPublicationItem() != null) && (comment.getSubmittedBy() != null)) {
         		cDao.saveComment( comment );
     			success = true;
     			
@@ -706,7 +740,7 @@ public class PublicationController extends BaseController {
     		}
     		
     	} catch (ValidationException e) {
-    		addValidationErrors( e.getValidationResults(), model );
+    		addValidationErrors( e, model );
     		model.addAttribute( "itemId", itemId );
     		model.addAttribute( "commentType", commentType );
     		model.addAttribute( "commentText", commentText );
@@ -751,7 +785,7 @@ public class PublicationController extends BaseController {
     			.setSubmittedBy( registrant )
     			.build();
     		
-    		if (comment.getPublicationItem() != null) {
+    		if ((comment.getPublicationItem() != null) && (comment.getSubmittedBy() != null)) {
         		cDao.saveComment( comment );
     			success = true;
     			
@@ -764,7 +798,7 @@ public class PublicationController extends BaseController {
     		}
     		
     	} catch (ValidationException e) {
-    		addValidationErrors( e.getValidationResults(), model );
+    		addValidationErrors( e, model );
     		model.addAttribute( "itemId", itemId );
     		model.addAttribute( "commentType", commentType );
     		model.addAttribute( "commentText", commentText );

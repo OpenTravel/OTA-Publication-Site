@@ -70,8 +70,6 @@ public class Publication {
 	@Column( name = "PUB_DATE", nullable = false )
 	private Date publicationDate;
 	
-	@NotNull
-	@Size( min = 1, max = 50 )
 	@Column( name = "ARCHIVE_FILENAME", nullable = false, length = 50 )
 	private String archiveFilename;
 	

@@ -71,21 +71,25 @@
 </td></tr></table>
 </div>
 
-<table id="reporttable" width="60%" align="left" style="margin-left:20px;">
+<table id="reporttable" width="80%" align="left" style="margin-left:20px;">
 	<tr>
-		<th width="70%">Downloaded Item</th>
+		<th width="20%">Specification</th>
+		<th width="50%">Schema / Artifact</th>
 		<th width="30%">Category</th>
 	</tr>
 	<c:choose>
 		<c:when test="${!registrant.downloadedPublications.isEmpty() || !registrant.downloadedPublicationItems.isEmpty()}">
 			<c:forEach var="publication" items="${registrant.downloadedPublications}">
 				<tr>
+					<td>${publication.name}-${publication.type.displayId}</td>
 					<td>${publication.archiveFilename}</td>
 					<td>Specification Archive</td>
 				</tr>
 			</c:forEach>
 			<c:forEach var="item" items="${registrant.downloadedPublicationItems}">
+				<c:set var="publication" value="${item.owner.owner}"/>
 				<tr>
+					<td>${publication.name}-${publication.type.displayId}</td>
 					<td>${item.itemFilename}</td>
 					<td>${item.owner.name}</td>
 				</tr>

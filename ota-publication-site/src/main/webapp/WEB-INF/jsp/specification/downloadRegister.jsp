@@ -16,7 +16,7 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<h1>Download the ${publication.name}-${publicationType} Publication</h1>
+<h1>Download the ${publication.name}-${publication.type.displayId} Publication</h1>
 <p>
 	<c:choose>
 		<c:when test="${item == null}">

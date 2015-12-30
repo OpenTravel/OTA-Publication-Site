@@ -16,8 +16,8 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="urlPubType" value="${publicationType.replaceAll('\\\\.', '_')}" />
-<h1>Browse the ${publication.name}-${publicationType} Publication</h1>
+<c:set var="urlPubType" value="${publication.type.displayId.replaceAll('\\\\.', '_')}" />
+<h1>Browse the ${publication.name}-${publication.type.displayId} Publication</h1>
 
 <div class="tblwrap">
 <table id="grouptable" align="left">

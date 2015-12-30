@@ -225,11 +225,13 @@ public class PublicationDAO extends AbstractDAO {
 			}
 			
 			// Save the archive file content
+			String archiveFilename = getArchiveFilename( publication );
+			log.info("Saving File Content: " + archiveFilename);
 			EntityManager em = getEntityManager();
 			SpecificationCollator collator = new SpecificationCollator( publication );
-			log.info("Saving File Content: " + publication.getArchiveFilename());
 			FileContent archiveFile = persistFileContent( archiveContent );
 			
+			publication.setArchiveFilename( archiveFilename );
 			publication.setArchiveContent( archiveFile );
 			em.flush();
 			
@@ -359,6 +361,18 @@ public class PublicationDAO extends AbstractDAO {
 		
 		getFactory().newDownloadDAO().purgeCache( publication );
 		getEntityManager().remove( publication );
+	}
+	
+	/**
+	 * Returns a standardized archive filename for the given publication.
+	 * 
+	 * @param publication  the publication for which to return a filename
+	 * @return String
+	 */
+	private String getArchiveFilename(Publication publication) {
+		return publication.getName() + "_" +
+				publication.getType().getDisplayId().charAt( 0 ) +
+				"0_Publication.zip";
 	}
 	
 }

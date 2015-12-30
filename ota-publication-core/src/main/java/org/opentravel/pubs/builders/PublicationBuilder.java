@@ -32,7 +32,6 @@ public class PublicationBuilder {
 	private PublicationType type;
 	private PublicationState state;
 	private Date publicationDate = new Date();
-	private String archiveFilename;
 	private String releaseNotesFilename;
 	
 	/**
@@ -48,7 +47,6 @@ public class PublicationBuilder {
 		p.setType( type );
 		p.setState( state );
 		p.setPublicationDate( publicationDate );
-		p.setArchiveFilename( archiveFilename );
 		p.setReleaseNotesFilename( releaseNotesFilename );
 		return p;
 	}
@@ -94,17 +92,6 @@ public class PublicationBuilder {
 	 */
 	public PublicationBuilder setPublicationDate(Date publicationDate) {
 		this.publicationDate = publicationDate;
-		return this;
-	}
-
-	/**
-	 * Assigns the value of the 'archiveFilename' field.
-	 *
-	 * @param archiveFilename  the field value to assign
-	 * @return PublicationBuilder
-	 */
-	public PublicationBuilder setArchiveFilename(String archiveFilename) {
-		this.archiveFilename = archiveFilename;
 		return this;
 	}
 

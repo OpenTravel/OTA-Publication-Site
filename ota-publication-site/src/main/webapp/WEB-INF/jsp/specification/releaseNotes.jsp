@@ -15,11 +15,11 @@
     limitations under the License.
 
 --%>
-<h3>${publication.name}-${publicationType} Publication Release Notes</h3>
+<h3>${publication.name}-${publication.type.displayId} Publication Release Notes</h3>
 <p>
-	<b>Download ${publication.name}-${publicationType} Publication:</b> <a href="${config.localSiteUrl}">${publication.archiveFilename}</a>
+	<b>Download ${publication.name}-${publication.type.displayId} Publication:</b> <a href="${config.localSiteUrl}">${publication.archiveFilename}</a>
 </p>
 <hr/>
-<b>OpenTravel ${publication.name}-${publicationType} Publication Release Notes</b>
+<b>OpenTravel ${publication.name}-${publication.type.displayId} Publication Release Notes</b>
 <br>
 ${releaseNotesText}

@@ -121,6 +121,8 @@ public class CommentDAO extends AbstractDAO {
 		if (vResults.hasViolations()) {
 			throw new ValidationException( vResults );
 		}
+		checkSubmitterStatus( comment );
+		
 		getEntityManager().persist( comment );
 		return comment.getId();
 	}
@@ -174,4 +176,21 @@ public class CommentDAO extends AbstractDAO {
 		return nextValue;
 	}
 	
+	/**
+	 * Verifies that the submitter is an OpenTravel member if the publication is
+	 * currently under member review.
+	 * 
+	 * @param comment  the comment instance to validate
+	 * @throws ValidationException  thrown if the submitter is a non-member when the document is under member review
+	 */
+	private void checkSubmitterStatus(Comment comment) throws ValidationException {
+		boolean submitterIsMember = comment.getSubmittedBy().getOtaMember();
+		PublicationState pubState = comment.getPublicationItem().getOwner().getOwner().getState();
+		
+		if (!submitterIsMember && (pubState == PublicationState.MEMBER_REVIEW)) {
+			throw new ValidationException(
+					"Sorry, the specification is currently open for comment only to OpenTravel members."
+					+ "  Please return when the specification is open for public review.", null);
+		}
+	}
 }

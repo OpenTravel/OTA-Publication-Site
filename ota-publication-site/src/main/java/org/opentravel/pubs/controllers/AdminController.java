@@ -107,12 +107,10 @@ public class AdminController extends BaseController {
     		if (processUpload) {
         		PublicationType publicationType = resolvePublicationType( pubType );
         		PublicationState publicationState = (pubState == null) ? null : PublicationState.valueOf( pubState );
-        		String archiveFilename = archiveFile.isEmpty() ? null : (name + "_Publication.zip");
     			Publication publication = new PublicationBuilder()
     					.setName( StringUtils.trimString( name ) )
     					.setType( publicationType )
     					.setState( publicationState )
-    					.setArchiveFilename( archiveFilename )
     					.build();
     			
     			try {
@@ -134,7 +132,7 @@ public class AdminController extends BaseController {
             		}
     				
     			} catch (ValidationException e) {
-    				addValidationErrors( e.getValidationResults(), model );
+    	    		addValidationErrors( e, model );
     				
     			} catch (DAOException e) {
     				log.error("An error occurred while publishing the spec: ", e);
@@ -222,7 +220,6 @@ public class AdminController extends BaseController {
     		if (processUpdate) {
         		PublicationType publicationType = resolvePublicationType( pubType );
         		PublicationState publicationState = (pubState == null) ? null : PublicationState.valueOf( pubState );
-        		String archiveFilename = archiveFile.isEmpty() ? null : (name + "_Publication.zip");
     			
     			publication.setName( StringUtils.trimString( name ) );
     			publication.setType( publicationType );
@@ -239,7 +236,6 @@ public class AdminController extends BaseController {
         			
             		if (!archiveFile.isEmpty()) {
         				pDao.updateSpecification( publication, archiveFile.getInputStream() );
-        				publication.setArchiveFilename( archiveFilename );
             		}
     				model.asMap().clear();
     				redirectAttrs.addAttribute( "publication", publication.getName() );
@@ -248,7 +244,7 @@ public class AdminController extends BaseController {
     				success = true;
     				
     			} catch (ValidationException e) {
-    				addValidationErrors( e.getValidationResults(), model );
+    	    		addValidationErrors( e, model );
     				
     			} catch (DAOException e) {
     				log.error("An error occurred while publishing the spec: ", e);
@@ -446,7 +442,7 @@ public class AdminController extends BaseController {
             		targetPage = "redirect:/admin/index.html";
         			
         		} catch (ValidationException e) {
-        			addValidationErrors( e.getValidationResults(), model);
+            		addValidationErrors( e, model );
         		}
         		
         	} else if (userId == null) {

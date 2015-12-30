@@ -74,7 +74,7 @@
 <table id="reporttable" align="left" style="margin-left:20px;">
 	<tr>
 		<th width="5%">Comment Number</th>
-		<th width="20%">Schema/Artifact</th>
+		<th width="20%">Specification / Artifact</th>
 		<th width="15%">Type</th>
 		<th width="60%">Comment</th>
 	</tr>
@@ -82,8 +82,9 @@
 		<c:when test="${!registrant.submittedComments.isEmpty()}">
 			<c:forEach var="comment" items="${registrant.submittedComments}">
 			<tr>
+				<c:set var="publication" value="${comment.publicationItem.owner.owner}"/>
 				<td>${comment.commentNumber}</td>
-				<td>${comment.publicationItem.itemFilename}</td>
+				<td>${publication.name}-${publication.type.displayId} / ${comment.publicationItem.itemFilename}</td>
 				<td>${comment.commentType.displayName}</td>
 				<td>
 					<c:choose>

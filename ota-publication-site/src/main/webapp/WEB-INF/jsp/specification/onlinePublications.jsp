@@ -22,7 +22,8 @@
 	can be accessed via its own, unique URL. For instance, entering
 	"<span class="techtext">${config.localSiteUrl}/content/specifications/downloads/2004A/1_0/OTA_CommonTypes.xsd</span>"
 	into a brower's 'Address' field will display the contents of the
-	OTA_CommonTypes schema file from the 2004A-1.0 release. <br />
+	<span class="techtext">OTA_CommonTypes</span> schema file from the
+	2004A-1.0 release. <br />
 </p>
 <p>These online schema are not meant to replace the downloadable
 	specifications available for download from this site, and are not

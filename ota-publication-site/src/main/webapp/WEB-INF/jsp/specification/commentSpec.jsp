@@ -16,10 +16,16 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<h1>Comment on the Latest ${publicationType} Specification</h1>
+<h1>Comment on the Latest ${publication.type.displayId} Specification</h1>
 
+<c:if test="${publication.state.toString() == 'MEMBER_REVIEW'}">
+	<h3><span style="color:Red;">This version of the specification is open for Member Review!</span></h3>
+</c:if>
+<c:if test="${publication.state.toString() == 'PUBLIC_REVIEW'}">
+	<h3><span style="color:Red;">This version of the specification is open for Public Review!</span></h3>
+</c:if>
 <p>OpenTravel is now accepting comments on the ${publication.name}
-	version of the ${publicationType} specification (OpenTravel does not
+	version of the ${publication.type.displayId} specification (OpenTravel does not
 	accept comments on past versions).&nbsp; Please submit a comment on the
 	specification using the following form.&nbsp; You may be contacted by
 	an OpenTravel staff member regarding your submission.</p>

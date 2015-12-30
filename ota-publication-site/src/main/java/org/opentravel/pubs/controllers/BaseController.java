@@ -22,6 +22,7 @@ import org.opentravel.pubs.config.ConfigSettings;
 import org.opentravel.pubs.config.ConfigSettingsFactory;
 import org.opentravel.pubs.dao.DAOFactoryManager;
 import org.opentravel.pubs.model.PublicationType;
+import org.opentravel.pubs.validation.ValidationException;
 import org.opentravel.pubs.validation.ValidationResults;
 import org.springframework.ui.Model;
 
@@ -84,17 +85,24 @@ public abstract class BaseController {
 	 * 
 	 * <p>A call to this method also marks the current transaction for rollback.
 	 * 
-	 * @param validationResults  the set of validation results to add
+	 * @param validationEx  the exception that contains the set of validation results to add
 	 * @param model  the model that will contain the validation results
 	 */
-	protected void addValidationErrors(ValidationResults validationResults, Model model) {
-		ValidationResults existingResults = (ValidationResults) model.asMap().get( "validationErrors" );
+	protected void addValidationErrors(ValidationException validationEx, Model model) {
+		ValidationResults validationResults = validationEx.getValidationResults();
 		
-		if (existingResults != null) {
-			existingResults.addAll( validationResults );
+		if (validationResults != null) {
+			ValidationResults existingResults = (ValidationResults) model.asMap().get( "validationErrors" );
 			
-		} else {
-			model.addAttribute( "validationErrors", validationResults );
+			if (existingResults != null) {
+				existingResults.addAll( validationResults );
+				
+			} else {
+				model.addAttribute( "validationErrors", validationResults );
+			}
+			
+		} else { // use the exception message as the UI error message
+			setErrorMessage( validationEx.getMessage(), model );
 		}
 		DAOFactoryManager.markForRollback();
 	}

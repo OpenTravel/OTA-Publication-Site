@@ -74,12 +74,24 @@
 		<p>
 			<b>Download ${publication10.name}-1.0 Publication:</b> <a href="${config.localSiteUrl}/content/specifications/downloads/${publication10.name}/1_0/${publication10.archiveFilename}">${publication10.archiveFilename}</a> | 
 			<a href="${config.localSiteUrl}/specifications/ReleaseNotes.html?spec=${publication10.name}&specType=OTA_1_0">View Release Notes</a>
+			<c:if test="${publication10.state.toString() == 'MEMBER_REVIEW'}">
+				| <span style="color:Red;">Open for Member Review!</span>
+			</c:if>
+			<c:if test="${publication10.state.toString() == 'PUBLIC_REVIEW'}">
+				| <span style="color:Red;">Open for Public Review!</span>
+			</c:if>
 		</p>
 	</c:if>
 	<c:if test="${publication20 != null}">
 		<p>
 			<b>Download ${publication20.name}-2.0 Publication:</b> <a href="${config.localSiteUrl}/content/specifications/downloads/${publication20.name}/2_0/${publication20.archiveFilename}">${publication20.archiveFilename}</a> |
 			<a href="${config.localSiteUrl}/specifications/ReleaseNotes.html?spec=${publication10.name}&type=OTA_2_0">View Release Notes</a>
+			<c:if test="${publication20.state.toString() == 'MEMBER_REVIEW'}">
+				| <span style="color:Red;">Open for Member Review!</span>
+			</c:if>
+			<c:if test="${publication20.state.toString() == 'PUBLIC_REVIEW'}">
+				| <span style="color:Red;">Open for Public Review!</span>
+			</c:if>
 		</p>
 	</c:if>
 </c:if>
