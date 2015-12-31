@@ -21,6 +21,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * Model object representing a comment on a publication that was submitted by a
  * registered user.
@@ -29,6 +32,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table( name = "SCHEMA_COMMENT" )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public class SchemaComment extends Comment {
 	
 	@NotNull

@@ -15,6 +15,7 @@
  */
 package org.opentravel.pubs.model;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ import javax.persistence.Table;
  * @author S. Livezey
  */
 @Entity
+@Cacheable( false )
 @Table( name = "FILE_CONTENT" )
 public class FileContent {
 	

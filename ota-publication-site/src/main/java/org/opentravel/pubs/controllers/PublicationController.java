@@ -533,7 +533,7 @@ public class PublicationController extends BaseController {
         	// If we processed the form successfully, clear our model so that its
         	// attributes will not show up as URL parameters on redirect
         	if (processRegistrant && (model.asMap().get( "registrant" ) != null)) {
-        		targetPage = "redirect:/specifications/downloads/" +
+        		targetPage = "redirect:/content/specifications/downloads/" +
         				pubName + "/" + type + "/" + filename;
         		model.asMap().clear();
         		
@@ -550,13 +550,6 @@ public class PublicationController extends BaseController {
             setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
     	}
     	return applyCommonValues( model, targetPage );
-    }
-    
-    @RequestMapping({ "/DownloadNotFound.html", "/DownloadNotFound.htm" })
-    public String downloadNotFoundPage(Model model,
-    		@RequestParam(value = "filename") String filename) {
-    	model.addAttribute( "filename", filename );
-    	return applyCommonValues( model, "downloadNotFound" );
     }
     
     @RequestMapping({ "/downloads/{pubName}/{pubType}/{filename:.+}" })
@@ -624,6 +617,13 @@ public class PublicationController extends BaseController {
             setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
     	}
     	return applyCommonValues( model, targetPath );
+    }
+    
+    @RequestMapping({ "/DownloadNotFound.html", "/DownloadNotFound.htm" })
+    public String downloadNotFoundPage(Model model,
+    		@RequestParam(value = "filename") String filename) {
+    	model.addAttribute( "filename", filename );
+    	return applyCommonValues( model, "downloadNotFound" );
     }
     
     /**

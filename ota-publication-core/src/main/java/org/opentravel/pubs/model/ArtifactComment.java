@@ -21,6 +21,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * Model object representing a comment on a non-publication artifact that was submitted
  * by a registered user.
@@ -29,6 +32,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table( name = "ARTIFACT_COMMENT" )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE )
 public class ArtifactComment extends Comment {
 	
 	@NotNull

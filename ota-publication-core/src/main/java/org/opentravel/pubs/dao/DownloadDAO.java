@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationItem;
@@ -33,22 +33,6 @@ import org.opentravel.pubs.model.Registrant;
  */
 public class DownloadDAO extends AbstractDAO {
 	
-    private static final String QUERY_FIND_ALL_PUB_DOWNLOADERS =
-    		"SELECT r FROM Registrant r JOIN r.downloadedPublications p "
-    		+ "WHERE p.id = :publicationId ORDER BY r.registrationDate ASC";
-    private static final String QUERY_FIND_PUB_DOWNLOADERS_BY_DATE_RANGE =
-    		"SELECT r FROM Registrant r JOIN r.downloadedPublications p "
-    		+ "WHERE p.id = :publicationId AND r.registrationDate >= :rDate "
-    		+ "ORDER BY r.registrationDate ASC";
-    private static final String QUERY_FIND_ALL_DOWNLOADED_PUBITEMS =
-    		"SELECT DISTINCT i FROM Publication p, PublicationGroup g, PublicationItem i, Registrant r JOIN r.downloadedPublicationItems i "
-    		+ "WHERE p.id = :publicationId AND g.owner = p.id AND i.owner = g.id "
-    		+ "ORDER BY i.id ASC";
-    private static final String QUERY_FIND_ALL_DOWNLOADED_PUBITEMS_BY_DATE_RANGE =
-    		"SELECT DISTINCT i FROM Publication p, PublicationGroup g, PublicationItem i, Registrant r JOIN r.downloadedPublicationItems i "
-    		+ "WHERE p.id = :publicationId AND r.registrationDate >= :rDate AND g.owner = p.id AND i.owner = g.id "
-    		+ "ORDER BY i.id ASC";
-    
 	private static ContentCacheManager cacheManager = ContentCacheManager.getInstance();
 	
 	/**
@@ -144,20 +128,20 @@ public class DownloadDAO extends AbstractDAO {
 	 * @param dateRange  the date range for comment submission relative to the current date
 	 * @return List<DownloadHistoryItem>
 	 */
-	@SuppressWarnings("unchecked")
 	public List<DownloadHistoryItem> getDownloadHistory(Publication publication, DateRangeType dateRange) {
 		List<DownloadHistoryItem> downloadHistory = new ArrayList<>();
-		Query pubQuery, itemQuery;
+		TypedQuery<Registrant> pubQuery;
+		TypedQuery<PublicationItem> itemQuery;
 		
 		// Start by finding the downloaders for the publication archive
 		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
-			pubQuery = getEntityManager().createQuery( QUERY_FIND_ALL_PUB_DOWNLOADERS );
+			pubQuery = getEntityManager().createNamedQuery( "registrantFindAllDownloaders", Registrant.class );
 		} else {
-			pubQuery = getEntityManager().createQuery( QUERY_FIND_PUB_DOWNLOADERS_BY_DATE_RANGE );
+			pubQuery = getEntityManager().createNamedQuery( "registrantFindAllDownloadersByDateRange", Registrant.class );
 			pubQuery.setParameter( "rDate", dateRange.getRangeStart() );
 		}
 		pubQuery.setParameter( "publicationId", publication.getId() );
-		List<Registrant> pubDownloaders = (List<Registrant>) pubQuery.getResultList();
+		List<Registrant> pubDownloaders = pubQuery.getResultList();
 		
 		if (!pubDownloaders.isEmpty()) {
 			DownloadHistoryItem downloadItem = new DownloadHistoryItem( publication );
@@ -168,13 +152,13 @@ public class DownloadDAO extends AbstractDAO {
 		
 		// Next, find the list of all constituent publication items that have downloads
 		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
-			itemQuery = getEntityManager().createQuery( QUERY_FIND_ALL_DOWNLOADED_PUBITEMS );
+			itemQuery = getEntityManager().createNamedQuery( "publicationItemFindAllDownloaded", PublicationItem.class );
 		} else {
-			itemQuery = getEntityManager().createQuery( QUERY_FIND_ALL_DOWNLOADED_PUBITEMS_BY_DATE_RANGE );
+			itemQuery = getEntityManager().createNamedQuery( "publicationItemFindAllDownloadedByDateRange", PublicationItem.class );
 			itemQuery.setParameter( "rDate", dateRange.getRangeStart() );
 		}
 		itemQuery.setParameter( "publicationId", publication.getId() );
-		List<PublicationItem> downloadedItems = (List<PublicationItem>) itemQuery.getResultList();
+		List<PublicationItem> downloadedItems = itemQuery.getResultList();
 		
 		for (PublicationItem pubItem : downloadedItems) {
 			DownloadHistoryItem downloadItem = new DownloadHistoryItem( pubItem );

@@ -20,6 +20,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.opentravel.pubs.model.Comment;
 import org.opentravel.pubs.model.Publication;
@@ -37,18 +38,6 @@ import org.opentravel.pubs.validation.ValidationResults;
 public class CommentDAO extends AbstractDAO {
 	
 	private static final int INITIAL_COMMENT_NUMBER = 1000;
-	
-    private static final String QUERY_COUNTER_NEXTVAL = "SELECT next_val FROM comment_counter";
-    private static final String QUERY_CREATE_COUNTER = "INSERT INTO comment_counter VALUES ( :nextValue )";
-    private static final String QUERY_UPDATE_COUNTER = "UPDATE comment_counter SET next_val = :nextValue";
-    private static final String QUERY_FIND_ALL =
-    		"SELECT c FROM Comment c, Publication p, PublicationGroup g, PublicationItem i "
-    		+ "WHERE c.publicationState = :state AND c.publicationItem = i AND i.owner = g AND g.owner = p AND p.id = :publicationId "
-    		+ "ORDER BY c.commentNumber ASC";
-    private static final String QUERY_FIND_BY_DATE_RANGE =
-    		"SELECT c FROM Comment c, Publication p, PublicationGroup g, PublicationItem i, Registrant r "
-    		+ "WHERE c.publicationState = :state AND r.registrationDate >= :rDate AND c.publicationItem = i AND c.submittedBy = r AND i.owner = g AND g.owner = p AND p.id = :publicationId "
-    		+ "ORDER BY c.commentNumber ASC";
 	
 	/**
 	 * Constructor that supplies the factory which created this DAO instance.
@@ -88,20 +77,19 @@ public class CommentDAO extends AbstractDAO {
 	 * @param dateRange  the date range for comment submission relative to the current date
 	 * @return List<Comment>
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Comment> findComments(Publication publication, PublicationState state, DateRangeType dateRange) {
-		Query query;
+		TypedQuery<Comment> query;
 		
 		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
-			query = getEntityManager().createQuery( QUERY_FIND_ALL );
+			query = getEntityManager().createNamedQuery( "commentFindByPublication", Comment.class );
 		} else {
-			query = getEntityManager().createQuery( QUERY_FIND_BY_DATE_RANGE );
+			query = getEntityManager().createNamedQuery( "commentFindByPublicationDateRange", Comment.class );
 			query.setParameter( "rDate", dateRange.getRangeStart() );
 		}
 		query.setParameter( "publicationId", publication.getId() );
 		query.setParameter( "state", state );
 		
-		return (List<Comment>) query.getResultList();
+		return query.getResultList();
 	}
 	
 	/**
@@ -144,7 +132,7 @@ public class CommentDAO extends AbstractDAO {
 	 */
 	private synchronized int getNextCommentNumber() {
 		EntityManager em = getFactory().getStandaloneEntityManager();
-		Query query = em.createNativeQuery( QUERY_COUNTER_NEXTVAL );
+		Query query = em.createNamedQuery( "commentCounterNextVal" );
 		boolean success = false;
 		int nextValue;
 		
@@ -153,14 +141,14 @@ public class CommentDAO extends AbstractDAO {
 			Integer queryResult = (Integer) query.getSingleResult();
 			
 			nextValue = queryResult;
-			query = em.createNativeQuery( QUERY_UPDATE_COUNTER );
+			query = em.createNamedQuery( "commentCounterUpdate" );
 			query.setParameter( "nextValue", nextValue + 1 );
 			query.executeUpdate();
 			success = true;
 			
 		} catch (NoResultException e) {
 			nextValue = INITIAL_COMMENT_NUMBER;
-			query = em.createNativeQuery( QUERY_CREATE_COUNTER );
+			query = em.createNamedQuery( "commentCounterCreate" );
 			query.setParameter( "nextValue", nextValue + 1 );
 			query.executeUpdate();
 			success = true;

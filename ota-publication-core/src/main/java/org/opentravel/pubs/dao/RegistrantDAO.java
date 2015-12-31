@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.opentravel.pubs.model.Registrant;
 import org.opentravel.pubs.validation.ModelValidator;
@@ -33,11 +34,6 @@ import org.opentravel.pubs.validation.ValidationResults;
  */
 public class RegistrantDAO extends AbstractDAO {
 	
-    private static final String QUERY_FIND_ALL = "SELECT r FROM Registrant r ORDER BY r.registrationDate ASC";
-    private static final String QUERY_FIND_BY_DATE_RANGE = "SELECT r FROM Registrant r WHERE r.registrationDate >= :rDate ORDER BY r.registrationDate ASC";
-    private static final String QUERY_DELETE_PUB_DOWNLOADS  = "DELETE FROM PUBLICATION_DOWNLOAD WHERE REGISTRANT_ID = :registrantId";
-    private static final String QUERY_DELETE_ITEM_DOWNLOADS = "DELETE FROM PUBLICATION_ITEM_DOWNLOAD WHERE REGISTRANT_ID = :registrantId";
-    
 	/**
 	 * Constructor that supplies the factory which created this DAO instance.
 	 * 
@@ -64,17 +60,16 @@ public class RegistrantDAO extends AbstractDAO {
 	 * @param rangeType  the relative date range for the query
 	 * @return List<Registrant>
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Registrant> findRegistrants(DateRangeType dateRange) {
-		Query query;
+		TypedQuery<Registrant> query;
 		
 		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
-			query = getEntityManager().createQuery( QUERY_FIND_ALL );
+			query = getEntityManager().createNamedQuery( "registrantFindAll", Registrant.class );
 		} else {
-			query = getEntityManager().createQuery( QUERY_FIND_BY_DATE_RANGE );
+			query = getEntityManager().createNamedQuery( "registrantFindByDateRange", Registrant.class );
 			query.setParameter( "rDate", dateRange.getRangeStart() );
 		}
-		return (List<Registrant>) query.getResultList();
+		return query.getResultList();
 	}
 	
 	/**
@@ -102,13 +97,13 @@ public class RegistrantDAO extends AbstractDAO {
 	 */
 	public void deleteRegistrant(Registrant registrant) {
 		EntityManager em = getEntityManager();
-		Query deletePublicationDownloads = em.createNativeQuery( QUERY_DELETE_PUB_DOWNLOADS );
-		Query deleteItemDownloads = em.createNativeQuery( QUERY_DELETE_ITEM_DOWNLOADS );
+		Query registrantDeletePublicationDownloads = em.createNamedQuery( "registrantDeletePublicationDownloads" );
+		Query registrantDeletePublicationItemDownloads = em.createNamedQuery( "registrantDeletePublicationItemDownloads" );
 		
-		deletePublicationDownloads.setParameter( "registrantId", registrant.getId() );
-		deleteItemDownloads.setParameter( "registrantId", registrant.getId() );
-		deletePublicationDownloads.executeUpdate();
-		deleteItemDownloads.executeUpdate();
+		registrantDeletePublicationDownloads.setParameter( "registrantId", registrant.getId() );
+		registrantDeletePublicationItemDownloads.setParameter( "registrantId", registrant.getId() );
+		registrantDeletePublicationDownloads.executeUpdate();
+		registrantDeletePublicationItemDownloads.executeUpdate();
 		getEntityManager().remove( registrant );
 	}
 	

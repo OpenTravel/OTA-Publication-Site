@@ -17,16 +17,8 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h1>Download the ${publication.name}-${publication.type.displayId} Publication</h1>
-<p>
-	<c:choose>
-		<c:when test="${item == null}">
-			<b>Downloading File: ${publication.archiveFilename}</b><br/>
-		</c:when>
-		<c:otherwise>
-			<b>Downloading File: ${item.itemFilename}</b><br/>
-		</c:otherwise>
-	</c:choose>
-</p>
+
+<p><b>Downloading File: ${filename}</b><br/></p>
 <p>
 	<span style="font-weight: bold;">Please complete the form below
 		and accept the license agreement to browse the selected file.<br/>

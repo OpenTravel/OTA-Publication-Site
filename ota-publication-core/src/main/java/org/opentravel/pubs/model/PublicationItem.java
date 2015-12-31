@@ -30,6 +30,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -37,14 +41,39 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * Model object representing a single item that was submitted as a component (typically
  * within a zip archive) of a publication.
  * 
  * @author S. Livezey
  */
+@NamedQueries({
+	@NamedQuery(
+		name  = "publicationItemFindByFilename",
+		query = "SELECT i FROM PublicationItem i, PublicationGroup g, Publication p "
+    		+ "WHERE i.itemFilename = :itemFilename AND p.id = :publicationId AND g.owner = p.id AND i.owner = g.id" ),
+	@NamedQuery(
+ 		name  = "publicationItemFindAllDownloaded",
+    	query = "SELECT DISTINCT i FROM Publication p, PublicationGroup g, PublicationItem i, Registrant r JOIN r.downloadedPublicationItems i "
+    		+ "WHERE p.id = :publicationId AND g.owner = p.id AND i.owner = g.id "
+    		+ "ORDER BY i.id ASC" ),
+    @NamedQuery(
+    	name  = "publicationItemFindAllDownloadedByDateRange",
+    	query = "SELECT DISTINCT i FROM Publication p, PublicationGroup g, PublicationItem i, Registrant r JOIN r.downloadedPublicationItems i "
+    		+ "WHERE p.id = :publicationId AND r.registrationDate >= :rDate AND g.owner = p.id AND i.owner = g.id "
+    		+ "ORDER BY i.id ASC" ),
+})
+@NamedNativeQueries({
+	@NamedNativeQuery(
+		name  = "publicationItemDeleteDownloads",
+		query = "DELETE FROM PUBLICATION_ITEM_DOWNLOAD WHERE PUBLICATION_ITEM_ID IN :itemIds" ),
+})
 @Entity
 @Table( name = "PUBLICATION_ITEM" )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public class PublicationItem {
 	
 	@Id
@@ -80,10 +109,12 @@ public class PublicationItem {
 	
 	@OneToMany( mappedBy = "publicationItem", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
 	@OrderBy( "commentNumber ASC" )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<Comment> submittedComments;
 	
 	@ManyToMany( mappedBy = "downloadedPublicationItems" )
 	@OrderBy( "registrationDate ASC" )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<Registrant> downloadedBy;
 
 	/**

@@ -27,9 +27,16 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * Abstract base class for all types of comments that can be submitted by site
@@ -37,9 +44,33 @@ import javax.validation.constraints.Size;
  * 
  * @author S. Livezey
  */
+@NamedQueries({
+	@NamedQuery(
+		name  = "commentFindByPublication",
+		query = "SELECT c FROM Comment c, Publication p, PublicationGroup g, PublicationItem i "
+    		+ "WHERE c.publicationState = :state AND c.publicationItem = i AND i.owner = g AND g.owner = p AND p.id = :publicationId "
+    		+ "ORDER BY c.commentNumber ASC" ),
+	@NamedQuery(
+		name  = "commentFindByPublicationDateRange",
+		query = "SELECT c FROM Comment c, Publication p, PublicationGroup g, PublicationItem i, Registrant r "
+    		+ "WHERE c.publicationState = :state AND r.registrationDate >= :rDate AND c.publicationItem = i AND c.submittedBy = r AND i.owner = g AND g.owner = p AND p.id = :publicationId "
+    		+ "ORDER BY c.commentNumber ASC" ),
+})
+@NamedNativeQueries({
+	@NamedNativeQuery(
+		name  = "commentCounterNextVal",
+		query = "SELECT next_val FROM comment_counter" ),
+	@NamedNativeQuery(
+		name  = "commentCounterCreate",
+		query = "INSERT INTO comment_counter VALUES ( :nextValue )" ),
+	@NamedNativeQuery(
+		name  = "commentCounterUpdate",
+		query = "UPDATE comment_counter SET next_val = :nextValue" ),
+})
 @Entity
 @Table( name = "COMMENT" )
 @Inheritance( strategy = InheritanceType.JOINED )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public abstract class Comment {
 	
 	@Id

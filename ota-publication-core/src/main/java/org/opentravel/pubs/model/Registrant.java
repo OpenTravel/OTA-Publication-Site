@@ -28,11 +28,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * Model object representing a user who registered on the OpenTravel web site for the
@@ -40,8 +47,34 @@ import javax.validation.constraints.Size;
  * 
  * @author S. Livezey
  */
+@NamedQueries({
+	@NamedQuery(
+		name  = "registrantFindAll",
+		query = "SELECT r FROM Registrant r ORDER BY r.registrationDate ASC" ),
+	@NamedQuery(
+		name  = "registrantFindByDateRange",
+		query = "SELECT r FROM Registrant r WHERE r.registrationDate >= :rDate ORDER BY r.registrationDate ASC" ),
+	@NamedQuery(
+		name  = "registrantFindAllDownloaders",
+		query = "SELECT r FROM Registrant r JOIN r.downloadedPublications p "
+    		+ "WHERE p.id = :publicationId ORDER BY r.registrationDate ASC" ),
+	@NamedQuery(
+		name  = "registrantFindAllDownloadersByDateRange",
+		query = "SELECT r FROM Registrant r JOIN r.downloadedPublications p "
+    		+ "WHERE p.id = :publicationId AND r.registrationDate >= :rDate "
+    		+ "ORDER BY r.registrationDate ASC" ),
+})
+@NamedNativeQueries({
+	@NamedNativeQuery(
+		name  = "registrantDeletePublicationDownloads",
+		query = "DELETE FROM PUBLICATION_DOWNLOAD WHERE REGISTRANT_ID = :registrantId" ),
+	@NamedNativeQuery(
+		name  = "registrantDeletePublicationItemDownloads",
+		query = "DELETE FROM PUBLICATION_ITEM_DOWNLOAD WHERE REGISTRANT_ID = :registrantId" ),
+})
 @Entity
 @Table( name = "REGISTRANT" )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public class Registrant {
 	
 	@Id
@@ -90,16 +123,19 @@ public class Registrant {
 	@JoinTable( name = "PUBLICATION_DOWNLOAD",
 		joinColumns = { @JoinColumn( name = "REGISTRANT_ID", referencedColumnName = "ID" ) },
 		inverseJoinColumns = { @JoinColumn( name = "PUBLICATION_ID", referencedColumnName = "ID") } )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<Publication> downloadedPublications;
 	
 	@ManyToMany
 	@JoinTable( name = "PUBLICATION_ITEM_DOWNLOAD",
 		joinColumns = { @JoinColumn( name = "REGISTRANT_ID", referencedColumnName = "ID" ) },
 		inverseJoinColumns = { @JoinColumn( name = "PUBLICATION_ITEM_ID", referencedColumnName = "ID") } )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<PublicationItem> downloadedPublicationItems;
 	
 	@OneToMany( mappedBy = "submittedBy", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
 	@OrderBy( "commentNumber ASC" )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<Comment> submittedComments;
 
 	/**

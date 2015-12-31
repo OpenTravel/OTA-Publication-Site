@@ -26,6 +26,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.opentravel.pubs.model.FileContent;
 import org.opentravel.pubs.model.Publication;
@@ -48,15 +49,6 @@ import org.slf4j.LoggerFactory;
 public class PublicationDAO extends AbstractDAO {
 	
     private static final Logger log = LoggerFactory.getLogger( PublicationDAO.class );
-    
-    private static final String QUERY_BY_NAME_TYPE          = "SELECT p FROM Publication p WHERE p.type = :pType AND p.name = :pName";
-    private static final String QUERY_LATEST_BY_TYPE        = "SELECT p FROM Publication p WHERE p.type = :pType AND p.publicationDate = (SELECT MAX(p2.publicationDate) FROM Publication p2 WHERE p2.type = :pType)";
-    private static final String QUERY_ALL_PUBLICATIONS      = "SELECT p FROM Publication p WHERE p.type = :pType ORDER BY p.publicationDate DESC";
-    private static final String QUERY_DELETE_PUB_DOWNLOADS  = "DELETE FROM PUBLICATION_DOWNLOAD WHERE PUBLICATION_ID = :publicationId";
-    private static final String QUERY_DELETE_ITEM_DOWNLOADS = "DELETE FROM PUBLICATION_ITEM_DOWNLOAD WHERE PUBLICATION_ITEM_ID IN :itemIds";
-    private static final String QUERY_ITEM_FIND_BY_FILENAME =
-    		"SELECT i FROM PublicationItem i, PublicationGroup g, Publication p "
-    		+ "WHERE i.itemFilename = :itemFilename AND p.id = :publicationId AND g.owner = p.id AND i.owner = g.id";
     
 	/**
 	 * Constructor that supplies the factory which created this DAO instance.
@@ -87,14 +79,14 @@ public class PublicationDAO extends AbstractDAO {
 	 * @return Publication
 	 * @throws DAOException  thrown if an error occurs while retrieving the publication
 	 */
-	@SuppressWarnings("unchecked")
 	public Publication getPublication(String name, PublicationType type) throws DAOException {
-		Query query = getEntityManager().createQuery( QUERY_BY_NAME_TYPE );
+		TypedQuery<Publication> query = getEntityManager().createNamedQuery(
+				"publicationFindByNameType", Publication.class );
 		
 		query.setParameter( "pType", type );
 		query.setParameter( "pName", name );
 		
-		List<Publication> queryResults = (List<Publication>) query.getResultList();
+		List<Publication> queryResults = query.getResultList();
 		return queryResults.isEmpty() ? null : queryResults.get( 0 );
 	}
 	
@@ -105,13 +97,13 @@ public class PublicationDAO extends AbstractDAO {
 	 * @return Publication
 	 * @throws DAOException  thrown if an error occurs while retrieving the publication
 	 */
-	@SuppressWarnings("unchecked")
 	public Publication getLatestPublication(PublicationType type) throws DAOException {
-		Query query = getEntityManager().createQuery( QUERY_LATEST_BY_TYPE );
+		TypedQuery<Publication> query = getEntityManager().createNamedQuery(
+				"publicationLatestByType", Publication.class );
 		
 		query.setParameter( "pType", type );
 		
-		List<Publication> queryResults = (List<Publication>) query.getResultList();
+		List<Publication> queryResults = query.getResultList();
 		return queryResults.isEmpty() ? null : queryResults.get( 0 );
 	}
 	
@@ -122,12 +114,12 @@ public class PublicationDAO extends AbstractDAO {
 	 * @return List<Publication>
 	 * @throws DAOException  thrown if an error occurs while retrieving the publications
 	 */
-	@SuppressWarnings("unchecked")
 	public List<Publication> getAllPublications(PublicationType type) throws DAOException {
-		Query query = getEntityManager().createQuery( QUERY_ALL_PUBLICATIONS );
+		TypedQuery<Publication> query = getEntityManager().createNamedQuery(
+				"publicationFindAll", Publication.class );
 		
 		query.setParameter( "pType", type );
-		return (List<Publication>) query.getResultList();
+		return query.getResultList();
 	}
 	
     /**
@@ -177,14 +169,14 @@ public class PublicationDAO extends AbstractDAO {
 	 * @return PublicationItem
 	 * @throws DAOException  thrown if an error occurs while retrieving the publication item
 	 */
-	@SuppressWarnings("unchecked")
 	public PublicationItem findPublicationItem(Publication publication, String itemFilename) throws DAOException {
-		Query query = getEntityManager().createQuery( QUERY_ITEM_FIND_BY_FILENAME );
+		TypedQuery<PublicationItem> query = getEntityManager().createNamedQuery(
+				"publicationItemFindByFilename", PublicationItem.class );
 		
 		query.setParameter( "publicationId", publication.getId() );
 		query.setParameter( "itemFilename", itemFilename );
 		
-		List<PublicationItem> queryResults = (List<PublicationItem>) query.getResultList();
+		List<PublicationItem> queryResults = query.getResultList();
 		return queryResults.isEmpty() ? null : queryResults.get( 0 );
 	}
 	
@@ -344,8 +336,8 @@ public class PublicationDAO extends AbstractDAO {
 	 */
 	public void deleteSpecification(Publication publication) throws DAOException {
 		EntityManager em = getEntityManager();
-		Query deletePublicationDownloads = em.createNativeQuery( QUERY_DELETE_PUB_DOWNLOADS );
-		Query deleteItemDownloads = em.createNativeQuery( QUERY_DELETE_ITEM_DOWNLOADS );
+		Query publicationDeleteDownloads = em.createNamedQuery( "publicationDeleteDownloads" );
+		Query publicationItemDeleteDownloads = em.createNamedQuery( "publicationItemDeleteDownloads" );
 		List<Long> itemIds = new ArrayList<>();
 		
 		for (PublicationGroup group : publication.getPublicationGroups()) {
@@ -354,10 +346,10 @@ public class PublicationDAO extends AbstractDAO {
 			}
 		}
 		
-		deletePublicationDownloads.setParameter( "publicationId", publication.getId() );
-		deleteItemDownloads.setParameter( "itemIds", itemIds );
-		deletePublicationDownloads.executeUpdate();
-		deleteItemDownloads.executeUpdate();
+		publicationDeleteDownloads.setParameter( "publicationId", publication.getId() );
+		publicationItemDeleteDownloads.setParameter( "itemIds", itemIds );
+		publicationDeleteDownloads.executeUpdate();
+		publicationItemDeleteDownloads.executeUpdate();
 		
 		getFactory().newDownloadDAO().purgeCache( publication );
 		getEntityManager().remove( publication );

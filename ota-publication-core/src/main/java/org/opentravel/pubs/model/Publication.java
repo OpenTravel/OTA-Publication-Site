@@ -29,6 +29,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -36,14 +40,35 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * Model object representing a publication or specification that is available for download
  * from the OpenTravel web site.
  * 
  * @author S. Livezey
  */
+@NamedQueries({
+	@NamedQuery(
+		name  = "publicationFindByNameType",
+		query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.name = :pName" ),
+	@NamedQuery(
+		name  = "publicationLatestByType",
+		query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.publicationDate = "
+				+ "(SELECT MAX(p2.publicationDate) FROM Publication p2 WHERE p2.type = :pType)" ),
+	@NamedQuery(
+		name  = "publicationFindAll",
+		query = "SELECT p FROM Publication p WHERE p.type = :pType ORDER BY p.publicationDate DESC" ),
+})
+@NamedNativeQueries({
+	@NamedNativeQuery(
+		name  = "publicationDeleteDownloads",
+		query = "DELETE FROM PUBLICATION_DOWNLOAD WHERE PUBLICATION_ID = :publicationId" ),
+})
 @Entity
 @Table( name = "PUBLICATION" )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public class Publication {
 	
 	@Id
@@ -86,10 +111,12 @@ public class Publication {
 	
 	@OneToMany( mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
 	@OrderBy( "sortOrder ASC" )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<PublicationGroup> publicationGroups;
 	
-	@ManyToMany( mappedBy = "downloadedPublications" )
+	@ManyToMany( mappedBy = "downloadedPublications", fetch = FetchType.LAZY  )
 	@OrderBy( "registrationDate ASC" )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<Registrant> downloadedBy;
 
 	/**

@@ -34,6 +34,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 /**
  * Model object representing a grouping of publication items.
  * 
@@ -41,6 +44,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Table( name = "PUBLICATION_GROUP" )
+@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public class PublicationGroup {
 	
 	@Id
@@ -68,6 +72,7 @@ public class PublicationGroup {
 	
 	@OneToMany( mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
 	@OrderBy( "itemFilename ASC" )
+	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<PublicationItem> publicationItems;
 
 	/**

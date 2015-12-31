@@ -14,6 +14,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.opentravel.pubs</groupId>
+			<artifactId>ota-publication-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 		</dependency>
@@ -35,9 +40,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.opentravel.pubs</groupId>
-			<artifactId>ota-publication-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.el</artifactId>
 		</dependency>
 	</dependencies>
 	
