@@ -16,10 +16,12 @@
 package org.opentravel.pubs.dao;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -195,36 +197,79 @@ public class PublicationDAO extends AbstractDAO {
 	 */
 	public long publishSpecification(Publication publication, InputStream archiveContent)
 			throws ValidationException, DAOException {
-		try {
-			String pubName = publication.getName();
-			PublicationType pubType = publication.getType();
+		String pubName = publication.getName();
+		PublicationType pubType = publication.getType();
+		
+		if (publication.getId() >= 0) {
+			throw new DAOException("The publication has already been published - use 'updateSpecification()' instead.");
 			
-			if ((pubName == null) || (pubType == null)) {
-				throw new DAOException("The publication name and type are required.");
-				
-			} else {
-				ValidationResults vResults = ModelValidator.validate( publication );
-				
-				if (vResults.hasViolations()) {
-					throw new ValidationException( vResults );
-				}
-				
-				// Check for an existing publication with the same name/type
-				if (getPublication( pubName, pubType ) != null) {
-					throw new DAOException("An " + pubType.getDisplayValue() +
-							" publication with the name '" + pubName + "' already exists.");
-				}
+		} else {
+			ValidationResults vResults = ModelValidator.validate( publication );
+			
+			if (vResults.hasViolations()) {
+				throw new ValidationException( vResults );
 			}
 			
-			// Save the archive file content
-			String archiveFilename = getArchiveFilename( publication );
-			log.info("Saving File Content: " + archiveFilename);
+			// Check for an existing publication with the same name/type
+			if (getPublication( pubName, pubType ) != null) {
+				throw new DAOException("An " + pubType.getDisplayValue() +
+						" publication with the name '" + pubName + "' already exists.");
+			}
+		}
+		return processSpecificationArchive( publication, archiveContent );
+	}
+	
+	/**
+	 * Updates the contents of the specification.  Note that this will update the contents of any
+	 * existing publication items, remove any deleted items, and add any newly discovered items.
+	 * 
+	 * @param publication  the publication to be updated
+	 * @param archiveContent   stream that provides access to the updated file content of the specification archive
+	 * @throws DAOException  thrown if an error occurs while updating the specification
+	 * @throws ValidationException  thrown if one or more validation errors were detected for the publication
+	 */
+	public void updateSpecification(Publication publication, InputStream archiveContent)
+			throws ValidationException, DAOException {
+		if (publication.getId() < 0) {
+			throw new DAOException("Unable to update - the publication has not yet been saved to persistent storage.");
+			
+		} else {
+			ValidationResults vResults = ModelValidator.validate( publication );
+			
+			if (vResults.hasViolations()) {
+				throw new ValidationException( vResults );
+			}
+		}
+		processSpecificationArchive( publication, archiveContent );
+	}
+	
+	/**
+	 * Performs an initial load or update of the given publication archive depending
+	 * upon its current state.
+	 * 
+	 * <p>The return value of this method is the ID of the new specification that was created
+	 * or updated.
+	 * 
+	 * @param publication  the publication object to be published as a specification
+	 * @param archiveContent  stream that provides access to the file content of the specification archive
+	 * @return long
+	 * @throws DAOException  thrown if an error occurs while publishing the specification
+	 */
+	private long processSpecificationArchive(Publication publication, InputStream archiveContent) throws DAOException {
+		try {
 			EntityManager em = getEntityManager();
 			SpecificationCollator collator = new SpecificationCollator( publication );
-			FileContent archiveFile = persistFileContent( archiveContent );
+			String archiveFilename = getArchiveFilename( publication );
+			FileContent archiveFile = publication.getArchiveContent();
 			
+			log.info("Saving File Content: " + archiveFilename);
+			if (archiveFile != null) {
+				persistFileContent( archiveFile, archiveContent );
+			} else {
+				archiveFile = persistFileContent( archiveContent );
+				publication.setArchiveContent( archiveFile );
+			}
 			publication.setArchiveFilename( archiveFilename );
-			publication.setArchiveContent( archiveFile );
 			em.flush();
 			
 			// First Pass - Create the publication items for the new specification
@@ -237,17 +282,27 @@ public class PublicationDAO extends AbstractDAO {
 						continue;
 						
 					} else if (collator.isReleaseNotes( zipEntry )) {
-						FileContent releaseNotesFile = persistFileContent( zipStream );
+						FileContent releaseNotesFile = publication.getReleaseNotesContent();
 						
+						if (releaseNotesFile != null) {
+							persistFileContent( releaseNotesFile, zipStream );
+						} else {
+							publication.setReleaseNotesContent( persistFileContent( zipStream ) );
+						}
 						publication.setReleaseNotesFilename( collator.getFilename( zipEntry ) );
-						publication.setReleaseNotesContent( releaseNotesFile );
 						
 					} else {
 						PublicationItem item = collator.addItem( zipEntry );
 						
 						if (item != null) {
 							log.info("Saving File Content: " + item.getItemFilename());
-							item.setItemContent( persistFileContent( zipStream ) );
+							FileContent itemFile = item.getItemContent();
+							
+							if (itemFile != null) {
+								persistFileContent( itemFile, zipStream );
+							} else {
+								item.setItemContent( persistFileContent( zipStream ) );
+							}
 						}
 					}
 				}
@@ -294,37 +349,39 @@ public class PublicationDAO extends AbstractDAO {
 			}
 			
 			// Finish by saving all of the non-file persistent records for the specification
-			log.info("Saving Publication: " + publication.getName());
-			em.persist( publication );
+			// and updating any items that have been removed
+			if (publication.getId() < 0) {
+				em.persist( publication );
+			}
+			
+			for (PublicationItem deletedItem : collator.getDeletedItems()) {
+				deletedItem.setRemoved( true );
+			}
 			
 			for (PublicationGroup group : collator.getGroups()) {
-				log.info("Saving Group: " + group.getName());
-				em.persist( group );
+				boolean emptyGroup = true;
+				
+				if (group.getId() < 0) {
+					em.persist( group );
+				}
 				
 				for (PublicationItem item : group.getPublicationItems()) {
-					log.info("Saving Item: " + item.getItemFilename());
-					em.persist( item );
+					if (item.getId() < 0) {
+						em.persist( item );
+					}
+					emptyGroup &= item.isRemoved();
 				}
+				group.setRemoved( emptyGroup );
 			}
 			em.flush();
+			DAOFactory.invalidateCollectionCache();
+			
 			return publication.getId();
 			
 		} catch (IOException e) {
 			log.error("An error occurred while publishing the specification.", e);
 			throw new DAOException("An error occurred while publishing the specification.", e);
 		}
-	}
-	
-	/**
-	 * Updates the contents of the specification.  Note that this will update the contents of any
-	 * existing publication items, remove any deleted items, and add any newly discovered items.
-	 * 
-	 * @param publication  the publication to be updated
-	 * @param archiveContent   stream that provides access to the updated file content of the specification archive
-	 * @throws DAOException  thrown if an error occurs while updating the specification
-	 */
-	public void updateSpecification(Publication publication, InputStream archiveContent) throws DAOException {
-		// TODO: Implement the 'updateSpecification()' operation
 	}
 	
 	/**
@@ -353,6 +410,65 @@ public class PublicationDAO extends AbstractDAO {
 		
 		getFactory().newDownloadDAO().purgeCache( publication );
 		getEntityManager().remove( publication );
+	}
+	
+	/**
+	 * Creates and persists a new <code>FileContent</code> object.  This method
+	 * operates within the scope of the current entity manager's transaction and
+	 * does not commit or rollback after the file content has been persisted.
+	 * 
+	 * @param contentStream  the input stream from which the file content should be obtained
+	 * @return FileContent
+	 * @throws IOException  thrown if an error occurs while attempting to read from the given input stream
+	 */
+	private FileContent persistFileContent(InputStream contentStream) throws IOException {
+		return persistFileContent( null, contentStream );
+	}
+	
+	/**
+	 * Creates or updates a <code>FileContent</code> object with the data provided from the
+	 * given input stream.  This method operates within the scope of the current entity manager's
+	 * transaction and does not commit or rollback after the file content has been persisted.
+	 * 
+	 * @param existingContent  the existing content record (if null, a new one will be created and persisted)
+	 * @param contentStream  the input stream from which the file content should be obtained
+	 * @return FileContent
+	 * @throws IOException  thrown if an error occurs while attempting to read from the given input stream
+	 */
+	private FileContent persistFileContent(FileContent existingContent, InputStream contentStream) throws IOException {
+		try {
+			ByteArrayOutputStream contentBytes = new ByteArrayOutputStream();
+			FileContent fc;
+			
+			// Compress the content before storing it in the database BLOB
+			try (DeflaterOutputStream zipOut = new DeflaterOutputStream( contentBytes )) {
+				byte[] buffer = new byte[ BUFFER_SIZE ];
+				int bytesRead;
+				
+				while ((bytesRead = contentStream.read( buffer, 0, BUFFER_SIZE )) >= 0) {
+					zipOut.write( buffer, 0, bytesRead );
+				}
+				zipOut.flush();
+			}
+			
+			// Create and persist the file entity
+			fc = (existingContent == null) ? new FileContent() : existingContent;
+			fc.setFileBytes( contentBytes.toByteArray() );
+			
+			if (existingContent == null) {
+				getEntityManager().persist( fc );
+			}
+			return fc;
+			
+		} finally {
+			// Close the input stream unless it is a zip stream since we may be
+			// reading subsequent file content entries from the same stream.
+			if (!(contentStream instanceof ZipInputStream)) {
+				try {
+					contentStream.close();
+				} catch (IOException e) {}
+			}
+		}
 	}
 	
 	/**

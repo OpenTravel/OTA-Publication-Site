@@ -15,8 +15,9 @@
 #
 
 #
-# In the 'my.ini' file, update the following property:
+# In the 'my.ini' file, update the following properties:
 # max_allowed_packet=64M
+# innodb_log_file_size=256M
 #
 
 #

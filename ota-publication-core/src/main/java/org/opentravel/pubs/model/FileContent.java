@@ -36,7 +36,7 @@ public class FileContent {
 	@Id
 	@Column( name = "ID", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private long id = -1L;
 	
 	@Column( name = "FILE_BYTES", nullable = false )
 	private byte[] fileBytes;

@@ -50,7 +50,7 @@ public class PublicationGroup {
 	@Id
 	@Column( name = "ID", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private long id = -1L;
 	
 	@ManyToOne( fetch = FetchType.LAZY )
 	@JoinColumn( name = "PUBLICATION_ID" )
@@ -74,6 +74,9 @@ public class PublicationGroup {
 	@OrderBy( "itemFilename ASC" )
 	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<PublicationItem> publicationItems;
+	
+	@Column( name = "REMOVED" )
+	private boolean removed;
 
 	/**
 	 * Returns the value of the 'id' field.
@@ -181,6 +184,24 @@ public class PublicationGroup {
 	 */
 	public void setPublicationItems(List<PublicationItem> publicationItems) {
 		this.publicationItems = publicationItems;
+	}
+
+	/**
+	 * Returns the value of the 'removed' field.
+	 *
+	 * @return boolean
+	 */
+	public boolean isRemoved() {
+		return removed;
+	}
+
+	/**
+	 * Assigns the value of the 'removed' field.
+	 *
+	 * @param removed  the field value to assign
+	 */
+	public void setRemoved(boolean deleted) {
+		this.removed = deleted;
 	}
 	
 }

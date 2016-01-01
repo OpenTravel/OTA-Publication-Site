@@ -79,7 +79,7 @@ public class PublicationItem {
 	@Id
 	@Column( name = "ID", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private long id = -1L;
 	
 	@ManyToOne( fetch = FetchType.LAZY )
 	@JoinColumn( name = "GROUP_ID" )
@@ -107,6 +107,9 @@ public class PublicationItem {
 	@Column( name = "CREATE_DATE", nullable = false )
 	private Date createDate;
 	
+	@Column( name = "REMOVED" )
+	private boolean removed;
+
 	@OneToMany( mappedBy = "publicationItem", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
 	@OrderBy( "commentNumber ASC" )
 	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
@@ -277,6 +280,24 @@ public class PublicationItem {
 	 */
 	public void setDownloadedBy(List<Registrant> downloadedBy) {
 		this.downloadedBy = downloadedBy;
+	}
+	
+	/**
+	 * Returns the value of the 'removed' field.
+	 *
+	 * @return boolean
+	 */
+	public boolean isRemoved() {
+		return removed;
+	}
+
+	/**
+	 * Assigns the value of the 'removed' field.
+	 *
+	 * @param removed  the field value to assign
+	 */
+	public void setRemoved(boolean deleted) {
+		this.removed = deleted;
 	}
 	
 }

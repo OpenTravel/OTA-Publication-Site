@@ -24,7 +24,6 @@ import javax.servlet.http.HttpSession;
 import org.opentravel.pubs.builders.PublicationBuilder;
 import org.opentravel.pubs.dao.AdminDAO;
 import org.opentravel.pubs.dao.CommentDAO;
-import org.opentravel.pubs.dao.DAOException;
 import org.opentravel.pubs.dao.DAOFactoryManager;
 import org.opentravel.pubs.dao.DateRangeType;
 import org.opentravel.pubs.dao.DownloadDAO;
@@ -134,9 +133,9 @@ public class AdminController extends BaseController {
     			} catch (ValidationException e) {
     	    		addValidationErrors( e, model );
     				
-    			} catch (DAOException e) {
-    				log.error("An error occurred while publishing the spec: ", e);
-    				setErrorMessage( e.getMessage(), model );
+    			} catch (Throwable t) {
+    				log.error("An error occurred while publishing the spec: ", t);
+    				setErrorMessage( t.getMessage(), model );
     			}
     		}
     		
@@ -246,9 +245,9 @@ public class AdminController extends BaseController {
     			} catch (ValidationException e) {
     	    		addValidationErrors( e, model );
     				
-    			} catch (DAOException e) {
-    				log.error("An error occurred while publishing the spec: ", e);
-    				setErrorMessage( e.getMessage(), model );
+    			} catch (Throwable t) {
+    				log.error("An error occurred while updating the spec: ", t);
+    				setErrorMessage( t.getMessage(), model );
     			}
     		}
     		

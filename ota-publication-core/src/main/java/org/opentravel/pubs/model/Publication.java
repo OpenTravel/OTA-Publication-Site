@@ -55,11 +55,11 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 		query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.name = :pName" ),
 	@NamedQuery(
 		name  = "publicationLatestByType",
-		query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.publicationDate = "
-				+ "(SELECT MAX(p2.publicationDate) FROM Publication p2 WHERE p2.type = :pType)" ),
+		query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.name = "
+				+ "(SELECT MAX(p2.name) FROM Publication p2 WHERE p2.type = :pType)" ),
 	@NamedQuery(
 		name  = "publicationFindAll",
-		query = "SELECT p FROM Publication p WHERE p.type = :pType ORDER BY p.publicationDate DESC" ),
+		query = "SELECT p FROM Publication p WHERE p.type = :pType ORDER BY p.name DESC" ),
 })
 @NamedNativeQueries({
 	@NamedNativeQuery(
@@ -74,7 +74,7 @@ public class Publication {
 	@Id
 	@Column( name = "ID", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private long id = -1L;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )

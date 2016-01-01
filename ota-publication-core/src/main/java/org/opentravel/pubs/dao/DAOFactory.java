@@ -21,6 +21,8 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
+import org.hibernate.Cache;
+import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +105,38 @@ public class DAOFactory {
 		if ((emFactory == null) || !emFactory.isOpen()) {
 			emFactory = Persistence.createEntityManagerFactory( JPA_PERSISTENCE_UNIT );
 		}
+	}
+	
+	/**
+	 * Returns the hibernate cache for the current session factory.
+	 * 
+	 * @return Cache
+	 */
+	protected static Cache getHibernateCache() {
+		return ((EntityManagerFactoryImpl) emFactory).getSessionFactory().getCache();
+	}
+	
+	/**
+	 * Invalidates the entire cache (all regions).
+	 */
+	public static void invalidateCache() {
+		getHibernateCache().evictAllRegions();
+	}
+	
+	/**
+	 * Invalidates the entity cache for the specified type.
+	 * 
+	 * @param entityType  the type of persistent entity for which to invalidate the cache
+	 */
+	public static void invalidateCache(Class<?> entityType) {
+		getHibernateCache().evictAllRegions();
+	}
+	
+	/**
+	 * Invalidates the collection cache for all entity types.
+	 */
+	public static void invalidateCollectionCache() {
+		getHibernateCache().evictCollectionRegions();
 	}
 	
 	/**

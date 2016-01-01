@@ -70,6 +70,9 @@
 						</c:when>
 						<c:otherwise>
 							${downloadItem.publicationItem.itemFilename}
+							<c:if test="${downloadItem.publicationItem.removed}">
+								<span style="color: Red">(Deleted from specification)</span>
+							</c:if>
 						</c:otherwise>
 					</c:choose>
 				</td></tr>

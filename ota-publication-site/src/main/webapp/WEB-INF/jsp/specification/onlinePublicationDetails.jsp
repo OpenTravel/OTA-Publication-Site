@@ -23,12 +23,14 @@
 <table id="grouptable" align="left">
 	<tr>
 		<c:forEach var="group" items="${groupList}">
+			<c:if test="${!group.removed}">
 			<c:choose>
 				<c:when test="${group.id == selectedGroup}"><th class="sel">${group.name}</th></c:when>
 				<c:otherwise>
 					<th class="nsel"><a href="${config.localSiteUrl}/specifications/OnlinePublicationDetails.html?spec=${publication.name}&specType=${urlPubType}&group=${group.id}">${group.name}</a></th>
 				</c:otherwise>
 			</c:choose>
+			</c:if>
 		</c:forEach>
 	</tr>
 </table>
@@ -43,11 +45,13 @@
 		<th>File Size</th>
 	</tr>
 	<c:forEach var="item" items="${itemList}">
+	<c:if test="${!item.removed}">
 	<tr>
 		<td><a href="${config.localSiteUrl}/content/specifications/downloads/${publication.name}/${urlPubType}/${item.itemFilename}">${item.itemFilename}</a></td>
 		<td>${formatter.formatDate( item.createDate )}</td>
 		<td class="fileSize">${formatter.formatFileSize( item.fileSize )}</td>
 	</tr>
+	</c:if>
 	</c:forEach>
 </table>
 </div>

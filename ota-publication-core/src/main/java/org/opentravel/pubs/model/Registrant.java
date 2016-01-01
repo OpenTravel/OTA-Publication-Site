@@ -80,7 +80,7 @@ public class Registrant {
 	@Id
 	@Column( name = "ID", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private long id = -1L;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )

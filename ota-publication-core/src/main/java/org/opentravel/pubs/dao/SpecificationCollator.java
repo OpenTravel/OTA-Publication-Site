@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 
 import org.opentravel.pubs.model.Publication;
@@ -29,6 +31,8 @@ import org.opentravel.pubs.model.PublicationGroup;
 import org.opentravel.pubs.model.PublicationItem;
 import org.opentravel.pubs.model.PublicationItemType;
 import org.opentravel.pubs.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class that separates and organizes the various publication items into groups
@@ -38,12 +42,21 @@ import org.opentravel.pubs.util.StringUtils;
  */
 class SpecificationCollator {
 	
+	private static final String XML_SCHEMAS_GROUP_NAME   = "XML Schemas";
+	private static final String JSON_SCHEMAS_GROUP_NAME  = "JSON Schemas";
+	private static final String GEN_ARTIFACTS_GROUP_NAME = "General Artifacts";
+	
+    private static final Logger log = LoggerFactory.getLogger( SpecificationCollator.class );
+    
 	private Publication publication;
 	private PublicationGroup xmlSchemasGroup = new PublicationGroup();
 	private PublicationGroup jsonSchemasGroup = new PublicationGroup();
 	private PublicationGroup generalArtifactsGroup = new PublicationGroup();
 	private Map<String,PublicationGroup> otherGroups = new HashMap<>();
 	private Map<String,List<String>> groupEntries = new HashMap<>();
+	
+	private Map<String,PublicationItem> existingPublicationItems = new HashMap<>();
+	private Set<String> processedItemFilenames = new HashSet<>();
 	
 	/**
 	 * Constructor that specifies the publication with which all groups will be
@@ -52,22 +65,7 @@ class SpecificationCollator {
 	 * @param publication  the publication with which all groups will be associated
 	 */
 	public SpecificationCollator(Publication publication) {
-		this.publication = publication;
-		
-		this.xmlSchemasGroup.setOwner( publication );
-		this.xmlSchemasGroup.setName( "XML Schemas" );
-		this.xmlSchemasGroup.setMemberType( PublicationItemType.XML_SCHEMA );
-		this.xmlSchemasGroup.setPublicationItems( new ArrayList<PublicationItem>() );
-		
-		this.jsonSchemasGroup.setOwner( publication );
-		this.jsonSchemasGroup.setName( "JSON Schemas" );
-		this.jsonSchemasGroup.setMemberType( PublicationItemType.JSON_SCHEMA );
-		this.jsonSchemasGroup.setPublicationItems( new ArrayList<PublicationItem>() );
-		
-		this.generalArtifactsGroup.setOwner( publication );
-		this.generalArtifactsGroup.setName( "General Artifacts" );
-		this.generalArtifactsGroup.setMemberType( PublicationItemType.ARTIFACT );
-		this.generalArtifactsGroup.setPublicationItems( new ArrayList<PublicationItem>() );
+		init( publication );
 	}
 	
 	/**
@@ -92,27 +90,56 @@ class SpecificationCollator {
 		Collections.sort( miscGroups, new GroupComparator() );
 		
 		// Add all non-empty groups to the final list
-		if (!xmlSchemasGroup.getPublicationItems().isEmpty()) {
-			groupList.add( xmlSchemasGroup );
-		}
-		if (!jsonSchemasGroup.getPublicationItems().isEmpty()) {
-			groupList.add( jsonSchemasGroup );
-		}
-		if (!generalArtifactsGroup.getPublicationItems().isEmpty()) {
-			groupList.add( generalArtifactsGroup );
-		}
+		addNonEmptyGroup( xmlSchemasGroup, groupList );
+		addNonEmptyGroup( jsonSchemasGroup, groupList );
+		addNonEmptyGroup( generalArtifactsGroup, groupList );
+		
 		for (PublicationGroup miscGroup : miscGroups) {
-			groupList.add( miscGroup );
+			addNonEmptyGroup( miscGroup, groupList );
 		}
-		if (otherGroup != null) {
-			groupList.add( otherGroup );
-		}
+		addNonEmptyGroup( otherGroup, groupList );
 		
 		// Assign the 'sortOrder' value for each group in the list
 		for (int i = 0; i < groupList.size(); i++) {
 			groupList.get( i ).setSortOrder( i );
 		}
 		return groupList;
+	}
+	
+	/**
+	 * Adds the given group to the group list if it is not empty.  Otherwise, the group
+	 * is marked as 'removed'.
+	 * 
+	 * @param group  the group to be added
+	 * @param groupList  the list that will recive the non-empty group
+	 */
+	private void addNonEmptyGroup(PublicationGroup group, List<PublicationGroup> groupList) {
+		if (group != null) {
+			if (!group.getPublicationItems().isEmpty()) {
+				groupList.add( group );
+				
+			} else {
+				group.setRemoved( true );
+				group.setSortOrder( 99 );
+			}
+		}
+	}
+	
+	/**
+	 * Returns the list of all publication items that were members of the original
+	 * publication, but were not processed by this collator during the load.
+	 * 
+	 * @return List<PublicationItem>
+	 */
+	public List<PublicationItem> getDeletedItems() {
+		List<PublicationItem> deletedItems = new ArrayList<>();
+		
+		for (String filename : existingPublicationItems.keySet()) {
+			if (!processedItemFilenames.contains( filename )) {
+				deletedItems.add( existingPublicationItems.get( filename ) );
+			}
+		}
+		return deletedItems;
 	}
 	
 	/**
@@ -170,14 +197,19 @@ class SpecificationCollator {
 	public PublicationItem addArchiveItem(ZipEntry publicationEntry, ZipEntry archiveEntry) {
 		String groupName = getGroupName( publicationEntry );
 		String filename = getFilename( archiveEntry );
-		PublicationItem pubItem = null;
+		PublicationItem pubItem = existingPublicationItems.get( filename );
 		
 		// Construct a new publication item as long as it is not an archive (zip) entry
-		if (!isArchiveArtifact( filename ) && !isXmlDocument( filename )) {
+		if (processedItemFilenames.contains( filename )) {
+			log.warn("The archive has already published a file with the name '" + filename + "' (skipping)");
+			
+		} else if (!isArchiveArtifact( filename ) && !isExcludedDocument( filename )) {
 			PublicationGroup group = null;
 			
-			pubItem = new PublicationItem();
-			pubItem.setItemFilename( filename );
+			if (pubItem == null) {
+				pubItem = new PublicationItem();
+				pubItem.setItemFilename( filename );
+			}
 			pubItem.setFileSize( archiveEntry.getSize() );
 			pubItem.setCreateDate( new Date( archiveEntry.getTime() ) );
 			
@@ -197,17 +229,22 @@ class SpecificationCollator {
 				group = otherGroups.get( groupName );
 				
 				if (group == null) {
-					group = new PublicationGroup();
-					group.setName( groupName );
-					group.setOwner( publication );
-					group.setMemberType( PublicationItemType.ARTIFACT );
-					group.setPublicationItems( new ArrayList<PublicationItem>() );
+					group = newGroup( publication, groupName, PublicationItemType.ARTIFACT );
 					otherGroups.put( groupName, group );
 				}
 				pubItem.setType( PublicationItemType.ARTIFACT );
 			}
-			group.getPublicationItems().add( pubItem );
-			pubItem.setOwner( group );
+			
+			if (!group.getPublicationItems().contains( pubItem )) {
+				PublicationGroup existingOwner = pubItem.getOwner();
+				
+				if ((existingOwner != null) && (existingOwner != group)) { // item was moved to a new group
+					pubItem.getOwner().getPublicationItems().remove( pubItem );
+				}
+				group.getPublicationItems().add( pubItem );
+				pubItem.setOwner( group );
+			}
+			processedItemFilenames.add( filename );
 		}
 		
 		// Add the archive entry to the 'groupEntries' (non-special case only)
@@ -275,13 +312,15 @@ class SpecificationCollator {
 	}
 	
 	/**
-	 * Returns true if the given filename represents an XML document.
+	 * Returns true if the given filename represents an artifact that should be
+	 * excluded from the archive.
 	 * 
 	 * @param filename  the filename to analyze
 	 * @return boolean
 	 */
-	private boolean isXmlDocument(String filename) {
-		return filename.toLowerCase().endsWith( ".xml" );
+	private boolean isExcludedDocument(String filename) {
+		String lcFilename = filename.toLowerCase();
+		return lcFilename.startsWith(".") || lcFilename.endsWith( ".xml" );
 	}
 	
 	/**
@@ -314,6 +353,69 @@ class SpecificationCollator {
 	 */
 	private boolean isArchiveArtifact(String filename) {
 		return filename.toLowerCase().endsWith( ".zip" );
+	}
+	
+	/**
+	 * Initializes this collator using the information provided.
+	 * 
+	 * @param publication
+	 */
+	private void init(Publication publication) {
+		this.publication = publication;
+		
+		if (publication.getId() < 0L) { // new publication instance
+			this.xmlSchemasGroup = newGroup( publication, XML_SCHEMAS_GROUP_NAME, PublicationItemType.XML_SCHEMA );
+			this.jsonSchemasGroup = newGroup( publication, JSON_SCHEMAS_GROUP_NAME, PublicationItemType.JSON_SCHEMA );
+			this.generalArtifactsGroup = newGroup( publication, GEN_ARTIFACTS_GROUP_NAME, PublicationItemType.ARTIFACT );
+			
+		} else { // update of an existing publication
+			for (PublicationGroup existingGroup : publication.getPublicationGroups()) {
+				if (!existingGroup.isRemoved()) {
+					for (PublicationItem existingItem : existingGroup.getPublicationItems()) {
+						if (!existingItem.isRemoved()) {
+							existingPublicationItems.put( existingItem.getItemFilename(), existingItem );
+						}
+					}
+					this.otherGroups.put( existingGroup.getName(), existingGroup );
+				}
+			}
+			
+			if (this.otherGroups.containsKey( XML_SCHEMAS_GROUP_NAME )) {
+				this.xmlSchemasGroup = this.otherGroups.remove( XML_SCHEMAS_GROUP_NAME );
+			} else {
+				this.xmlSchemasGroup = newGroup( publication, XML_SCHEMAS_GROUP_NAME, PublicationItemType.XML_SCHEMA );
+			}
+			
+			if (this.otherGroups.containsKey( JSON_SCHEMAS_GROUP_NAME )) {
+				this.jsonSchemasGroup = this.otherGroups.remove( JSON_SCHEMAS_GROUP_NAME );
+			} else {
+				this.jsonSchemasGroup = newGroup( publication, JSON_SCHEMAS_GROUP_NAME, PublicationItemType.JSON_SCHEMA );
+			}
+			
+			if (this.otherGroups.containsKey( GEN_ARTIFACTS_GROUP_NAME )) {
+				this.generalArtifactsGroup = this.otherGroups.remove( GEN_ARTIFACTS_GROUP_NAME );
+			} else {
+				this.generalArtifactsGroup = newGroup( publication, GEN_ARTIFACTS_GROUP_NAME, PublicationItemType.ARTIFACT );
+			}
+		}
+	}
+	
+	/**
+	 * Creates a new <code>PublicationGroup</code> using the information provided.
+	 * 
+	 * @param p  the owner of the new group
+	 * @param name  the name of the new group
+	 * @param memberType  the member type for the new group
+	 * @return PublicationGroup
+	 */
+	private PublicationGroup newGroup(Publication p, String name, PublicationItemType memberType) {
+		PublicationGroup newGroup = new PublicationGroup();
+		
+		newGroup.setName( name );
+		newGroup.setOwner( publication );
+		newGroup.setMemberType( memberType );
+		newGroup.setPublicationItems( new ArrayList<PublicationItem>() );
+		return newGroup;
 	}
 	
 	/**
