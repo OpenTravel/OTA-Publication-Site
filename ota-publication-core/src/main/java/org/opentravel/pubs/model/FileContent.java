@@ -15,6 +15,8 @@
  */
 package org.opentravel.pubs.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,15 +32,17 @@ import javax.persistence.Table;
  */
 @Entity
 @Cacheable( false )
-@Table( name = "FILE_CONTENT" )
-public class FileContent {
+@Table( name = "file_content" )
+public class FileContent implements Serializable {
 	
+	private static final long serialVersionUID = -9133465334966977397L;
+
 	@Id
-	@Column( name = "ID", nullable = false )
+	@Column( name = "id", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id = -1L;
 	
-	@Column( name = "FILE_BYTES", nullable = false )
+	@Column( name = "file_bytes", nullable = false )
 	private byte[] fileBytes;
 
 	/**

@@ -129,7 +129,17 @@ public class DAOFactory {
 	 * @param entityType  the type of persistent entity for which to invalidate the cache
 	 */
 	public static void invalidateCache(Class<?> entityType) {
-		getHibernateCache().evictAllRegions();
+		getHibernateCache().evictEntityRegion( entityType );
+	}
+	
+	/**
+	 * Invalidates the entity cache for the entity with the specified ID.
+	 * 
+	 * @param entityType  the type of persistent entity for which to invalidate the cache
+	 * @param id  the ID of the entity to evict from the cache
+	 */
+	public static void invalidateCache(Class<?> entityType, Long id) {
+		getHibernateCache().evictEntity( entityType, id );
 	}
 	
 	/**
@@ -137,6 +147,18 @@ public class DAOFactory {
 	 */
 	public static void invalidateCollectionCache() {
 		getHibernateCache().evictCollectionRegions();
+	}
+	
+	/**
+	 * Invalidates the collection cache for the specified role on the entity identified
+	 * by the ID provided.
+	 * 
+	 * @param entityType  the type of persistent entity for which to invalidate the collection cache
+	 * @param role  the collection's role to be evicted
+	 * @param id  the ID of the entity that owns the collection
+	 */
+	public static void invalidateCollectionCache(Class<?> entityType, String role, Long id) {
+		getHibernateCache().evictCollection( entityType.getName() + "." + role, id );
 	}
 	
 	/**

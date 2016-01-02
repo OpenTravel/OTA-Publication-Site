@@ -15,6 +15,7 @@
  */
 package org.opentravel.pubs.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -69,45 +70,47 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @NamedNativeQueries({
 	@NamedNativeQuery(
 		name  = "publicationItemDeleteDownloads",
-		query = "DELETE FROM PUBLICATION_ITEM_DOWNLOAD WHERE PUBLICATION_ITEM_ID IN :itemIds" ),
+		query = "DELETE FROM publication_item_download WHERE publication_item_id IN :itemIds" ),
 })
 @Entity
-@Table( name = "PUBLICATION_ITEM" )
+@Table( name = "publication_item" )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
-public class PublicationItem {
+public class PublicationItem implements Serializable {
 	
+	private static final long serialVersionUID = -6205651944875058207L;
+
 	@Id
-	@Column( name = "ID", nullable = false )
+	@Column( name = "id", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id = -1L;
 	
 	@ManyToOne( fetch = FetchType.LAZY )
-	@JoinColumn( name = "GROUP_ID" )
+	@JoinColumn( name = "group_id" )
 	private PublicationGroup owner;
 	
 	@NotNull
-	@Column( name = "ITEM_TYPE", nullable = false, length = 20 )
+	@Column( name = "item_type", nullable = false, length = 20 )
 	@Enumerated( EnumType.STRING )
 	private PublicationItemType type;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "ITEM_FILENAME", nullable = false, length = 50 )
+	@Column( name = "item_filename", nullable = false, length = 50 )
 	private String itemFilename;
 	
 	@OneToOne( fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
-	@JoinColumn( name = "ITEM_CONTENT_ID" )
+	@JoinColumn( name = "item_content_id" )
 	private FileContent itemContent;
 	
 	@NotNull
-	@Column( name = "FILE_SIZE", nullable = false )
+	@Column( name = "file_size", nullable = false )
 	private long fileSize;
 	
 	@NotNull
-	@Column( name = "CREATE_DATE", nullable = false )
+	@Column( name = "create_date", nullable = false )
 	private Date createDate;
 	
-	@Column( name = "REMOVED" )
+	@Column( name = "removed" )
 	private boolean removed;
 
 	@OneToMany( mappedBy = "publicationItem", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )

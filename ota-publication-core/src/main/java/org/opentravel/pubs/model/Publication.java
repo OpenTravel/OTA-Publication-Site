@@ -15,6 +15,7 @@
  */
 package org.opentravel.pubs.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -64,49 +65,51 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @NamedNativeQueries({
 	@NamedNativeQuery(
 		name  = "publicationDeleteDownloads",
-		query = "DELETE FROM PUBLICATION_DOWNLOAD WHERE PUBLICATION_ID = :publicationId" ),
+		query = "DELETE FROM publication_download WHERE publication_id = :publicationId" ),
 })
 @Entity
-@Table( name = "PUBLICATION" )
+@Table( name = "publication" )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
-public class Publication {
+public class Publication implements Serializable {
 	
+	private static final long serialVersionUID = -3897797233461922352L;
+
 	@Id
-	@Column( name = "ID", nullable = false )
+	@Column( name = "id", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id = -1L;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "NAME", nullable = false, length = 50 )
+	@Column( name = "name", nullable = false, length = 50 )
 	private String name;
 	
 	@NotNull
-	@Column( name = "PUB_TYPE", nullable = false, length = 20 )
+	@Column( name = "pub_type", nullable = false, length = 20 )
 	@Enumerated( EnumType.STRING )
 	private PublicationType type;
 	
 	@NotNull
-	@Column( name = "PUB_STATE", nullable = false, length = 20 )
+	@Column( name = "pub_state", nullable = false, length = 20 )
 	@Enumerated( EnumType.STRING )
 	private PublicationState state;
 	
 	@NotNull
-	@Column( name = "PUB_DATE", nullable = false )
+	@Column( name = "pub_date", nullable = false )
 	private Date publicationDate;
 	
-	@Column( name = "ARCHIVE_FILENAME", nullable = false, length = 50 )
+	@Column( name = "archive_filename", nullable = false, length = 50 )
 	private String archiveFilename;
 	
 	@OneToOne( fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
-	@JoinColumn( name = "ARCHIVE_CONTENT_ID" )
+	@JoinColumn( name = "archive_content_id" )
 	private FileContent archiveContent;
 	
-	@Column( name = "RELEASE_NOTES_FILENAME", nullable = false, length = 50 )
+	@Column( name = "release_notes_filename", nullable = false, length = 50 )
 	private String releaseNotesFilename;
 	
 	@OneToOne( fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
-	@JoinColumn( name = "RELEASE_NOTES_CONTENT_ID" )
+	@JoinColumn( name = "release_notes_content_id" )
 	private FileContent releaseNotesContent;
 	
 	@OneToMany( mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )

@@ -15,6 +15,7 @@
  */
 package org.opentravel.pubs.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -43,40 +44,42 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * @author S. Livezey
  */
 @Entity
-@Table( name = "PUBLICATION_GROUP" )
+@Table( name = "publication_group" )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
-public class PublicationGroup {
+public class PublicationGroup implements Serializable {
 	
+	private static final long serialVersionUID = 6782307764838116536L;
+
 	@Id
-	@Column( name = "ID", nullable = false )
+	@Column( name = "id", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id = -1L;
 	
 	@ManyToOne( fetch = FetchType.LAZY )
-	@JoinColumn( name = "PUBLICATION_ID" )
+	@JoinColumn( name = "publication_id" )
 	private Publication owner;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "NAME", nullable = false, length = 50 )
+	@Column( name = "name", nullable = false, length = 50 )
 	private String name;
 	
 	@NotNull
-	@Column( name = "MEMBER_TYPE", nullable = false, length = 20 )
+	@Column( name = "member_type", nullable = false, length = 20 )
 	@Enumerated( EnumType.STRING )
 	private PublicationItemType memberType;
 	
 	@NotNull
-	@Column( name = "SORT_ORDER", nullable = false )
+	@Column( name = "sort_order", nullable = false )
 	private int sortOrder;
+	
+	@Column( name = "removed" )
+	private boolean removed;
 	
 	@OneToMany( mappedBy = "owner", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE } )
 	@OrderBy( "itemFilename ASC" )
 	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<PublicationItem> publicationItems;
-	
-	@Column( name = "REMOVED" )
-	private boolean removed;
 
 	/**
 	 * Returns the value of the 'id' field.
@@ -169,24 +172,6 @@ public class PublicationGroup {
 	}
 
 	/**
-	 * Returns the value of the 'publicationItems' field.
-	 *
-	 * @return List<PublicationItem>
-	 */
-	public List<PublicationItem> getPublicationItems() {
-		return publicationItems;
-	}
-
-	/**
-	 * Assigns the value of the 'publicationItems' field.
-	 *
-	 * @param publicationItems  the field value to assign
-	 */
-	public void setPublicationItems(List<PublicationItem> publicationItems) {
-		this.publicationItems = publicationItems;
-	}
-
-	/**
 	 * Returns the value of the 'removed' field.
 	 *
 	 * @return boolean
@@ -204,4 +189,22 @@ public class PublicationGroup {
 		this.removed = deleted;
 	}
 	
+	/**
+	 * Returns the value of the 'publicationItems' field.
+	 *
+	 * @return List<PublicationItem>
+	 */
+	public List<PublicationItem> getPublicationItems() {
+		return publicationItems;
+	}
+
+	/**
+	 * Assigns the value of the 'publicationItems' field.
+	 *
+	 * @param publicationItems  the field value to assign
+	 */
+	public void setPublicationItems(List<PublicationItem> publicationItems) {
+		this.publicationItems = publicationItems;
+	}
+
 }

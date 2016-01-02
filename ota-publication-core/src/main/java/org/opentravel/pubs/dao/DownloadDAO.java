@@ -72,6 +72,7 @@ public class DownloadDAO extends AbstractDAO {
 			}
 			if (!alreadyDownloaded) {
 				registrant.getDownloadedPublications().add( publication );
+				DAOFactory.invalidateCollectionCache( Publication.class, "downloadedBy", publication.getId() );
 			}
 		}
 		return contentStream;
@@ -115,6 +116,7 @@ public class DownloadDAO extends AbstractDAO {
 			}
 			if (!alreadyDownloaded) {
 				registrant.getDownloadedPublicationItems().add( item );
+				DAOFactory.invalidateCollectionCache( PublicationItem.class, "downloadedBy", item.getId() );
 			}
 		}
 		return contentStream;

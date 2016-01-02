@@ -15,6 +15,8 @@
  */
 package org.opentravel.pubs.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -69,51 +71,53 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 		query = "UPDATE comment_counter SET next_val = :nextValue" ),
 })
 @Entity
-@Table( name = "COMMENT" )
+@Table( name = "comment" )
 @Inheritance( strategy = InheritanceType.JOINED )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
-public abstract class Comment {
+public abstract class Comment implements Serializable {
 	
+	private static final long serialVersionUID = -1257015606333253361L;
+
 	@Id
-	@Column( name = "ID", nullable = false )
+	@Column( name = "id", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id = -1L;
 	
 	@NotNull
-	@Column( name = "COMMENT_NUMBER", nullable = false )
+	@Column( name = "comment_number", nullable = false )
 	private int commentNumber;
 	
 	@NotNull
 	@ManyToOne( fetch = FetchType.LAZY )
-	@JoinColumn( name = "PUBLICATION_ITEM_ID" )
+	@JoinColumn( name = "publication_item_id" )
 	private PublicationItem publicationItem;
 	
 	@Size( min = 1, max = 200 )
-	@Column( name = "OTHER_ITEM_NAME", nullable = true, length = 200 )
+	@Column( name = "other_item_name", nullable = true, length = 200 )
 	private String otherItemName;
 	
 	@NotNull
-	@Column( name = "PUB_STATE", nullable = false, length = 20 )
+	@Column( name = "pub_state", nullable = false, length = 20 )
 	@Enumerated( EnumType.STRING )
 	private PublicationState publicationState;
 	
 	@NotNull
-	@Column( name = "COMMENT_TYPE", nullable = false, length = 20 )
+	@Column( name = "comment_type", nullable = false, length = 20 )
 	@Enumerated( EnumType.STRING )
 	private CommentType commentType;
 	
 	@NotNull
 	@Size( min = 1, max = 65536 )
-	@Column( name = "COMMENT_TEXT", nullable = false )
+	@Column( name = "comment_text", nullable = false )
 	private String commentText;
 	
 	@NotNull
 	@Size( min = 1, max = 65536 )
-	@Column( name = "SUGGESTED_CHANGE", nullable = false )
+	@Column( name = "suggested_change", nullable = false )
 	private String suggestedChange;
 	
 	@ManyToOne( fetch = FetchType.LAZY )
-	@JoinColumn( name = "REGISTRANT_ID" )
+	@JoinColumn( name = "registrant_id" )
 	private Registrant submittedBy;
 
 	/**

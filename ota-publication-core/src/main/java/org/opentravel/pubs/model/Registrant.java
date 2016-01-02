@@ -15,6 +15,7 @@
  */
 package org.opentravel.pubs.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -67,69 +68,71 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @NamedNativeQueries({
 	@NamedNativeQuery(
 		name  = "registrantDeletePublicationDownloads",
-		query = "DELETE FROM PUBLICATION_DOWNLOAD WHERE REGISTRANT_ID = :registrantId" ),
+		query = "DELETE FROM publication_download WHERE registrant_id = :registrantId" ),
 	@NamedNativeQuery(
 		name  = "registrantDeletePublicationItemDownloads",
-		query = "DELETE FROM PUBLICATION_ITEM_DOWNLOAD WHERE REGISTRANT_ID = :registrantId" ),
+		query = "DELETE FROM publication_item_download WHERE registrant_id = :registrantId" ),
 })
 @Entity
-@Table( name = "REGISTRANT" )
+@Table( name = "registrant" )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
-public class Registrant {
+public class Registrant implements Serializable {
 	
+	private static final long serialVersionUID = 5482356020754989732L;
+
 	@Id
-	@Column( name = "ID", nullable = false )
+	@Column( name = "id", nullable = false )
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id = -1L;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "LAST_NAME", nullable = false, length = 50 )
+	@Column( name = "last_name", nullable = false, length = 50 )
 	private String lastName;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "FIRST_NAME", nullable = false, length = 50 )
+	@Column( name = "first_name", nullable = false, length = 50 )
 	private String firstName;
 	
 	@NotNull
 	@Size( min = 1, max = 100 )
-	@Column( name = "COMPANY", nullable = true, length = 100 )
+	@Column( name = "company", nullable = true, length = 100 )
 	private String company;
 	
 	@NotNull
 	@Size( min = 1, max = 100 )
-	@Column( name = "TITLE", nullable = true, length = 100 )
+	@Column( name = "title", nullable = true, length = 100 )
 	private String title;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "EMAIL", nullable = false, length = 50 )
+	@Column( name = "email", nullable = false, length = 50 )
 	private String email;
 	
 	@NotNull
 	@Size( min = 1, max = 50 )
-	@Column( name = "PHONE", nullable = true, length = 50 )
+	@Column( name = "phone", nullable = true, length = 50 )
 	private String phone;
 	
 	@NotNull
-	@Column( name = "OTA_MEMBER" )
+	@Column( name = "ota_member" )
 	private Boolean otaMember;
 	
-	@Column( name = "REGISTRATION_DATE", nullable = false )
+	@Column( name = "registration_date", nullable = false )
 	private Date registrationDate;
 	
 	@ManyToMany
-	@JoinTable( name = "PUBLICATION_DOWNLOAD",
-		joinColumns = { @JoinColumn( name = "REGISTRANT_ID", referencedColumnName = "ID" ) },
-		inverseJoinColumns = { @JoinColumn( name = "PUBLICATION_ID", referencedColumnName = "ID") } )
+	@JoinTable( name = "publication_download",
+		joinColumns = { @JoinColumn( name = "registrant_id", referencedColumnName = "id" ) },
+		inverseJoinColumns = { @JoinColumn( name = "publication_id", referencedColumnName = "id") } )
 	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<Publication> downloadedPublications;
 	
 	@ManyToMany
-	@JoinTable( name = "PUBLICATION_ITEM_DOWNLOAD",
-		joinColumns = { @JoinColumn( name = "REGISTRANT_ID", referencedColumnName = "ID" ) },
-		inverseJoinColumns = { @JoinColumn( name = "PUBLICATION_ITEM_ID", referencedColumnName = "ID") } )
+	@JoinTable( name = "publication_item_download",
+		joinColumns = { @JoinColumn( name = "registrant_id", referencedColumnName = "id" ) },
+		inverseJoinColumns = { @JoinColumn( name = "publication_item_id", referencedColumnName = "id") } )
 	@Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="collectionCache" )
 	private List<PublicationItem> downloadedPublicationItems;
 	

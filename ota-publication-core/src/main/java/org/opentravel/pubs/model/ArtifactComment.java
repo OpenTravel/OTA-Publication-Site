@@ -31,18 +31,20 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * @author S. Livezey
  */
 @Entity
-@Table( name = "ARTIFACT_COMMENT" )
+@Table( name = "artifact_comment" )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE )
 public class ArtifactComment extends Comment {
 	
+	private static final long serialVersionUID = -7187981847041093740L;
+
 	@NotNull
 	@Size( min = 1, max = 100 )
-	@Column( name = "PAGE_NUMBERS", nullable = false, length = 100 )
+	@Column( name = "page_numbers", nullable = false, length = 100 )
 	private String pageNumbers;
 	
 	@NotNull
 	@Size( min = 1, max = 100 )
-	@Column( name = "LINE_NUMBERS", nullable = false, length = 100 )
+	@Column( name = "line_numbers", nullable = false, length = 100 )
 	private String lineNumbers;
 	
 	/**

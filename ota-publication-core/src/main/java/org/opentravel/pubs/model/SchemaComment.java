@@ -31,23 +31,25 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * @author S. Livezey
  */
 @Entity
-@Table( name = "SCHEMA_COMMENT" )
+@Table( name = "schema_comment" )
 @Cache( usage = CacheConcurrencyStrategy.READ_WRITE, region="daoCache" )
 public class SchemaComment extends Comment {
 	
+	private static final long serialVersionUID = -6696641913793342983L;
+
 	@NotNull
 	@Size( min = 1, max = 200 )
-	@Column( name = "COMMENT_XPATH", nullable = false, length = 200 )
+	@Column( name = "comment_xpath", nullable = false, length = 200 )
 	private String commentXPath;
 	
 	@NotNull
 	@Size( min = 1, max = 200 )
-	@Column( name = "MODIFY_XPATH", nullable = false, length = 200 )
+	@Column( name = "modify_xpath", nullable = false, length = 200 )
 	private String modifyXPath;
 	
 	@NotNull
 	@Size( min = 0, max = 65536 )
-	@Column( name = "NEW_ANNOTATIONS", nullable = false )
+	@Column( name = "new_annotations", nullable = false )
 	private String newAnnotations;
 	
 	/**
