@@ -24,7 +24,7 @@
 </div>
 <div id="editBox">
 	<div id="formWpr">
-		<form id="registrationForm" action="${config.localSiteUrl}/specifications/Specifications.html" method="POST">
+		<form id="registrationForm" action="${config.localSiteUrl}/specifications/${registrationPage}" method="POST">
 		<input name="processRegistrant" type="hidden" class="text" value="true" />
 		<table border="0" cellpadding="0" cellspacing="0">
 			<%@ include file="registrantInfoForm.jsp" %>
@@ -46,5 +46,5 @@
 <c:if test="${registrant != null}">
 	<span style="font-weight: bold;">Thank you for accepting the license agreement, ${registrant.firstName}.</span>
 	<br/>
-	<p class="small"><i>Not ${registrant.firstName}? Click <a href="${config.localSiteUrl}/specifications/Specifications.html?newSession=true"/>here</a> to re-register.</i></p>
+	<p class="small"><i>Not ${registrant.firstName}? Click <a href="${config.localSiteUrl}/specifications/${registrationPage}?newSession=true"/>here</a> to re-register.</i></p>
 </c:if>

@@ -21,13 +21,26 @@
 
 		<li>
 			<c:choose>
-				<c:when test="${(currentPage == 'specificationMain') || (currentPage == 'specificationReleaseNotes')}">
+				<c:when test="${(currentPage == 'specification10Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_1_0'))}">
 					<a id="SideNavControl1_MenuHyperLink" class="current"
-						href="${config.localSiteUrl}/specifications/Specifications.html">Specification</a>
+						href="${config.localSiteUrl}/specifications/Specifications.html">1.0 Specification</a>
 				</c:when>
 				<c:otherwise>
 					<a id="SideNavControl1_MenuHyperLink"
-						href="${config.localSiteUrl}/specifications/Specifications.html">Specification</a>
+						href="${config.localSiteUrl}/specifications/Specifications.html">1.0 Specification</a>
+				</c:otherwise>
+			</c:choose>
+		</li>
+
+		<li>
+			<c:choose>
+				<c:when test="${(currentPage == 'specification20Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_2_0'))}">
+					<a id="SideNavControl1a_MenuHyperLink" class="current"
+						href="${config.localSiteUrl}/specifications/Specifications20.html">2.0 Specification</a>
+				</c:when>
+				<c:otherwise>
+					<a id="SideNavControl1a_MenuHyperLink"
+						href="${config.localSiteUrl}/specifications/Specifications20.html">2.0 Specification</a>
 				</c:otherwise>
 			</c:choose>
 		</li>

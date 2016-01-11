@@ -72,7 +72,7 @@
 				<c:if test="${!firstRow}"></ul></td></c:if>
 				<td><ul>
 			</c:if>
-			<li><a href="${config.localSiteUrl}/specifications/Specifications.html?spec=${publication.name}">${publication.name}</a></li>
+			<li><a href="${config.localSiteUrl}/specifications/Specifications20.html?spec=${publication.name}">${publication.name}</a></li>
 			<c:set var="firstRow" value="false"/>
 			<c:set var="currentRow" value="${currentRow + 1}"/>
 		</c:forEach>

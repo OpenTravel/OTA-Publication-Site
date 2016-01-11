@@ -17,7 +17,8 @@
 --%>
 <h3>${publication.name}-${publication.type.displayId} Publication Release Notes</h3>
 <p>
-	<b>Download ${publication.name}-${publication.type.displayId} Publication:</b> <a href="${config.localSiteUrl}">${publication.archiveFilename}</a>
+	<b>Download ${publication.name}-${publication.type.displayId} Publication:</b>
+	<a href="${config.localSiteUrl}/content/specifications/downloads/${publication.name}/${publication.type}/${publication.archiveFilename}">${publication.archiveFilename}</a>
 </p>
 <hr/>
 <b>OpenTravel ${publication.name}-${publication.type.displayId} Publication Release Notes</b>

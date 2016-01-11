@@ -17,7 +17,7 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <span style="color: #274683; font-family: 'times new roman', serif; font-size: 32px; line-height: 37px;">
-	Download the ${publication10.name} Publication of the OpenTravel Schema </span>
+	Download the ${publication.name}-${publication.type.displayId} Publication of the OpenTravel Schema </span>
 <p>
 <div>
 	<p>See below for download instructions.</p>
@@ -60,7 +60,7 @@
 	<c:if test="${registrant == null}">
 	<p>
 		<span style="font-weight: bold;">Please complete the form below
-			and accept the license agreement to download the ${publication10.name} Publication of
+			and accept the license agreement to download the ${publication.name} Publication of
 			the OpenTravel specification.<br/>
 		</span>
 	</p>
@@ -70,26 +70,14 @@
 <%@ include file="registrationForm.jsp" %>
 
 <c:if test="${registrant != null}">
-	<c:if test="${publication10 != null}">
+	<c:if test="${publication != null}">
 		<p>
-			<b>Download ${publication10.name}-1.0 Publication:</b> <a href="${config.localSiteUrl}/content/specifications/downloads/${publication10.name}/1_0/${publication10.archiveFilename}">${publication10.archiveFilename}</a> | 
-			<a href="${config.localSiteUrl}/specifications/ReleaseNotes.html?spec=${publication10.name}&specType=OTA_1_0">View Release Notes</a>
-			<c:if test="${publication10.state.toString() == 'MEMBER_REVIEW'}">
+			<b>Download ${publication.name}-${publication.type.displayId} Publication:</b> <a href="${config.localSiteUrl}/content/specifications/downloads/${publication.name}/${publication.type}/${publication.archiveFilename}">${publication.archiveFilename}</a> | 
+			<a href="${config.localSiteUrl}/specifications/ReleaseNotes.html?spec=${publication.name}&specType=${publication.type}">View Release Notes</a>
+			<c:if test="${publication.state.toString() == 'MEMBER_REVIEW'}">
 				| <span style="color:Red;">Open for Member Review!</span>
 			</c:if>
-			<c:if test="${publication10.state.toString() == 'PUBLIC_REVIEW'}">
-				| <span style="color:Red;">Open for Public Review!</span>
-			</c:if>
-		</p>
-	</c:if>
-	<c:if test="${publication20 != null}">
-		<p>
-			<b>Download ${publication20.name}-2.0 Publication:</b> <a href="${config.localSiteUrl}/content/specifications/downloads/${publication20.name}/2_0/${publication20.archiveFilename}">${publication20.archiveFilename}</a> |
-			<a href="${config.localSiteUrl}/specifications/ReleaseNotes.html?spec=${publication10.name}&type=OTA_2_0">View Release Notes</a>
-			<c:if test="${publication20.state.toString() == 'MEMBER_REVIEW'}">
-				| <span style="color:Red;">Open for Member Review!</span>
-			</c:if>
-			<c:if test="${publication20.state.toString() == 'PUBLIC_REVIEW'}">
+			<c:if test="${publication.state.toString() == 'PUBLIC_REVIEW'}">
 				| <span style="color:Red;">Open for Public Review!</span>
 			</c:if>
 		</p>

@@ -22,6 +22,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title><tiles:insertAttribute name="title" ignore="true" /></title>
+	<link rel="shortcut icon" href="${config.localSiteUrl}/images/icons/favicon.ico" />
 	<link id="linkRSS" rel="alternate" type="application/rss+xml" title="RSS 2.0" href="${config.mainSiteUrl}/News/evNewsRSS.aspx" />
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
 	<script src="${config.mainSiteUrl}/Javascript/Main.js" type="text/javascript"></script>

@@ -71,8 +71,8 @@ public class PublicationController extends BaseController {
 	
     private static final Logger log = LoggerFactory.getLogger( PublicationController.class );
     
-    @RequestMapping({ "/Specifications.html", "/Specifications.htm" })
-    public String specificationsPage(Model model, HttpSession session,
+    @RequestMapping({ "/Specifications.html", "/Specifications.htm", "/Specifications10.html", "/Specifications10.htm" })
+    public String specifications10Page(Model model, HttpSession session,
             @RequestParam(value = "spec", required = false) String spec,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @RequestParam(value = "processRegistrant", required = false) boolean processRegistrant,
@@ -83,24 +83,20 @@ public class PublicationController extends BaseController {
             @RequestParam(value = "phone", required = false) String phone,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "otaMember", required = false) Boolean otaMember) {
-    	String targetPage = "specificationMain";
+    	String targetPage = "specification10Main";
     	try {
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-        	Publication publication10 = null;
-        	Publication publication20 = null;
+        	Publication publication = null;
         	
         	if (spec != null) {
-        		publication10 = pDao.getPublication( spec, PublicationType.OTA_1_0 );
+        		publication = pDao.getPublication( spec, PublicationType.OTA_1_0 );
         	}
-    		if (publication10 == null) {
-        		publication10 = pDao.getLatestPublication( PublicationType.OTA_1_0 );
+    		if (publication == null) {
+    			publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
     		}
-        	if (publication10 != null) {
-        		publication20 = pDao.getPublication( publication10.getName(), PublicationType.OTA_2_0 );
-        	}
     		
-        	model.addAttribute( "publication10", publication10 );
-        	model.addAttribute( "publication20", publication20 );
+        	model.addAttribute( "publication", publication );
+        	model.addAttribute( "registrationPage", "Specifications.html" );
         	
         	if (newSession) session.removeAttribute( "registrantId" );
         	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
@@ -110,6 +106,51 @@ public class PublicationController extends BaseController {
         	// attributes will not show up as URL parameters on redirect
         	if (processRegistrant && (model.asMap().get( "registrant" ) != null)) {
         		targetPage = "redirect:/specifications/Specifications.html";
+        		model.asMap().clear();
+        	}
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    @RequestMapping({ "/Specifications20.html", "/Specifications20.htm" })
+    public String specifications20Page(Model model, HttpSession session,
+            @RequestParam(value = "spec", required = false) String spec,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @RequestParam(value = "processRegistrant", required = false) boolean processRegistrant,
+            @RequestParam(value = "firstName", required = false) String firstName,
+            @RequestParam(value = "lastName", required = false) String lastName,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "company", required = false) String company,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "otaMember", required = false) Boolean otaMember) {
+    	String targetPage = "specification20Main";
+    	try {
+        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+        	Publication publication = null;
+        	
+        	if (spec != null) {
+        		publication = pDao.getPublication( spec, PublicationType.OTA_2_0 );
+        	}
+    		if (publication == null) {
+    			publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
+    		}
+    		
+        	model.addAttribute( "publication", publication );
+        	model.addAttribute( "registrationPage", "Specifications20.html" );
+        	
+        	if (newSession) session.removeAttribute( "registrantId" );
+        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
+    				phone, email, otaMember, model, session );
+        	
+        	// If we processed the form successfully, clear our model so that its
+        	// attributes will not show up as URL parameters on redirect
+        	if (processRegistrant && (model.asMap().get( "registrant" ) != null)) {
+        		targetPage = "redirect:/specifications/Specifications20.html";
         		model.asMap().clear();
         	}
         	
