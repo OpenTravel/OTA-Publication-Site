@@ -28,6 +28,9 @@ public enum PublicationItemType {
 	/** An JSON schema publication item. */
 	JSON_SCHEMA,
 	
+	/** An WSDL publication item. */
+	WSDL,
+	
 	/** An artifact publication item. */
 	ARTIFACT,
 	

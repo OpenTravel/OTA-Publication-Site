@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 class SpecificationCollator {
 	
 	private static final String XML_SCHEMAS_GROUP_NAME   = "XML Schemas";
+	private static final String WSDL_GROUP_NAME          = "WSDL";
 	private static final String JSON_SCHEMAS_GROUP_NAME  = "JSON Schemas";
 	private static final String GEN_ARTIFACTS_GROUP_NAME = "General Artifacts";
 	
@@ -50,6 +51,7 @@ class SpecificationCollator {
     
 	private Publication publication;
 	private PublicationGroup xmlSchemasGroup = new PublicationGroup();
+	private PublicationGroup wsdlGroup = new PublicationGroup();
 	private PublicationGroup jsonSchemasGroup = new PublicationGroup();
 	private PublicationGroup generalArtifactsGroup = new PublicationGroup();
 	private Map<String,PublicationGroup> otherGroups = new HashMap<>();
@@ -91,6 +93,7 @@ class SpecificationCollator {
 		
 		// Add all non-empty groups to the final list
 		addNonEmptyGroup( xmlSchemasGroup, groupList );
+		addNonEmptyGroup( wsdlGroup, groupList );
 		addNonEmptyGroup( jsonSchemasGroup, groupList );
 		addNonEmptyGroup( generalArtifactsGroup, groupList );
 		
@@ -217,6 +220,10 @@ class SpecificationCollator {
 				group = xmlSchemasGroup;
 				pubItem.setType( PublicationItemType.XML_SCHEMA );
 				
+			} else if (isWsdlDocument( filename )) {
+				group = wsdlGroup;
+				pubItem.setType( PublicationItemType.WSDL );
+				
 			} else if (isJsonSchema( filename )) {
 				group = jsonSchemasGroup;
 				pubItem.setType( PublicationItemType.JSON_SCHEMA );
@@ -312,6 +319,16 @@ class SpecificationCollator {
 	}
 	
 	/**
+	 * Returns true if the given filename represents WSDL document.
+	 * 
+	 * @param filename  the filename to analyze
+	 * @return boolean
+	 */
+	private boolean isWsdlDocument(String filename) {
+		return filename.toLowerCase().endsWith( ".wsdl" );
+	}
+	
+	/**
 	 * Returns true if the given filename represents an artifact that should be
 	 * excluded from the archive.
 	 * 
@@ -365,6 +382,7 @@ class SpecificationCollator {
 		
 		if (publication.getId() < 0L) { // new publication instance
 			this.xmlSchemasGroup = newGroup( publication, XML_SCHEMAS_GROUP_NAME, PublicationItemType.XML_SCHEMA );
+			this.wsdlGroup = newGroup( publication, WSDL_GROUP_NAME, PublicationItemType.WSDL );
 			this.jsonSchemasGroup = newGroup( publication, JSON_SCHEMAS_GROUP_NAME, PublicationItemType.JSON_SCHEMA );
 			this.generalArtifactsGroup = newGroup( publication, GEN_ARTIFACTS_GROUP_NAME, PublicationItemType.ARTIFACT );
 			
@@ -384,6 +402,12 @@ class SpecificationCollator {
 				this.xmlSchemasGroup = this.otherGroups.remove( XML_SCHEMAS_GROUP_NAME );
 			} else {
 				this.xmlSchemasGroup = newGroup( publication, XML_SCHEMAS_GROUP_NAME, PublicationItemType.XML_SCHEMA );
+			}
+			
+			if (this.otherGroups.containsKey( WSDL_GROUP_NAME )) {
+				this.wsdlGroup = this.otherGroups.remove( WSDL_GROUP_NAME );
+			} else {
+				this.wsdlGroup = newGroup( publication, WSDL_GROUP_NAME, PublicationItemType.WSDL );
 			}
 			
 			if (this.otherGroups.containsKey( JSON_SCHEMAS_GROUP_NAME )) {

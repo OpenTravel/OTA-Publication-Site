@@ -94,7 +94,7 @@ public class PublicationItem implements Serializable {
 	private PublicationItemType type;
 	
 	@NotNull
-	@Size( min = 1, max = 50 )
+	@Size( min = 1, max = 200 )
 	@Column( name = "item_filename", nullable = false, length = 50 )
 	private String itemFilename;
 	

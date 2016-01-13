@@ -63,7 +63,7 @@ CREATE TABLE publication_item (
 	id BIGINT NOT NULL AUTO_INCREMENT,
 	group_id BIGINT NOT NULL,
 	item_type VARCHAR(20) NOT NULL,
-	item_filename VARCHAR(50) NOT NULL,
+	item_filename VARCHAR(200) NOT NULL,
 	item_content_id BIGINT NOT NULL,
 	file_size BIGINT NOT NULL,
 	create_date TIMESTAMP NOT NULL,
