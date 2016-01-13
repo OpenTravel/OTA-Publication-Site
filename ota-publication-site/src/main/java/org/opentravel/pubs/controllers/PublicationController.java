@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -236,10 +237,14 @@ public class PublicationController extends BaseController {
         	} else {
             	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
             	Publication publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
+            	List<PublicationItem> publicationItems = new ArrayList<>();
+            	
+            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.WSDL ) );
+            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
+            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.JSON_SCHEMA ) );
             	
         		model.addAttribute( "publication", publication );
-        		model.addAttribute( "publicationItems",
-        				pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
+        		model.addAttribute( "publicationItems", publicationItems );
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
         	}
     		model.addAttribute( "submitCommentsUrl", "/specifications/Comment10Spec.html" );
@@ -301,10 +306,14 @@ public class PublicationController extends BaseController {
         	} else {
             	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
             	Publication publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
+            	List<PublicationItem> publicationItems = new ArrayList<>();
+            	
+            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.WSDL ) );
+            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
+            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.JSON_SCHEMA ) );
             	
         		model.addAttribute( "publication", publication );
-        		model.addAttribute( "publicationItems",
-        				pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
+        		model.addAttribute( "publicationItems", publicationItems );
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
         	}
     		model.addAttribute( "submitCommentsUrl", "/specifications/Comment20Spec.html" );
