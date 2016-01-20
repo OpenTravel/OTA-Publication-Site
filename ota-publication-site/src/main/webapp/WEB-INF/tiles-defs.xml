@@ -46,7 +46,7 @@
 	<definition name="specification20Main" extends="baseLayout">
 		<put-attribute name="title" value="Specifications" />
 		<put-attribute name="licenseAgreement" value="/WEB-INF/jsp/specification/licenseAgreement.jsp" />
-		<put-attribute name="body" value="/WEB-INF/jsp/specification/publicationMain.jsp" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/publication20Main.jsp" />
 	</definition>
 	<definition name="specificationReleaseNotes" extends="baseLayout">
 		<put-attribute name="title" value="Specification Release Notes" />

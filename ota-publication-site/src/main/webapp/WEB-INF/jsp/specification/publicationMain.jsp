@@ -17,18 +17,15 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <span style="color: #274683; font-family: 'times new roman', serif; font-size: 32px; line-height: 37px;">
-	Download the ${publication.name}-${publication.type.displayId} Publication of the OpenTravel Schema </span>
+	Download the ${publication.name}-${publication.type.displayId}
+	<c:choose>
+		<c:when test="${publication.state == 'PUBLIC_REVIEW'}">Public Review</c:when>
+		<c:when test="${publication.state == 'MEMBER_REVIEW'}">Member Review</c:when>
+	</c:choose>
+	Version of the OpenTravel Schema </span>
 <p>
 <div>
-	<p>See below for download instructions.</p>
-	<div>
-		<div>
-			<div>
-				<ul>
-				</ul>
-			</div>
-		</div>
-	</div>
+	<p><b>See below for download instructions.</b></p>
 	<h3>OpenTravel Members - Don't Forget about the Implementation Guide!</h3>
 	<h4>Version 1.5&nbsp;</h4>
 	<div>
@@ -59,9 +56,10 @@
 	</p>
 	<c:if test="${registrant == null}">
 	<p>
-		<span style="font-weight: bold;">Please complete the form below
-			and accept the license agreement to download the ${publication.name} Publication of
-			the OpenTravel specification.<br/>
+		<span style="font-weight: bold;">
+			Please complete the form below and accept the license agreement to download the
+			${publication.name}-${publication.type.displayId} Version of the OpenTravel
+			specification.<br/>
 		</span>
 	</p>
 	</c:if>
@@ -74,12 +72,6 @@
 		<p>
 			<b>Download ${publication.name}-${publication.type.displayId} Publication:</b> <a href="${config.localSiteUrl}/content/specifications/downloads/${publication.name}/${publication.type}/${publication.archiveFilename}">${publication.archiveFilename}</a> | 
 			<a href="${config.localSiteUrl}/specifications/ReleaseNotes.html?spec=${publication.name}&specType=${publication.type}">View Release Notes</a>
-			<c:if test="${publication.state.toString() == 'MEMBER_REVIEW'}">
-				| <span style="color:Red;">Open for Member Review!</span>
-			</c:if>
-			<c:if test="${publication.state.toString() == 'PUBLIC_REVIEW'}">
-				| <span style="color:Red;">Open for Public Review!</span>
-			</c:if>
 		</p>
 	</c:if>
 </c:if>

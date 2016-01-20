@@ -294,7 +294,7 @@ public class AdminController extends BaseController {
     @RequestMapping({ "/SpecificationComments.html", "/SpecificationComments.htm" })
     public String specificationCommentsPage(HttpSession session, Model model,
             @RequestParam(value = "publication", required = false) String name,
-            @RequestParam(value = "type", required = false) String pubType,
+            @RequestParam(value = "specType", required = false) String pubType,
             @RequestParam(value = "pubState", required = false) PublicationState pubState,
             @RequestParam(value = "dateRange", required = false) DateRangeType dateRange) {
     	try {
@@ -331,7 +331,7 @@ public class AdminController extends BaseController {
     @RequestMapping({ "/SpecificationDownloads.html", "/SpecificationDownloads.htm" })
     public String specificationDownloadsPage(HttpSession session, Model model,
             @RequestParam(value = "publication", required = false) String name,
-            @RequestParam(value = "pubType", required = false) String pubType,
+            @RequestParam(value = "specType", required = false) String pubType,
             @RequestParam(value = "dateRange", required = false) DateRangeType dateRange) {
     	try {
 			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
