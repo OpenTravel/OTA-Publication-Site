@@ -35,7 +35,7 @@
 	</td></tr>
 	<tr><td align="right">
 		<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.specDeleteForm.submit();"><span>Delete Specification</span></a>
-		<br/><a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&type=${publication.type}">Cancel</a>
+		<br/><a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">Cancel</a>
 	</td></tr></table>
 </form>
 </div>

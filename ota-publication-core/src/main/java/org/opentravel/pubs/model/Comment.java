@@ -50,13 +50,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 	@NamedQuery(
 		name  = "commentFindByPublication",
 		query = "SELECT c FROM Comment c, Publication p, PublicationGroup g, PublicationItem i "
-    		+ "WHERE c.publicationState = :state AND c.publicationItem = i AND i.owner = g AND g.owner = p AND i.removed = FALSE AND p.id = :publicationId "
+    		+ "WHERE c.publicationItem = i AND i.owner = g AND g.owner = p AND i.removed = FALSE AND p.id = :publicationId "
     		+ "ORDER BY c.commentNumber ASC" ),
 	@NamedQuery(
 		name  = "commentFindByPublicationDateRange",
 		query = "SELECT c FROM Comment c, Publication p, PublicationGroup g, PublicationItem i, Registrant r "
-    		+ "WHERE c.publicationState = :state AND r.registrationDate >= :rDate AND "
-    		+ "c.publicationItem = i AND c.submittedBy = r AND i.owner = g AND g.owner = p AND i.removed = FALSE AND p.id = :publicationId "
+    		+ "WHERE r.registrationDate >= :rDate AND c.publicationItem = i AND c.submittedBy = r AND "
+    		+ "i.owner = g AND g.owner = p AND i.removed = FALSE AND p.id = :publicationId "
     		+ "ORDER BY c.commentNumber ASC" ),
 })
 @NamedNativeQueries({

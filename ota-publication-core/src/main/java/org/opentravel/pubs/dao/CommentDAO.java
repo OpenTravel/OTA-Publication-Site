@@ -73,11 +73,10 @@ public class CommentDAO extends AbstractDAO {
 	 * Returns the list of publication comments that meet the criteria provided.
 	 * 
 	 * @param publication  the publication for which the comments were submitted
-	 * @param state  the state of the publication at the time the comments were submitted
 	 * @param dateRange  the date range for comment submission relative to the current date
 	 * @return List<Comment>
 	 */
-	public List<Comment> findComments(Publication publication, PublicationState state, DateRangeType dateRange) {
+	public List<Comment> findComments(Publication publication, DateRangeType dateRange) {
 		TypedQuery<Comment> query;
 		
 		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
@@ -87,7 +86,6 @@ public class CommentDAO extends AbstractDAO {
 			query.setParameter( "rDate", dateRange.getRangeStart() );
 		}
 		query.setParameter( "publicationId", publication.getId() );
-		query.setParameter( "state", state );
 		
 		return query.getResultList();
 	}

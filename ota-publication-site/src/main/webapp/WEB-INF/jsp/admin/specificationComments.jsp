@@ -21,25 +21,9 @@
 <div id="formWpr">
 <form id="reportForm" action="${config.localSiteUrl}/admin/SpecificationComments.html" method="GET">
 	<input name="publication" type="hidden" class="text" value="${publication.name}" />
-	<input name="type" type="hidden" class="text" value="${publication.type}" />
+	<input name="specType" type="hidden" class="text" value="${publication.type}" />
 	<table>
 		<tr>
-			<td nowrap>
-				<br>Publication State:
-				<select name="pubState">
-					<c:forEach var="ps" items="${publicationStates}">
-						<c:choose>
-							<c:when test="${pubState == ps}">
-								<option value="${ps}" selected>${ps.displayValue}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${ps}">${ps.displayValue}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
-			</td>
-			<td> &nbsp; </td>
 			<td nowrap>
 				<br>Date Range: 
 				<select name="dateRange">
@@ -59,7 +43,7 @@
 				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.reportForm.submit();"><span>Refresh</span></a>
 			</td>
 			<td nowrap>
-				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&type=${publication.type}">Back to Overview</a>
+				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">Back to Overview</a>
 			</td>
 		</tr>
 	</table>
@@ -79,7 +63,10 @@
 			<c:forEach var="comment" items="${commentList}">
 			<tr>
 				<td>${comment.commentNumber}</td>
-				<td>${comment.publicationItem.itemFilename}</td>
+				<td>
+					${comment.publicationItem.itemFilename}
+					<p class="small"><i>${comment.publicationState.displayValue}</i></p>
+				</td>
 				<td>${comment.commentType.displayName}</td>
 				<td>
 					<a href="${config.localSiteUrl}/admin/RegistrantDetails.html?rid=${comment.submittedBy.id}">${comment.submittedBy.firstName} ${comment.submittedBy.lastName}</a>

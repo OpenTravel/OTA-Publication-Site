@@ -21,7 +21,7 @@
 <div id="formWpr">
 <form id="reportForm" action="${config.localSiteUrl}/admin/SpecificationDownloads.html" method="GET">
 	<input name="publication" type="hidden" class="text" value="${publication.name}" />
-	<input name="type" type="hidden" class="text" value="${publication.type}" />
+	<input name="specType" type="hidden" class="text" value="${publication.type}" />
 	<table>
 		<tr>
 			<td>
@@ -43,7 +43,7 @@
 				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.reportForm.submit();"><span>Refresh</span></a>
 			</td>
 			<td>
-				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&type=${publication.type}">Back to Overview</a>
+				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">Back to Overview</a>
 			</td>
 		</tr>
 	</table>
@@ -75,6 +75,7 @@
 							</c:if>
 						</c:otherwise>
 					</c:choose>
+					&nbsp;-&nbsp; <i>${downloadItem.downloadedBy.size()} download(s)</i>
 				</td></tr>
 				<c:forEach var="registrant" items="${downloadItem.downloadedBy}">
 					<tr>

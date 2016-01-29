@@ -300,7 +300,7 @@ public class PublicationController extends BaseController {
     		
         	if (commentSuccess) {
         		targetPage = "redirect:/specifications/CommentThankYou.html";
-        		redirectAttrs.addAttribute( "submitCommentsUrl", "/specifications/Comment10Spec.html" );
+        		redirectAttrs.addAttribute( "submitCommentsUrl", "/specifications/Comment20Spec.html" );
         		model.asMap().clear();
         		
         	} else {

@@ -96,7 +96,7 @@ public class AdminController extends BaseController {
     public String doUploadSpecificationPage(HttpSession session, Model model, RedirectAttributes redirectAttrs,
             @RequestParam(value = "processUpload", required = false) boolean processUpload,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "pubType", required = false) String pubType,
+            @RequestParam(value = "specType", required = false) String specType,
             @RequestParam(value = "pubState", required = false) String pubState,
     		@RequestParam(value = "archiveFile", required = false) MultipartFile archiveFile) {
     	String targetPage = "uploadSpecification";
@@ -104,7 +104,7 @@ public class AdminController extends BaseController {
     		boolean success = false;
     		
     		if (processUpload) {
-        		PublicationType publicationType = resolvePublicationType( pubType );
+        		PublicationType publicationType = resolvePublicationType( specType );
         		PublicationState publicationState = (pubState == null) ? null : PublicationState.valueOf( pubState );
     			Publication publication = new PublicationBuilder()
     					.setName( StringUtils.trimString( name ) )
@@ -119,7 +119,7 @@ public class AdminController extends BaseController {
         				
         				model.asMap().clear();
         				redirectAttrs.addAttribute( "publication", publication.getName() );
-        				redirectAttrs.addAttribute( "type", publication.getType() );
+        				redirectAttrs.addAttribute( "specType", publication.getType() );
             			targetPage = "redirect:/admin/ViewSpecification.html";
             			
             		} else {
@@ -141,7 +141,7 @@ public class AdminController extends BaseController {
     		
     		if (!success) {
         		model.addAttribute( "name", name );
-        		model.addAttribute( "pubType", pubType );
+        		model.addAttribute( "specType", specType );
         		model.addAttribute( "pubState", pubState );
         		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
     		}
@@ -156,14 +156,14 @@ public class AdminController extends BaseController {
     @RequestMapping({ "/ViewSpecification.html", "/ViewSpecification.htm" })
     public String viewSpecificationPage(HttpSession session, Model model,
     		 @RequestParam(value = "publication", required = false) String name,
-    		 @RequestParam(value = "type", required = false) String pubType) {
+    		 @RequestParam(value = "specType", required = false) String specType) {
     	String targetPage = "viewSpecification";
     	try {
     		Publication publication = null;
     		
-    		if ((name != null) && (pubType != null)) {
+    		if ((name != null) && (specType != null)) {
     			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-        		PublicationType publicationType = resolvePublicationType( pubType );
+        		PublicationType publicationType = resolvePublicationType( specType );
     			
     			publication = pDao.getPublication( name, publicationType );
     			model.addAttribute( "publication", publication );
@@ -191,7 +191,7 @@ public class AdminController extends BaseController {
 			
     		model.addAttribute( "publication", publication );
     		model.addAttribute( "name", publication.getName() );
-    		model.addAttribute( "pubType", publication.getType() );
+    		model.addAttribute( "specType", publication.getType() );
     		model.addAttribute( "pubState", publication.getState() );
     		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
         	
@@ -207,7 +207,7 @@ public class AdminController extends BaseController {
             @RequestParam(value = "processUpdate", required = false) boolean processUpdate,
             @RequestParam(value = "publicationId", required = false) Long publicationId,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "pubType", required = false) String pubType,
+            @RequestParam(value = "specType", required = false) String specType,
             @RequestParam(value = "pubState", required = false) String pubState,
     		@RequestParam(value = "archiveFile", required = false) MultipartFile archiveFile) {
     	String targetPage = "updateSpecification";
@@ -217,7 +217,7 @@ public class AdminController extends BaseController {
     		boolean success = false;
     		
     		if (processUpdate) {
-        		PublicationType publicationType = resolvePublicationType( pubType );
+        		PublicationType publicationType = resolvePublicationType( specType );
         		PublicationState publicationState = (pubState == null) ? null : PublicationState.valueOf( pubState );
     			
     			publication.setName( StringUtils.trimString( name ) );
@@ -238,7 +238,7 @@ public class AdminController extends BaseController {
             		}
     				model.asMap().clear();
     				redirectAttrs.addAttribute( "publication", publication.getName() );
-    				redirectAttrs.addAttribute( "type", publication.getType() );
+    				redirectAttrs.addAttribute( "specType", publication.getType() );
         			targetPage = "redirect:/admin/ViewSpecification.html";
     				success = true;
     				
@@ -254,7 +254,7 @@ public class AdminController extends BaseController {
     		if (!success) {
         		model.addAttribute( "publication", publication );
         		model.addAttribute( "name", name );
-        		model.addAttribute( "pubType", pubType );
+        		model.addAttribute( "specType", specType );
         		model.addAttribute( "pubState", pubState );
         		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
     		}
@@ -294,29 +294,23 @@ public class AdminController extends BaseController {
     @RequestMapping({ "/SpecificationComments.html", "/SpecificationComments.htm" })
     public String specificationCommentsPage(HttpSession session, Model model,
             @RequestParam(value = "publication", required = false) String name,
-            @RequestParam(value = "specType", required = false) String pubType,
-            @RequestParam(value = "pubState", required = false) PublicationState pubState,
+            @RequestParam(value = "specType", required = false) String specType,
             @RequestParam(value = "dateRange", required = false) DateRangeType dateRange) {
     	try {
 			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
 			CommentDAO cDao = DAOFactoryManager.getFactory().newCommentDAO();
-    		PublicationType publicationType = resolvePublicationType( pubType );
+    		PublicationType publicationType = resolvePublicationType( specType );
 			Publication publication = pDao.getPublication( name, publicationType );
 			List<Comment> commentList;
 			
-    		if (pubState == null) {
-    			pubState = PublicationState.MEMBER_REVIEW;
-    		}
     		if (dateRange == null) {
     			dateRange = DateRangeType.LAST_WEEK;
     		}
-    		commentList = cDao.findComments( publication, pubState, dateRange );
+    		commentList = cDao.findComments( publication, dateRange );
     		
     		model.addAttribute( "publication", publication );
     		model.addAttribute( "commentList", commentList );
-    		model.addAttribute( "pubState", pubState );
     		model.addAttribute( "dateRange", dateRange );
-    		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
     		model.addAttribute( "dateRanges", Arrays.asList( DateRangeType.values() ) );
 			model.addAttribute( "formatter", ValueFormatter.getInstance() );
 			model.addAttribute( "typeChecker", TypeChecker.getInstance() );
@@ -331,12 +325,12 @@ public class AdminController extends BaseController {
     @RequestMapping({ "/SpecificationDownloads.html", "/SpecificationDownloads.htm" })
     public String specificationDownloadsPage(HttpSession session, Model model,
             @RequestParam(value = "publication", required = false) String name,
-            @RequestParam(value = "specType", required = false) String pubType,
+            @RequestParam(value = "specType", required = false) String specType,
             @RequestParam(value = "dateRange", required = false) DateRangeType dateRange) {
     	try {
 			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
 			DownloadDAO dDao = DAOFactoryManager.getFactory().newDownloadDAO();
-    		PublicationType publicationType = resolvePublicationType( pubType );
+    		PublicationType publicationType = resolvePublicationType( specType );
 			Publication publication = pDao.getPublication( name, publicationType );
 			List<DownloadHistoryItem> downloadHistory;
 			

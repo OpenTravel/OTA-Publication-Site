@@ -39,19 +39,19 @@
 					<tr>
 						<td>
 							<c:set var="checkedState" value="" />
-							<c:if test="${(pubType != null) && (pubType == 'OTA_1_0')}">
+							<c:if test="${(specType != null) && (specType == 'OTA_1_0')}">
 								<c:set var="checkedState" value="checked" />
 							</c:if>
-							<input id="PubType_10" name="pubType" type="radio" class="text" value="OTA_1_0" ${checkedState} />
-							<label for="PubType_10">1.0</label>
+							<input id="SpecType_10" name="specType" type="radio" class="text" value="OTA_1_0" ${checkedState} />
+							<label for="SpecType_10">1.0</label>
 						</td>
 						<td>
 							<c:set var="checkedState" value="" />
-							<c:if test="${(pubType != null) && (pubType == 'OTA_2_0')}">
+							<c:if test="${(specType != null) && (specType == 'OTA_2_0')}">
 								<c:set var="checkedState" value="checked" />
 							</c:if>
-							<input id="PubType_20" name="pubType" type="radio" class="text" value="OTA_2_0" ${checkedState} />
-							<label for="PubType_20">2.0</label>
+							<input id="SpecType_20" name="specType" type="radio" class="text" value="OTA_2_0" ${checkedState} />
+							<label for="SpecType_20">2.0</label>
 						</td>
 					</tr>
 				</table>
