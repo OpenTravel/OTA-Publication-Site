@@ -22,10 +22,13 @@
 		<spring.version>4.1.5.RELEASE</spring.version>
 		<tiles.version>3.0.5</tiles.version>
 		<commons.fileupload.version>1.3.1</commons.fileupload.version>
+		<commons.codec.version>1.10</commons.codec.version>
 		<jstl.version>1.2</jstl.version>
 		<servlet.api.version>2.5</servlet.api.version>
 		<javax.el.version>2.2.5</javax.el.version>
 		<javax.transaction.version>1.2</javax.transaction.version>
+		<javax.mail.version>1.5.5</javax.mail.version>
+		<velocity.version>1.7</velocity.version>
 		<hibernate.version>5.0.6.Final</hibernate.version>
 		<hibernate.validator.version>5.2.2.Final</hibernate.validator.version>
 		<ehcache.version>2.10.1</ehcache.version>
@@ -137,6 +140,16 @@
 				<version>${javax.el.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>${javax.mail.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>${velocity.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.glassfish.web</groupId>
 				<artifactId>javax.el</artifactId>
 				<version>${javax.el.version}</version>
@@ -180,6 +193,11 @@
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>${mysql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons.codec.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>

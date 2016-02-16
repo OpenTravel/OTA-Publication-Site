@@ -14,18 +14,9 @@
 # limitations under the License.
 #
 
-DROP TABLE publication_item_download;
-DROP TABLE publication_download;
-DROP TABLE artifact_comment;
-DROP TABLE schema_comment;
-DROP TABLE comment;
-DROP TABLE comment_counter;
-DROP TABLE publication_item;
-DROP TABLE publication_group;
-DROP TABLE publication;
-DROP TABLE file_content;
-DROP TABLE registrant;
-DROP TABLE hibernate_sequence;
-DROP TABLE user_roles;
-DROP TABLE users;
-DROP TABLE application_settings;
+CREATE TABLE application_settings (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	settings_bytes BLOB NOT NULL,
+	PRIMARY KEY (id)
+);

@@ -27,6 +27,7 @@ public class ConfigSettings {
 	public static final String CONFIG_MAIN_SITE_URL   = "mainSite.url";
 	public static final String CONFIG_LOCAL_SITE_URL  = "localSite.url";
 	public static final String CONTENT_CACHE_LOCATION = "content.cache.location";
+	public static final String ENCRYPTION_PASSWORD    = "encryption.password";
 	
 	private Properties configProps;
 	
@@ -65,6 +66,21 @@ public class ConfigSettings {
 	 */
 	public String getContentCacheLocation() {
 		return getProperty( CONTENT_CACHE_LOCATION );
+	}
+	
+	/**
+	 * Returns the password used to encrypt password entries that are stored
+	 * in persistent storage as application configuration settings.
+	 * 
+	 * @return String
+	 */
+	public String getEncryptionPassword() {
+		String password = getProperty( ENCRYPTION_PASSWORD );
+		
+		if (password == null) {
+			password = PasswordHelper.DEFAULT_ENCRYPTION_PASSWORD;
+		}
+		return password;
 	}
 	
 	/**

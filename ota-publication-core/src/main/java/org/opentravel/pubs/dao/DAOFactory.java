@@ -88,6 +88,15 @@ public class DAOFactory {
 	}
 	
 	/**
+	 * Returns a new <code>ApplicationSettingsDAO</code> instance.
+	 * 
+	 * @return ApplicationSettingsDAO
+	 */
+	public ApplicationSettingsDAO newApplicationSettingsDAO() {
+		return new ApplicationSettingsDAO( this );
+	}
+	
+	/**
 	 * Shuts down the underlying <code>EntityManagerFactory</code> and releases all associated
 	 * system resources.  This method should only be called upon application shutdown.
 	 */
