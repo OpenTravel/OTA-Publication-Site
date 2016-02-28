@@ -41,6 +41,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.opentravel.pubs.validation.EmailAddress;
 
 /**
  * Model object representing a user who registered on the OpenTravel web site for the
@@ -106,6 +107,7 @@ public class Registrant implements Serializable {
 	private String title;
 	
 	@NotNull
+	@EmailAddress
 	@Size( min = 1, max = 50 )
 	@Column( name = "email", nullable = false, length = 50 )
 	private String email;

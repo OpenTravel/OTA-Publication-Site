@@ -15,6 +15,8 @@
  */
 package org.opentravel.pubs.notification;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.opentravel.pubs.config.PasswordHelper;
@@ -219,10 +221,29 @@ public class EmailConfigBuilder {
 	 * Assigns the list of all email addresses that will be courtesy copied on
 	 * all email notifications.
 	 *
+	 * @param ccRecipients  the comma-separated list of CC recipients to assign
+	 * @return EmailConfigBuilder
+	 */
+	public EmailConfigBuilder setCcRecipients(String ccRecipients) {
+		String[] ccItems = (ccRecipients == null) ? new String[0] : ccRecipients.split(",");
+		List<String> ccList = new ArrayList<>();
+		
+		for (String ccItem : ccItems) {
+			if ((ccItem = ccItem.trim()).length() > 0) {
+				ccList.add( ccItem );
+			}
+		}
+		return setCcRecipients( ccList.toArray( new String[ ccList.size() ] ) );
+	}
+	
+	/**
+	 * Assigns the list of all email addresses that will be courtesy copied on
+	 * all email notifications.
+	 *
 	 * @param ccRecipients  the list of CC recipients to assign
 	 * @return EmailConfigBuilder
 	 */
-	public EmailConfigBuilder setCcRecipients(String... ccRecipients) {
+	public EmailConfigBuilder setCcRecipients(String[] ccRecipients) {
 		this.ccRecipients = ccRecipients;
 		return this;
 	}

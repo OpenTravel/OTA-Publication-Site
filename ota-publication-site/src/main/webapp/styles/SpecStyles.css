@@ -20,6 +20,9 @@
 .techtext { font-family: courier new, monospace; font-size:1em; }
 .commentheader { text-decoration:underline; }
 .commentspacing { margin-bottom:4px; }
+.aligntop { vertical-align:top; }
+
+input:disabled { color:#666666; background:#dddddd; }
 
 #grouptable {font-family: arial, helvetica, sans serif; margin:auto; border-collapse:collapse;}
 #grouptable td, table th {font-size:1em; border: 1px solid black; padding:3px 7px 2px 7px;}

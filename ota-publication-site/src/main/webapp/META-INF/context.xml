@@ -20,7 +20,7 @@
 
 	<Resource name="jdbc/otapubs" description="OpenTravel Publication Database" auth="Container"
 		type="javax.sql.DataSource" driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/otapubs"
+		url="jdbc:mysql://localhost:3306/otapubs?useSSL=false"
 		username="otadmin" password="otadmin"
 		maxActive="10" maxIdle="3" maxWait="10000"
 		validationQuery="select 1" />

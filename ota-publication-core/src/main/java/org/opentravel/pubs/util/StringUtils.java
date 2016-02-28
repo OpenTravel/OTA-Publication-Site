@@ -83,4 +83,64 @@ public class StringUtils {
 		return sb.toString();
 	}
     
+	/**
+	 * Parses and returns the numeric string value or zero in the case of a null or error string value.
+	 * 
+	 * @param valueStr  the value string to parse
+	 * @return int
+	 */
+	public static int parseIntValue(String valueStr) {
+		int result = 0;
+		
+		if (valueStr != null) {
+			try {
+				result = Integer.parseInt( valueStr );
+				
+			} catch (NumberFormatException e) {
+				// No exception - return zero
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Parses and returns the numeric string value or zero in the case of a null or error string value.
+	 * 
+	 * @param valueStr  the value string to parse
+	 * @return long
+	 */
+	public static long parseLongValue(String valueStr) {
+		long result = 0L;
+		
+		if (valueStr != null) {
+			try {
+				result = Long.parseLong( valueStr );
+				
+			} catch (NumberFormatException e) {
+				// No exception - return zero
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Parses and returns the boolean string value or false in the case of a null or error string value.
+	 * 
+	 * @param valueStr  the value string to parse
+	 * @return boolean
+	 */
+	public static boolean parseBooleanValue(String valueStr) {
+		boolean result = false;
+		
+		if (valueStr != null) {
+			try {
+				result = Boolean.parseBoolean( valueStr );
+				
+			} catch (NumberFormatException e) {
+				// No exception - return false
+			}
+		}
+		return result;
+	}
+	
 }

@@ -1,0 +1,60 @@
+<table width="100%" style="border-collapse: collapse;">
+	<tr>
+		<td colspan="2" align="center"><h3>Artifact Comment #$comment.commentNumber</h3></td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Name:</td>
+		<td style="padding-bottom: 1em;">$comment.submittedBy.firstName $comment.submittedBy.lastName</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Company:</td>
+		<td style="padding-bottom: 1em;">$comment.submittedBy.company</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Email:</td>
+		<td style="padding-bottom: 1em;"><a href="mailto:$comment.submittedBy.email">$comment.submittedBy.email</a></td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Phone:</td>
+		<td style="padding-bottom: 1em;">$comment.submittedBy.phone</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Is Member?</td>
+		<td style="padding-bottom: 1em;">#if ($comment.submittedBy.otaMember) Yes #else No #end</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Artifact:</td>
+		<td style="padding-bottom: 1em;">
+			<span style="font-family: courier new, monospace; font-size:1em;">${comment.publicationItem.itemFilename}</span>
+			(<i>${comment.publicationState.displayValue}</i>)
+		</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Comment Type:</td>
+		<td style="padding-bottom: 1em;">$comment.commentType.displayName</td>
+	</tr>
+	#if ($comment.pageNumbers)
+	<tr valign="top">
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Page Numbers:</td>
+		<td style="padding-bottom: 1em;"><span style="font-family: courier new, monospace; font-size:1em;">$comment.pageNumbers</span></td>
+	</tr>
+	#end
+	#if ($comment.lineNumbers)
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Line Numbers:</td>
+		<td style="padding-bottom: 1em;"><span style="font-family: courier new, monospace; font-size:1em;">$comment.lineNumbers</span></td>
+	</tr>
+	#end
+	#if ($comment.commentText)
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Comments:</td>
+		<td style="padding-bottom: 1em;">$comment.commentText</td>
+	</tr>
+	#end
+	#if ($comment.suggestedChange)
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Suggested Change:</td>
+		<td style="padding-bottom: 1em;">$comment.suggestedChange</td>
+	</tr>
+	#end
+</table>

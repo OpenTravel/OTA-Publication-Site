@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opentravel.pubs.builders.PublicationBuilder;
 import org.opentravel.pubs.dao.AdminDAO;
+import org.opentravel.pubs.dao.ApplicationSettingsDAO;
 import org.opentravel.pubs.dao.CommentDAO;
 import org.opentravel.pubs.dao.DAOFactoryManager;
 import org.opentravel.pubs.dao.DateRangeType;
@@ -30,12 +31,14 @@ import org.opentravel.pubs.dao.DownloadDAO;
 import org.opentravel.pubs.dao.DownloadHistoryItem;
 import org.opentravel.pubs.dao.PublicationDAO;
 import org.opentravel.pubs.dao.RegistrantDAO;
+import org.opentravel.pubs.forms.EmailSettingsForm;
 import org.opentravel.pubs.model.AdminCredentials;
 import org.opentravel.pubs.model.Comment;
 import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationState;
 import org.opentravel.pubs.model.PublicationType;
 import org.opentravel.pubs.model.Registrant;
+import org.opentravel.pubs.notification.EmailConfigBuilder;
 import org.opentravel.pubs.util.StringUtils;
 import org.opentravel.pubs.util.TypeChecker;
 import org.opentravel.pubs.util.ValueFormatter;
@@ -46,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -412,6 +416,49 @@ public class AdminController extends BaseController {
     	return applyCommonValues( model, "registrantDownloads" );
     }
 
+    @RequestMapping({ "/EmailSettings.html", "/EmailSettings.htm" })
+    public String emailSettings(HttpSession session, Model model,// RedirectAttributes redirectAttrs,
+    		@ModelAttribute("emailSettings") EmailSettingsForm emailSettings) {
+		ApplicationSettingsDAO settingsDAO = DAOFactoryManager.getFactory().newApplicationSettingsDAO();
+		String targetPage = "emailSettings";
+		
+    	if (emailSettings.isProcessUpdate()) {
+    		if (emailSettings.isEnableNotification()) {
+        		ValidationResults vResults = ModelValidator.validate( emailSettings );
+        		
+        		if (vResults.hasViolations()) {
+        			addValidationErrors( vResults, model );
+        			
+        		} else {
+            		settingsDAO.saveSettings( EmailConfigBuilder.EMAIL_CONFIG_SETTINGS,
+                			new EmailConfigBuilder()
+                				.setSmtpHost( emailSettings.getSmtpHost() )
+                				.setSmtpPort( StringUtils.parseIntValue( emailSettings.getSmtpPort() ) )
+                				.setSmtpUser( emailSettings.getSmtpUser() )
+                				.setSmtpPassword( emailSettings.getSmtpPassword() )
+                				.setTimeout( StringUtils.parseLongValue( emailSettings.getTimeout() ) )
+                				.setSslEnable( emailSettings.isSslEnable() )
+                				.setAuthEnable( emailSettings.isAuthEnable() )
+                				.setStartTlsEnable( emailSettings.isStartTlsEnable() )
+                				.setSenderAddress( emailSettings.getSenderAddress() )
+                				.setSenderName( emailSettings.getSenderName() )
+                				.setCcRecipients( emailSettings.getCcRecipients() )
+                				.build()
+                		);
+            		setStatusMessage( "Email notification settings updated successfully.", model );
+        		}
+    		} else { // disable email validation
+    			settingsDAO.deleteSettings( EmailConfigBuilder.EMAIL_CONFIG_SETTINGS );
+        		setStatusMessage( "Email notifications have been disabled.", model );
+    		}
+    		
+    	} else {
+    		emailSettings.initialize(
+    				settingsDAO.getSettings( EmailConfigBuilder.EMAIL_CONFIG_SETTINGS ) );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
     @RequestMapping({ "/ChangeAdminCredentials.html", "/ChangeAdminCredentials.htm" })
     public String changeCredentialsPage(HttpSession session, Model model,
             @RequestParam(value = "processUpdate", required = false) boolean processUpdate,

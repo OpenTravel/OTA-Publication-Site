@@ -35,11 +35,11 @@
 		<li>
 			<c:choose>
 				<c:when test="${(currentPage == 'uploadSpecification')}">
-					<a id="SideNavControl1_MenuHyperLink" class="current"
+					<a id="SideNavControl2_MenuHyperLink" class="current"
 						href="${config.localSiteUrl}/admin/UploadSpecification.html">Upload a New Specification</a>
 				</c:when>
 				<c:otherwise>
-					<a id="SideNavControl1_MenuHyperLink"
+					<a id="SideNavControl2_MenuHyperLink"
 						href="${config.localSiteUrl}/admin/UploadSpecification.html">Upload a New Specification</a>
 				</c:otherwise>
 			</c:choose>
@@ -48,11 +48,11 @@
 		<li>
 			<c:choose>
 				<c:when test="${(currentPage == 'viewRegistrants')}">
-					<a id="SideNavControl1_MenuHyperLink" class="current"
+					<a id="SideNavControl3_MenuHyperLink" class="current"
 						href="${config.localSiteUrl}/admin/ViewRegistrants.html">View Web Site Registrants</a>
 				</c:when>
 				<c:otherwise>
-					<a id="SideNavControl1_MenuHyperLink"
+					<a id="SideNavControl3_MenuHyperLink"
 						href="${config.localSiteUrl}/admin/ViewRegistrants.html">View Web Site Registrants</a>
 				</c:otherwise>
 			</c:choose>
@@ -60,12 +60,25 @@
 		
 		<li>
 			<c:choose>
+				<c:when test="${(currentPage == 'emailSettings')}">
+					<a id="SideNavControl4_MenuHyperLink" class="current"
+						href="${config.localSiteUrl}/admin/EmailSettings.html">Email Notification Settings</a>
+				</c:when>
+				<c:otherwise>
+					<a id="SideNavControl4_MenuHyperLink"
+						href="${config.localSiteUrl}/admin/EmailSettings.html">Email Notification Settings</a>
+				</c:otherwise>
+			</c:choose>
+		</li>
+		
+		<li>
+			<c:choose>
 				<c:when test="${(currentPage == 'changeCredentials')}">
-					<a id="SideNavControl1_MenuHyperLink" class="current"
+					<a id="SideNavControl5_MenuHyperLink" class="current"
 						href="${config.localSiteUrl}/admin/ChangeAdminCredentials.html">Change Admin Login Credentials</a>
 				</c:when>
 				<c:otherwise>
-					<a id="SideNavControl1_MenuHyperLink"
+					<a id="SideNavControl6_MenuHyperLink"
 						href="${config.localSiteUrl}/admin/ChangeAdminCredentials.html">Change Admin Login Credentials</a>
 				</c:otherwise>
 			</c:choose>

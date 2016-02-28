@@ -47,7 +47,10 @@ import org.slf4j.LoggerFactory;
 public class NotificationManager {
 	
     public static final String TEMPLATE_LOCATION = "/org/opentravel/pubs/templates/";
-    public static final String COMMENT_TEMPLATE  = "comment-email.vm";
+    public static final String SCHEMA_COMMENT_MESSAGE_TEMPLATE   = "schema-comment-message.vm";
+    public static final String SCHEMA_COMMENT_SUBJECT_TEMPLATE   = "schema-comment-subject.vm";
+    public static final String ARTIFACT_COMMENT_MESSAGE_TEMPLATE = "artifact-comment-message.vm";
+    public static final String ARTIFACT_COMMENT_SUBJECT_TEMPLATE = "artifact-comment-subject.vm";
     
     private static final Logger log = LoggerFactory.getLogger( NotificationManager.class );
     private static final int MAX_RETRIES = 5;
@@ -77,13 +80,14 @@ public class NotificationManager {
 	 * thread.  The return type of the future indicates the success or failure of the email
 	 * transmission.
 	 * 
-	 * @param messageTemplate  the name of the email template to use for generating the email message body
-	 * @param contentMap  the map containing the key/value pairs required for processing the email message template
+	 * @param subjectTemplate  the name of the template to use for generating the email subject line
+	 * @param messageTemplate  the name of the template to use for generating the email message body
+	 * @param contentMap  the map containing the key/value pairs required for processing the templates
 	 * @param recipients  the list of recipients to whom the email will be addressed
 	 * @return Future<Boolean>
 	 */
-	public Future<Boolean> sendNotification(final String subject, final String messageTemplate, final Map<String,Object> contentMap,
-			final InternetAddress... recipients) {
+	public Future<Boolean> sendNotification(final String subjectTemplate, final String messageTemplate,
+			final Map<String,Object> contentMap, final InternetAddress... recipients) {
 		ApplicationSettingsDAO settingsDAO = DAOFactoryManager.getFactory().newApplicationSettingsDAO();
 		final Properties emailConfig = settingsDAO.getSettings( EmailConfigBuilder.EMAIL_CONFIG_SETTINGS );
 		Future<Boolean> future = null;
@@ -92,43 +96,50 @@ public class NotificationManager {
 			Callable<Boolean> notificationTask = new Callable<Boolean>() {
 				public Boolean call() {
 					boolean successInd = false;
-					int retryCount = 0;
-					
-					while (!successInd && (retryCount < MAX_RETRIES)) {
-						try {
-							Session mailSession = Session.getInstance( getSmtpConfig( emailConfig ) );
-							String userId = emailConfig.getProperty( EmailConfigBuilder.USERNAME_PROPERTY );
-							String encryptedPassword = emailConfig.getProperty( EmailConfigBuilder.PASSWORD_PROPERTY );
-							InternetAddress fromAddress = new InternetAddress(
-									emailConfig.getProperty( EmailConfigBuilder.SENDER_ADDRESS_PROPERTY ), 
-									emailConfig.getProperty( EmailConfigBuilder.SENDER_NAME_PROPERTY ) );
-							String ccList = emailConfig.getProperty( EmailConfigBuilder.CC_RECIPIENTS_PROPERTY );
-							Message message = new MimeMessage( mailSession );
-							
-							for (InternetAddress recipient : recipients) {
-								message.addRecipient( RecipientType.TO, recipient );
-							}
-							if ((ccList != null) && (ccList.length() > 0)) {
-								for (String ccAddress : ccList.split(",")) {
-									message.addRecipient( RecipientType.CC, new InternetAddress( ccAddress ) );
-								}
-							}
-							message.setFrom( fromAddress );
-							message.setSubject( subject );
-							message.setContent( generateMessageBody( messageTemplate, contentMap ), "text/html" );
-							
-							if ((userId != null) && (encryptedPassword != null)) {
-								Transport.send( message, userId, PasswordHelper.decrypt( encryptedPassword ) );
-							} else {
-								Transport.send( message );
-							}
-							successInd = true;
-							log.info( "Sent email notification - " + subject );
-							
-						} catch (Throwable e) {
-							log.error( "Error sending email notification.", e.getMessage() );
-							retryCount++;
+					try {
+						Session mailSession = Session.getInstance( getSmtpConfig( emailConfig ) );
+						String userId = emailConfig.getProperty( EmailConfigBuilder.USERNAME_PROPERTY );
+						String encryptedPassword = emailConfig.getProperty( EmailConfigBuilder.PASSWORD_PROPERTY );
+						InternetAddress fromAddress = new InternetAddress(
+								emailConfig.getProperty( EmailConfigBuilder.SENDER_ADDRESS_PROPERTY ), 
+								emailConfig.getProperty( EmailConfigBuilder.SENDER_NAME_PROPERTY ) );
+						String ccList = emailConfig.getProperty( EmailConfigBuilder.CC_RECIPIENTS_PROPERTY );
+						String subject = processTemplate( subjectTemplate, contentMap );
+						Message message = new MimeMessage( mailSession );
+						int retryCount = 1;
+						
+						for (InternetAddress recipient : recipients) {
+							message.addRecipient( RecipientType.TO, recipient );
 						}
+						if ((ccList != null) && (ccList.length() > 0)) {
+							for (String ccAddress : ccList.split(",")) {
+								message.addRecipient( RecipientType.CC, new InternetAddress( ccAddress ) );
+							}
+						}
+						message.setFrom( fromAddress );
+						message.setSubject( subject );
+						message.setContent( processTemplate( messageTemplate, contentMap ), "text/html" );
+						
+						while (!successInd && (retryCount <= MAX_RETRIES)) {
+							try {
+								
+								if ((userId != null) && (encryptedPassword != null)) {
+									Transport.send( message, userId, PasswordHelper.decrypt( encryptedPassword ) );
+								} else {
+									Transport.send( message );
+								}
+								successInd = true;
+								log.info( "Sent email notification - " + subject );
+								
+							} catch (Throwable e) {
+								log.error( "Error sending email notification (attempt " + retryCount + ") - " + e.getMessage() );
+								e.printStackTrace( System.out );
+								retryCount++;
+							}
+						}
+					} catch (Throwable e) {
+						log.error( "Error creating email notification message - " + e.getMessage() );
+						e.printStackTrace( System.out );
 					}
 					return successInd;
 				}
@@ -139,15 +150,14 @@ public class NotificationManager {
 	}
 	
 	/**
-	 * Generates the body of the outbound notification email using the template name and
-	 * content information provided.
+	 * Processes the velocity template using the template name and content information provided.
 	 * 
-	 * @param messageTemplate  the name of the email template to use for generating the email message body
-	 * @param contentMap  the map containing the key/value pairs required for processing the email message template
+	 * @param templateName  the name of the template to use for generating the formatted content
+	 * @param contentMap  the map containing the key/value pairs required for processing the template
 	 * @return String
 	 */
-	private String generateMessageBody(String messageTemplate, Map<String, Object> contentMap) {
-		Template template = velocityEngine.getTemplate( TEMPLATE_LOCATION + messageTemplate, "UTF-8" );
+	private String processTemplate(String templateName, Map<String, Object> contentMap) {
+		Template template = velocityEngine.getTemplate( TEMPLATE_LOCATION + templateName, "UTF-8" );
 		VelocityContext context = new VelocityContext();
 		StringWriter writer = new StringWriter();
 		

@@ -66,6 +66,16 @@ public abstract class BaseController {
     }
     
 	/**
+	 * Assigns the status message for the console page that will be displayed.
+	 * 
+	 * @param statusMessage  the status message text
+	 * @param model  the model to which the error message should be applied
+	 */
+	protected void setStatusMessage(String statusMessage, Model model) {
+		model.addAttribute( "statusMessage", statusMessage );
+	}
+	
+	/**
 	 * Assigns the error message for the console page that will be displayed.  A call
 	 * to this method also marks the current transaction for rollback.
 	 * 
@@ -92,6 +102,27 @@ public abstract class BaseController {
 		ValidationResults validationResults = validationEx.getValidationResults();
 		
 		if (validationResults != null) {
+			addValidationErrors( validationResults, model );
+			
+		} else { // use the exception message as the UI error message
+			setErrorMessage( validationEx.getMessage(), model );
+		}
+		DAOFactoryManager.markForRollback();
+	}
+
+	/**
+	 * Adds the given set of validation results to the model provided.  If any validation
+	 * results already exist in the model, the new results are merged into the original set.
+	 * 
+	 * <p>The results are stored as a model attribute under the key "validationErrors".
+	 * 
+	 * <p>A call to this method also marks the current transaction for rollback.
+	 * 
+	 * @param validationResults  the set of validation results to add
+	 * @param model  the model that will contain the validation results
+	 */
+	protected void addValidationErrors(ValidationResults validationResults, Model model) {
+		if (validationResults != null) {
 			ValidationResults existingResults = (ValidationResults) model.asMap().get( "validationErrors" );
 			
 			if (existingResults != null) {
@@ -100,13 +131,9 @@ public abstract class BaseController {
 			} else {
 				model.addAttribute( "validationErrors", validationResults );
 			}
-			
-		} else { // use the exception message as the UI error message
-			setErrorMessage( validationEx.getMessage(), model );
 		}
-		DAOFactoryManager.markForRollback();
 	}
-
+	
     /**
      * Makes a best attempt to resolve the give publication-type string to
      * a valid enumeration value.  If no determination can be made, the default
