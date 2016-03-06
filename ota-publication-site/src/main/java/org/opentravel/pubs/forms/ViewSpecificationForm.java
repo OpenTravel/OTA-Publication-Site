@@ -16,30 +16,18 @@
 package org.opentravel.pubs.forms;
 
 /**
- * Base class for all form model object types.
+ * Form used during the view and download specification pages to pass web
+ * site registrant information.
  */
-public class AbstractForm {
-	
-	private boolean processForm = false;
+public class ViewSpecificationForm extends AbstractRegistrantContainerForm {
 	
 	/**
-	 * Returns the flag value indicating whether the form has been initialized and submitted
-	 * by the user for processing.
-	 *
-	 * @return boolean
+	 * @see org.opentravel.pubs.forms.AbstractForm#setProcessForm(boolean)
 	 */
-	public boolean isProcessForm() {
-		return processForm;
-	}
-	
-	/**
-	 * Assigns the flag value indicating whether the form has been initialized and submitted
-	 * by the user for processing.
-	 *
-	 * @param processForm  the field value to assign
-	 */
+	@Override
 	public void setProcessForm(boolean processForm) {
-		this.processForm = processForm;
+		getRegistrantForm().setProcessForm( processForm );
+		super.setProcessForm( processForm );
 	}
 	
 }

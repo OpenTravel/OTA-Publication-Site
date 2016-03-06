@@ -37,6 +37,10 @@ import org.opentravel.pubs.dao.DAOFactoryManager;
 import org.opentravel.pubs.dao.DownloadDAO;
 import org.opentravel.pubs.dao.PublicationDAO;
 import org.opentravel.pubs.dao.RegistrantDAO;
+import org.opentravel.pubs.forms.ArtifactCommentForm;
+import org.opentravel.pubs.forms.RegistrantForm;
+import org.opentravel.pubs.forms.SchemaCommentForm;
+import org.opentravel.pubs.forms.ViewSpecificationForm;
 import org.opentravel.pubs.model.ArtifactComment;
 import org.opentravel.pubs.model.CommentType;
 import org.opentravel.pubs.model.Publication;
@@ -55,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -76,16 +81,10 @@ public class PublicationController extends BaseController {
     public String specifications10Page(Model model, HttpSession session,
             @RequestParam(value = "spec", required = false) String spec,
             @RequestParam(value = "newSession", required = false) boolean newSession,
-            @RequestParam(value = "processRegistrant", required = false) boolean processRegistrant,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember) {
+            @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
     	String targetPage = "specification10Main";
     	try {
+    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
         	Publication publication = null;
         	
@@ -97,18 +96,18 @@ public class PublicationController extends BaseController {
     		}
     		
         	model.addAttribute( "publication", publication );
-        	model.addAttribute( "registrationPage", "Specifications.html" );
+        	model.addAttribute( "registrationPage", "Specifications10.html" );
         	
         	if (newSession) session.removeAttribute( "registrantId" );
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+        	handleRegistrantInfo( registrantForm, model, session );
         	
         	// If we processed the form successfully, clear our model so that its
         	// attributes will not show up as URL parameters on redirect
-        	if (processRegistrant && (model.asMap().get( "registrant" ) != null)) {
-        		targetPage = "redirect:/specifications/Specifications.html";
+        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
+        		targetPage = "redirect:/specifications/Specifications10.html";
         		model.asMap().clear();
         	}
+        	specificationForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -121,16 +120,10 @@ public class PublicationController extends BaseController {
     public String specifications20Page(Model model, HttpSession session,
             @RequestParam(value = "spec", required = false) String spec,
             @RequestParam(value = "newSession", required = false) boolean newSession,
-            @RequestParam(value = "processRegistrant", required = false) boolean processRegistrant,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember) {
+            @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
     	String targetPage = "specification20Main";
     	try {
+    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
         	Publication publication = null;
         	
@@ -145,15 +138,15 @@ public class PublicationController extends BaseController {
         	model.addAttribute( "registrationPage", "Specifications20.html" );
         	
         	if (newSession) session.removeAttribute( "registrantId" );
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+        	handleRegistrantInfo( registrantForm, model, session );
         	
         	// If we processed the form successfully, clear our model so that its
         	// attributes will not show up as URL parameters on redirect
-        	if (processRegistrant && (model.asMap().get( "registrant" ) != null)) {
+        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
         		targetPage = "redirect:/specifications/Specifications20.html";
         		model.asMap().clear();
         	}
+        	specificationForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -190,30 +183,17 @@ public class PublicationController extends BaseController {
     @RequestMapping({ "/Comment10Spec.html", "/Comment10Spec.htm" })
     public String comment10SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
-            @RequestParam(value = "processComment", required = false) boolean processComment,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember,
-            @RequestParam(value = "itemId", required = false) Long itemId,
-            @RequestParam(value = "commentType", required = false) CommentType commentType,
-            @RequestParam(value = "commentText", required = false) String commentText,
-            @RequestParam(value = "suggestedChange", required = false) String suggestedChange,
-            @RequestParam(value = "commentXPath", required = false) String commentXPath,
-            @RequestParam(value = "modifyXPath", required = false) String modifyXPath,
-            @RequestParam(value = "newAnnotations", required = false) String newAnnotations) {
+            @ModelAttribute("commentForm") SchemaCommentForm commentForm) {
     	String targetPage = "specificationComment10";
 		boolean commentSuccess = false;
     	try {
         	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = processComment && (registrant == null);
+    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
+    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
     		
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+    		registrantForm.setProcessForm( processRegistrant );
+        	handleRegistrantInfo( registrantForm, model, session );
     		registrant = (Registrant) model.asMap().get( "registrant" );
         	
     		// If the registrant was created successfully, commit it and start a new
@@ -224,9 +204,8 @@ public class PublicationController extends BaseController {
     			registrant = getCurrentRegistrant( session );
     		}
     		
-        	if (processComment) {
-        		commentSuccess = addSchemaComment( itemId, commentType, commentText, suggestedChange,
-        				commentXPath, modifyXPath, newAnnotations, registrant, model, session );
+        	if (commentForm.isProcessForm()) {
+        		commentSuccess = addSchemaComment( commentForm, registrant, model, session );
         	}
     		
         	if (commentSuccess) {
@@ -248,6 +227,7 @@ public class PublicationController extends BaseController {
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
         	}
     		model.addAttribute( "submitCommentsUrl", "/specifications/Comment10Spec.html" );
+        	commentForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -259,30 +239,17 @@ public class PublicationController extends BaseController {
     @RequestMapping({ "/Comment20Spec.html", "/Comment20Spec.htm" })
     public String comment20SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
-            @RequestParam(value = "processComment", required = false) boolean processComment,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember,
-            @RequestParam(value = "itemId", required = false) Long itemId,
-            @RequestParam(value = "commentType", required = false) CommentType commentType,
-            @RequestParam(value = "commentText", required = false) String commentText,
-            @RequestParam(value = "suggestedChange", required = false) String suggestedChange,
-            @RequestParam(value = "commentXPath", required = false) String commentXPath,
-            @RequestParam(value = "modifyXPath", required = false) String modifyXPath,
-            @RequestParam(value = "newAnnotations", required = false) String newAnnotations) {
+            @ModelAttribute("commentForm") SchemaCommentForm commentForm) {
     	String targetPage = "specificationComment20";
 		boolean commentSuccess = false;
     	try {
         	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = processComment && (registrant == null);
+    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
+    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
     		
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+    		registrantForm.setProcessForm( processRegistrant );
+        	handleRegistrantInfo( registrantForm, model, session );
     		registrant = (Registrant) model.asMap().get( "registrant" );
         	
     		// If the registrant was created successfully, commit it and start a new
@@ -293,9 +260,8 @@ public class PublicationController extends BaseController {
     			registrant = getCurrentRegistrant( session );
     		}
         	
-        	if (processComment) {
-        		commentSuccess = addSchemaComment( itemId, commentType, commentText, suggestedChange,
-        				commentXPath, modifyXPath, newAnnotations, registrant, model, session );
+        	if (commentForm.isProcessForm()) {
+        		commentSuccess = addSchemaComment( commentForm, registrant, model, session );
         	}
     		
         	if (commentSuccess) {
@@ -317,6 +283,7 @@ public class PublicationController extends BaseController {
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
         	}
     		model.addAttribute( "submitCommentsUrl", "/specifications/Comment20Spec.html" );
+        	commentForm.setProcessForm( true );
     		
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -328,29 +295,17 @@ public class PublicationController extends BaseController {
     @RequestMapping({ "/Comment10Artifact.html", "/Comment10Artifact.html" })
     public String comment10ArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
-            @RequestParam(value = "processComment", required = false) boolean processComment,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember,
-            @RequestParam(value = "itemId", required = false) Long itemId,
-            @RequestParam(value = "commentType", required = false) CommentType commentType,
-            @RequestParam(value = "commentText", required = false) String commentText,
-            @RequestParam(value = "suggestedChange", required = false) String suggestedChange,
-            @RequestParam(value = "pageNumbers", required = false) String pageNumbers,
-            @RequestParam(value = "lineNumbers", required = false) String lineNumbers) {
+            @ModelAttribute("commentForm") ArtifactCommentForm commentForm) {
     	String targetPage = "artifactComment10";
 		boolean commentSuccess = false;
     	try {
         	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = processComment && (registrant == null);
+    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
+    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
     		
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+    		registrantForm.setProcessForm( processRegistrant );
+        	handleRegistrantInfo( registrantForm, model, session );
     		registrant = (Registrant) model.asMap().get( "registrant" );
         	
     		// If the registrant was created successfully, commit it and start a new
@@ -361,9 +316,8 @@ public class PublicationController extends BaseController {
     			registrant = getCurrentRegistrant( session );
     		}
     		
-        	if (processComment) {
-        		commentSuccess = addArtifactComment( itemId, commentType, commentText, suggestedChange,
-        				pageNumbers, lineNumbers, registrant, model, session );
+        	if (commentForm.isProcessForm()) {
+        		commentSuccess = addArtifactComment( commentForm, registrant, model, session );
         	}
     		
         	if (commentSuccess) {
@@ -381,6 +335,7 @@ public class PublicationController extends BaseController {
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
         	}
     		model.addAttribute( "submitCommentsUrl", "/specifications/Comment10Artifact.html" );
+        	commentForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -392,29 +347,17 @@ public class PublicationController extends BaseController {
     @RequestMapping({ "/Comment20Artifact.html", "/Comment20Artifact.htm" })
     public String comment20ArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
-            @RequestParam(value = "processComment", required = false) boolean processComment,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember,
-            @RequestParam(value = "itemId", required = false) Long itemId,
-            @RequestParam(value = "commentType", required = false) CommentType commentType,
-            @RequestParam(value = "commentText", required = false) String commentText,
-            @RequestParam(value = "suggestedChange", required = false) String suggestedChange,
-            @RequestParam(value = "pageNumbers", required = false) String pageNumbers,
-            @RequestParam(value = "lineNumbers", required = false) String lineNumbers) {
+            @ModelAttribute("commentForm") ArtifactCommentForm commentForm) {
     	String targetPage = "artifactComment20";
 		boolean commentSuccess = false;
     	try {
         	if (newSession) session.removeAttribute( "registrantId" );
     		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = processComment && (registrant == null);
+    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
+    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
     		
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+    		registrantForm.setProcessForm( processRegistrant );
+        	handleRegistrantInfo( registrantForm, model, session );
     		registrant = (Registrant) model.asMap().get( "registrant" );
         	
     		// If the registrant was created successfully, commit it and start a new
@@ -425,9 +368,8 @@ public class PublicationController extends BaseController {
     			registrant = getCurrentRegistrant( session );
     		}
     		
-        	if (processComment) {
-        		commentSuccess = addArtifactComment( itemId, commentType, commentText, suggestedChange,
-        				pageNumbers, lineNumbers, registrant, model, session );
+        	if (commentForm.isProcessForm()) {
+        		commentSuccess = addArtifactComment( commentForm, registrant, model, session );
         	}
     		
         	if (commentSuccess) {
@@ -445,6 +387,7 @@ public class PublicationController extends BaseController {
         		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
         	}
     		model.addAttribute( "submitCommentsUrl", "/specifications/Comment20Artifact.html" );
+        	commentForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -563,26 +506,19 @@ public class PublicationController extends BaseController {
     		@RequestParam(value = "pubName", required = true) String pubName,
     		@RequestParam(value = "pubType", required = true) String type,
     		@RequestParam(value = "filename", required = true) String filename,
-            @RequestParam(value = "processRegistrant", required = false) boolean processRegistrant,
-            @RequestParam(value = "firstName", required = false) String firstName,
-            @RequestParam(value = "lastName", required = false) String lastName,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "otaMember", required = false) Boolean otaMember) {
+    		@ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
     	String targetPage = "downloadRegister";
     	try {
+    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
     		PublicationType pubType = resolvePublicationType( type );
         	Publication publication = pDao.getPublication( pubName, pubType );
         	
-        	handleRegistrantInfo( processRegistrant, firstName, lastName, title, company,
-    				phone, email, otaMember, model, session );
+        	handleRegistrantInfo( registrantForm, model, session );
     		
         	// If we processed the form successfully, clear our model so that its
         	// attributes will not show up as URL parameters on redirect
-        	if (processRegistrant && (model.asMap().get( "registrant" ) != null)) {
+        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
         		targetPage = "redirect:/content/specifications/downloads/" +
         				pubName + "/" + type + "/" + filename;
         		model.asMap().clear();
@@ -592,8 +528,8 @@ public class PublicationController extends BaseController {
         		model.addAttribute( "pubName", pubName );
         		model.addAttribute( "pubType", pubType );
         		model.addAttribute( "filename", filename );
-        		model.addAttribute( "publication", publication );
         	}
+        	specificationForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -697,13 +633,12 @@ public class PublicationController extends BaseController {
      * been created or a validation error occurs while attempting to create one, this method
      * will return null.
      * 
-     * @param processRegistrant  flag indicating whether registrant data is being submitted
+     * @param registrantForm  form containing all of registrant values submitted by the user
      * @param model  the UI model for the current request
      * @param session  the HTTP session
      */
-    private void handleRegistrantInfo(boolean processRegistrant, String firstName, String lastName,
-            String title, String company, String phone, String email, Boolean otaMember,
-            Model model, HttpSession session) {
+    private void handleRegistrantInfo(RegistrantForm registrantForm, Model model,
+    		HttpSession session) {
 		RegistrantDAO rDao = DAOFactoryManager.getFactory().newRegistrantDAO();
 		Long registrantId = (Long) session.getAttribute( "registrantId" );
     	Registrant registrant = null;
@@ -712,18 +647,18 @@ public class PublicationController extends BaseController {
     		registrant = rDao.getRegistrant( registrantId );
     		if (registrant == null) registrantId = null;
 		}
-    	if (processRegistrant) {
+    	if (registrantForm.isProcessForm()) {
     		if (registrant == null) {
     			registrant = new Registrant();
     			registrant.setRegistrationDate( new Date() );
     		}
-			registrant.setLastName( StringUtils.trimString( lastName ) );
-			registrant.setFirstName( StringUtils.trimString( firstName ) );
-			registrant.setTitle( StringUtils.trimString( title ) );
-			registrant.setCompany( StringUtils.trimString( company ) );
-			registrant.setPhone( StringUtils.trimString( phone ) );
-			registrant.setEmail( StringUtils.trimString( email ) );
-			registrant.setOtaMember( otaMember );
+			registrant.setLastName( StringUtils.trimString( registrantForm.getLastName() ) );
+			registrant.setFirstName( StringUtils.trimString( registrantForm.getFirstName() ) );
+			registrant.setTitle( StringUtils.trimString( registrantForm.getTitle() ) );
+			registrant.setCompany( StringUtils.trimString( registrantForm.getCompany() ) );
+			registrant.setPhone( StringUtils.trimString( registrantForm.getPhone() ) );
+			registrant.setEmail( StringUtils.trimString( registrantForm.getEmail() ) );
+			registrant.setOtaMember( registrantForm.getOtaMember() );
 			
 			if ((registrantId == null) || (registrantId < 0)) { // persist for the first time
 				try {
@@ -732,13 +667,6 @@ public class PublicationController extends BaseController {
 					
 				} catch (ValidationException e) {
 		    		addValidationErrors( e, model );
-		    		model.addAttribute( "firstName", firstName );
-		    		model.addAttribute( "lastName", lastName );
-		    		model.addAttribute( "title", title );
-		    		model.addAttribute( "company", company );
-		    		model.addAttribute( "phone", phone );
-		    		model.addAttribute( "email", email );
-		    		model.addAttribute( "otaMember", otaMember );
 					registrant = null;
 				}
 			}
@@ -749,31 +677,33 @@ public class PublicationController extends BaseController {
     /**
      * Creates and saves a new schema comment using the information provided.
      * 
+     * @param commentForm  the form used to supply the field values for the submitted comment
+     * @param registrant  the web site registrant who submitted the comment
      * @param model  the UI model for the current request
      * @param session  the HTTP session
      */
-    private boolean addSchemaComment(Long itemId, CommentType commentType, String commentText,
-            String suggestedChange, String commentXPath, String modifyXPath, String newAnnotations,
-            Registrant registrant, Model model, HttpSession session) {
+    private boolean addSchemaComment(SchemaCommentForm commentForm, Registrant registrant,
+    		Model model, HttpSession session) {
     	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
     	CommentDAO cDao = DAOFactoryManager.getFactory().newCommentDAO();
     	boolean success = false;
     	try {
-    		PublicationItem item = (itemId == null) ? null : pDao.getPublicationItem( itemId );
+    		PublicationItem item = (commentForm.getItemId() == null) ?
+    				null : pDao.getPublicationItem( commentForm.getItemId() );
     		
-    		if ((itemId != null) && (item == null)) {
+    		if ((commentForm.getItemId() != null) && (item == null)) {
        			throw new DAOException("Unable to resolve the publication item to which this comment applies.");
     		}
     		
     		SchemaComment comment = new SchemaCommentBuilder()
     			.setPublicationItem( item )
     			.setPublicationState( (item == null) ? null : item.getOwner().getOwner().getState() )
-    			.setCommentType( commentType )
-    			.setCommentText( StringUtils.trimString( commentText ) )
-    			.setSuggestedChange( StringUtils.trimString( suggestedChange ) )
-    			.setCommentXPath( StringUtils.trimString( commentXPath ) )
-    			.setModifyXPath( StringUtils.trimString( modifyXPath ) )
-    			.setNewAnnotations( newAnnotations )
+    			.setCommentType( commentForm.getCommentType() )
+    			.setCommentText( StringUtils.trimString( commentForm.getCommentText() ) )
+    			.setSuggestedChange( StringUtils.trimString( commentForm.getSuggestedChange() ) )
+    			.setCommentXPath( StringUtils.trimString( commentForm.getCommentXPath() ) )
+    			.setModifyXPath( StringUtils.trimString( commentForm.getModifyXPath() ) )
+    			.setNewAnnotations( commentForm.getNewAnnotations() )
     			.setSubmittedBy( registrant )
     			.build();
     		
@@ -791,13 +721,6 @@ public class PublicationController extends BaseController {
     		
     	} catch (ValidationException e) {
     		addValidationErrors( e, model );
-    		model.addAttribute( "itemId", itemId );
-    		model.addAttribute( "commentType", commentType );
-    		model.addAttribute( "commentText", commentText );
-    		model.addAttribute( "suggestedChange", suggestedChange );
-    		model.addAttribute( "commentXPath", commentXPath );
-    		model.addAttribute( "modifyXPath", modifyXPath );
-    		model.addAttribute( "newAnnotations", newAnnotations );
     		
     	} catch (Throwable t) {
     		log.error("Error saving comment (please contact the site administrator).", t);
@@ -809,29 +732,31 @@ public class PublicationController extends BaseController {
     /**
      * Creates and saves a new schema comment using the information provided.
      * 
+     * @param commentForm  the form used to supply the field values for the submitted comment
+     * @param registrant  the web site registrant who submitted the comment
      * @param model  the UI model for the current request
      * @param session  the HTTP session
      */
-    private boolean addArtifactComment(Long itemId, CommentType commentType, String commentText,
-            String suggestedChange, String pageNumbers, String lineNumbers,
-            Registrant registrant, Model model, HttpSession session) {
+    private boolean addArtifactComment(ArtifactCommentForm commentForm, Registrant registrant,
+    		Model model, HttpSession session) {
     	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
     	CommentDAO cDao = DAOFactoryManager.getFactory().newCommentDAO();
     	boolean success = false;
     	try {
-    		PublicationItem item = (itemId == null) ? null : pDao.getPublicationItem( itemId );
+    		PublicationItem item = (commentForm.getItemId() == null) ?
+    				null : pDao.getPublicationItem( commentForm.getItemId() );
     		
-    		if ((itemId != null) && (item == null)) {
+    		if ((commentForm.getItemId() != null) && (item == null)) {
     			throw new DAOException("Unable to resolve the publication item to which this comment applies.");
     		}
     		ArtifactComment comment = new ArtifactCommentBuilder()
     			.setPublicationItem( item )
     			.setPublicationState( (item == null) ? null : item.getOwner().getOwner().getState() )
-    			.setCommentType( commentType )
-    			.setCommentText( StringUtils.trimString( commentText ) )
-    			.setSuggestedChange( StringUtils.trimString( suggestedChange ) )
-    			.setPageNumbers( StringUtils.trimString( pageNumbers ) )
-    			.setLineNumbers( StringUtils.trimString( lineNumbers ) )
+    			.setCommentType( commentForm.getCommentType() )
+    			.setCommentText( StringUtils.trimString( commentForm.getCommentText() ) )
+    			.setSuggestedChange( StringUtils.trimString( commentForm.getSuggestedChange() ) )
+    			.setPageNumbers( StringUtils.trimString( commentForm.getPageNumbers() ) )
+    			.setLineNumbers( StringUtils.trimString( commentForm.getLineNumbers() ) )
     			.setSubmittedBy( registrant )
     			.build();
     		
@@ -849,12 +774,6 @@ public class PublicationController extends BaseController {
     		
     	} catch (ValidationException e) {
     		addValidationErrors( e, model );
-    		model.addAttribute( "itemId", itemId );
-    		model.addAttribute( "commentType", commentType );
-    		model.addAttribute( "commentText", commentText );
-    		model.addAttribute( "suggestedChange", suggestedChange );
-    		model.addAttribute( "pageNumbers", pageNumbers );
-    		model.addAttribute( "lineNumbers", lineNumbers );
     		
     	} catch (Throwable t) {
     		log.error("Error saving comment (please contact the site administrator).", t);

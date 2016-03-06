@@ -15,6 +15,7 @@
     limitations under the License.
 
 --%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:if test="${registrant == null}">
 <div>
@@ -24,8 +25,8 @@
 </div>
 <div id="editBox">
 	<div id="formWpr">
-		<form id="registrationForm" action="${config.localSiteUrl}/specifications/${registrationPage}" method="POST">
-		<input name="processRegistrant" type="hidden" class="text" value="true" />
+		<form:form id="registrationForm" action="${config.localSiteUrl}/specifications/${registrationPage}" method="POST" modelAttribute="specificationForm">
+		<form:hidden path="processForm" />
 		<table border="0" cellpadding="0" cellspacing="0">
 			<%@ include file="registrantInfoForm.jsp" %>
 			<tr>
@@ -39,6 +40,7 @@
 				</td>
 			</tr>
 		</table>
+		</form:form>
 	</div>
 </div>
 </c:if>

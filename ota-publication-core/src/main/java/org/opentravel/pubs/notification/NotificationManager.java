@@ -132,14 +132,12 @@ public class NotificationManager {
 								log.info( "Sent email notification - " + subject );
 								
 							} catch (Throwable e) {
-								log.error( "Error sending email notification (attempt " + retryCount + ") - " + e.getMessage() );
-								e.printStackTrace( System.out );
+								log.error( "Error sending email notification (attempt " + retryCount + ") - " + e.getMessage(), e );
 								retryCount++;
 							}
 						}
 					} catch (Throwable e) {
-						log.error( "Error creating email notification message - " + e.getMessage() );
-						e.printStackTrace( System.out );
+						log.error( "Error creating email notification message - " + e.getMessage(), e );
 					}
 					return successInd;
 				}

@@ -29,7 +29,7 @@ import org.opentravel.pubs.validation.IntegerString;
 import org.opentravel.pubs.validation.LongIntegerString;
 
 /**
- * Model object for form submissions of email configuration settings.
+ * Form used for the editing of email configuration settings.
  */
 public class EmailSettingsForm extends AbstractForm {
 	
@@ -88,7 +88,6 @@ public class EmailSettingsForm extends AbstractForm {
 			this.ccRecipients   = emailConfig.getProperty( EmailConfigBuilder.CC_RECIPIENTS_PROPERTY );
 		}
 		this.enableNotification = (emailConfig != null);
-		setProcessUpdate( true );
 	}
 	
 	/**

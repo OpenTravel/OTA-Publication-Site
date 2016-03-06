@@ -20,8 +20,8 @@
 <h1>Email Notification Settings</h1>
 
 <div id="formWpr">
-<form:form id="credentialsForm" action="${config.localSiteUrl}/admin/EmailSettings.html" method="POST" commandName="emailSettings" autocomplete="off">
-	<form:hidden path="processUpdate" />
+<form:form id="credentialsForm" action="${config.localSiteUrl}/admin/EmailSettings.html" method="POST" modelAttribute="emailSettings" autocomplete="off">
+	<form:hidden path="processForm" />
 	<table>
 		<tr>
 			<td class="required aligntop">Enable Email Notifications: </td>

@@ -32,6 +32,7 @@ import org.opentravel.pubs.dao.DownloadHistoryItem;
 import org.opentravel.pubs.dao.PublicationDAO;
 import org.opentravel.pubs.dao.RegistrantDAO;
 import org.opentravel.pubs.forms.EmailSettingsForm;
+import org.opentravel.pubs.forms.SpecificationForm;
 import org.opentravel.pubs.model.AdminCredentials;
 import org.opentravel.pubs.model.Comment;
 import org.opentravel.pubs.model.Publication;
@@ -85,9 +86,10 @@ public class AdminController extends BaseController {
     }
 
     @RequestMapping({ "/UploadSpecification.html", "/UploadSpecification.htm" })
-    public String uploadSpecificationPage(HttpSession session, Model model) {
+    public String uploadSpecificationPage(HttpSession session, Model model,
+    		@ModelAttribute("specificationForm") SpecificationForm specificationForm) {
     	try {
-    		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
+			specificationForm.setProcessForm( true );
     		
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -98,28 +100,24 @@ public class AdminController extends BaseController {
     
     @RequestMapping({ "/DoUploadSpecification.html", "/DoUploadSpecification.htm" })
     public String doUploadSpecificationPage(HttpSession session, Model model, RedirectAttributes redirectAttrs,
-            @RequestParam(value = "processUpload", required = false) boolean processUpload,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "specType", required = false) String specType,
-            @RequestParam(value = "pubState", required = false) String pubState,
+    		@ModelAttribute("specificationForm") SpecificationForm specificationForm,
     		@RequestParam(value = "archiveFile", required = false) MultipartFile archiveFile) {
     	String targetPage = "uploadSpecification";
     	try {
-    		boolean success = false;
-    		
-    		if (processUpload) {
-        		PublicationType publicationType = resolvePublicationType( specType );
-        		PublicationState publicationState = (pubState == null) ? null : PublicationState.valueOf( pubState );
+    		if (specificationForm.isProcessForm()) {
+        		PublicationType publicationType = resolvePublicationType( specificationForm.getSpecType() );
+        		PublicationState publicationState = (specificationForm.getPubState() == null) ?
+        				null : PublicationState.valueOf( specificationForm.getPubState() );
     			Publication publication = new PublicationBuilder()
-    					.setName( StringUtils.trimString( name ) )
+    					.setName( StringUtils.trimString( specificationForm.getName() ) )
     					.setType( publicationType )
     					.setState( publicationState )
     					.build();
     			
     			try {
             		if (!archiveFile.isEmpty()) {
-        				DAOFactoryManager.getFactory().newPublicationDAO()
-        						.publishSpecification( publication, archiveFile.getInputStream() );
+        				DAOFactoryManager.getFactory().newPublicationDAO().publishSpecification(
+        						publication, archiveFile.getInputStream() );
         				
         				model.asMap().clear();
         				redirectAttrs.addAttribute( "publication", publication.getName() );
@@ -141,13 +139,6 @@ public class AdminController extends BaseController {
     				log.error("An error occurred while publishing the spec: ", t);
     				setErrorMessage( t.getMessage(), model );
     			}
-    		}
-    		
-    		if (!success) {
-        		model.addAttribute( "name", name );
-        		model.addAttribute( "specType", specType );
-        		model.addAttribute( "pubState", pubState );
-        		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
     		}
         	
     	} catch (Throwable t) {
@@ -187,17 +178,15 @@ public class AdminController extends BaseController {
     
     @RequestMapping({ "/UpdateSpecification.html", "/UpdateSpecification.htm" })
     public String updateSpecificationPage(HttpSession session, Model model,
+    		@ModelAttribute("specificationForm") SpecificationForm specificationForm,
             @RequestParam(value = "publicationId", required = false) Long publicationId) {
     	String targetPage = "updateSpecification";
     	try {
 			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
 			Publication publication = pDao.getPublication( publicationId );
 			
-    		model.addAttribute( "publication", publication );
-    		model.addAttribute( "name", publication.getName() );
-    		model.addAttribute( "specType", publication.getType() );
-    		model.addAttribute( "pubState", publication.getState() );
-    		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
+			specificationForm.initialize( publication );
+			specificationForm.setProcessForm( true );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -208,23 +197,18 @@ public class AdminController extends BaseController {
 
     @RequestMapping({ "/DoUpdateSpecification.html", "/DoUpdateSpecification.htm" })
     public String doUpdateSpecificationPage(HttpSession session, Model model, RedirectAttributes redirectAttrs,
-            @RequestParam(value = "processUpdate", required = false) boolean processUpdate,
-            @RequestParam(value = "publicationId", required = false) Long publicationId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "specType", required = false) String specType,
-            @RequestParam(value = "pubState", required = false) String pubState,
+    		@ModelAttribute("specificationForm") SpecificationForm specificationForm,
     		@RequestParam(value = "archiveFile", required = false) MultipartFile archiveFile) {
     	String targetPage = "updateSpecification";
     	try {
-			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-			Publication publication = pDao.getPublication( publicationId );
-    		boolean success = false;
-    		
-    		if (processUpdate) {
-        		PublicationType publicationType = resolvePublicationType( specType );
-        		PublicationState publicationState = (pubState == null) ? null : PublicationState.valueOf( pubState );
+    		if (specificationForm.isProcessForm()) {
+    			PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+    			Publication publication = pDao.getPublication( specificationForm.getPublicationId() );
+        		PublicationType publicationType = resolvePublicationType( specificationForm.getSpecType() );
+        		PublicationState publicationState = (specificationForm.getPubState() == null) ?
+        				null : PublicationState.valueOf( specificationForm.getPubState() );
     			
-    			publication.setName( StringUtils.trimString( name ) );
+    			publication.setName( StringUtils.trimString( specificationForm.getName() ) );
     			publication.setType( publicationType );
     			publication.setState( publicationState );
     			
@@ -244,7 +228,6 @@ public class AdminController extends BaseController {
     				redirectAttrs.addAttribute( "publication", publication.getName() );
     				redirectAttrs.addAttribute( "specType", publication.getType() );
         			targetPage = "redirect:/admin/ViewSpecification.html";
-    				success = true;
     				
     			} catch (ValidationException e) {
     	    		addValidationErrors( e, model );
@@ -253,14 +236,6 @@ public class AdminController extends BaseController {
     				log.error("An error occurred while updating the spec: ", t);
     				setErrorMessage( t.getMessage(), model );
     			}
-    		}
-    		
-    		if (!success) {
-        		model.addAttribute( "publication", publication );
-        		model.addAttribute( "name", name );
-        		model.addAttribute( "specType", specType );
-        		model.addAttribute( "pubState", pubState );
-        		model.addAttribute( "publicationStates", Arrays.asList( PublicationState.values() ) );
     		}
     		
     	} catch (Throwable t) {
@@ -417,12 +392,12 @@ public class AdminController extends BaseController {
     }
 
     @RequestMapping({ "/EmailSettings.html", "/EmailSettings.htm" })
-    public String emailSettings(HttpSession session, Model model,// RedirectAttributes redirectAttrs,
+    public String emailSettings(HttpSession session, Model model,
     		@ModelAttribute("emailSettings") EmailSettingsForm emailSettings) {
 		ApplicationSettingsDAO settingsDAO = DAOFactoryManager.getFactory().newApplicationSettingsDAO();
 		String targetPage = "emailSettings";
 		
-    	if (emailSettings.isProcessUpdate()) {
+    	if (emailSettings.isProcessForm()) {
     		if (emailSettings.isEnableNotification()) {
         		ValidationResults vResults = ModelValidator.validate( emailSettings );
         		
@@ -453,6 +428,7 @@ public class AdminController extends BaseController {
     		}
     		
     	} else {
+    		emailSettings.setProcessForm( true );
     		emailSettings.initialize(
     				settingsDAO.getSettings( EmailConfigBuilder.EMAIL_CONFIG_SETTINGS ) );
     	}

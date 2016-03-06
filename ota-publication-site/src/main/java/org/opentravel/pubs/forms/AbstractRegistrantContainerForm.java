@@ -16,30 +16,19 @@
 package org.opentravel.pubs.forms;
 
 /**
- * Base class for all form model object types.
+ * Abstract base class that provides a nested registration form instance.
  */
-public class AbstractForm {
+public abstract class AbstractRegistrantContainerForm extends AbstractForm {
 	
-	private boolean processForm = false;
-	
-	/**
-	 * Returns the flag value indicating whether the form has been initialized and submitted
-	 * by the user for processing.
-	 *
-	 * @return boolean
-	 */
-	public boolean isProcessForm() {
-		return processForm;
-	}
+	private RegistrantForm registrantForm = new RegistrantForm();
 	
 	/**
-	 * Assigns the flag value indicating whether the form has been initialized and submitted
-	 * by the user for processing.
+	 * Returns the value of the 'registrantForm' field.
 	 *
-	 * @param processForm  the field value to assign
+	 * @return RegistrantForm
 	 */
-	public void setProcessForm(boolean processForm) {
-		this.processForm = processForm;
+	public RegistrantForm getRegistrantForm() {
+		return registrantForm;
 	}
 	
 }

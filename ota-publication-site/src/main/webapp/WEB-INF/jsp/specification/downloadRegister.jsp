@@ -15,6 +15,7 @@
     limitations under the License.
 
 --%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h1>Download the ${publication.name}-${publication.type.displayId} Publication</h1>
 
@@ -31,8 +32,8 @@
 </div>
 <div id="editBox">
 	<div id="formWpr">
-		<form id="registrationForm" action="${config.localSiteUrl}/specifications/DownloadRegister.html" method="POST">
-		<input name="processRegistrant" type="hidden" class="text" value="true" />
+		<form:form id="registrationForm" action="${config.localSiteUrl}/specifications/DownloadRegister.html" method="POST" modelAttribute="specificationForm">
+		<form:hidden path="processForm" />
 		<input name="pubName" type="hidden" class="text" value="${pubName}" />
 		<input name="pubType" type="hidden" class="text" value="${pubType}" />
 		<input name="filename" type="hidden" class="text" value="${filename}" />
@@ -49,5 +50,6 @@
 				</td>
 			</tr>
 		</table>
+		</form:form>
 	</div>
 </div>

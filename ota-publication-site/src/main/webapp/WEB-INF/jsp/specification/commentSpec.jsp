@@ -15,6 +15,7 @@
     limitations under the License.
 
 --%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h1>Comment on the Latest ${publication.type.displayId} Specification</h1>
 
@@ -39,8 +40,8 @@
 </p>
 <div id="editBox">
 <div id="formWpr">
-<form id="commentForm" action="${config.localSiteUrl}${submitCommentsUrl}" method="POST">
-	<input name="processComment" type="hidden" class="text" value="true" />
+<form:form id="commentForm" action="${config.localSiteUrl}${submitCommentsUrl}" method="POST" modelAttribute="commentForm">
+	<form:hidden path="processForm" />
 	<table border="0" cellpadding="0" cellspacing="0">
 		<%@ include file="commentContactInfo.jsp" %>
 		<tr>
@@ -69,19 +70,10 @@
 		<tr valign="top">
 			<td class="required">* XML Schema: </td>
 			<td>
-				<select name="itemId">
-					<option value=""></option>
-					<c:forEach var="item" items="${publicationItems}">
-						<c:choose>
-							<c:when test="${itemId == item.id}">
-								<option value="${item.id}" selected>${item.itemFilename}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${item.id}">${item.itemFilename}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
+				<form:select path="itemId">
+					<form:option value=""/>
+					<form:options items="${publicationItems}" itemValue="id" itemLabel="itemFilename"/>
+				</form:select>
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('SchemaComment.publicationItem')}">
 					<span style="color: Red">${validationErrors.getMessage('SchemaComment.publicationItem')}</span>
 				</c:if>
@@ -91,17 +83,10 @@
 		<tr>
 			<td class="required">* Comment Type: </td>
 			<td>
-				<table id="MemberRadioButtonList" class="checkList" cellspacing="0" cellpadding="0" border="0">
+				<table id="CommentTypeList" class="checkList" cellspacing="0" cellpadding="0" border="0">
 				<c:forEach var="ct" items="${commentTypes}">
 					<tr><td>
-					<c:choose>
-						<c:when test="${commentType == ct}">
-							<input id="CommentType_${ct}" name="commentType" type="radio" class="text" value="${ct.toString()}" checked />
-						</c:when>
-						<c:otherwise>
-							<input id="CommentType_${ct}" name="commentType" type="radio" class="text" value="${ct.toString()}" />
-					</c:otherwise>
-					</c:choose>
+					<form:radiobutton id="CommentType_${ct}" path="commentType" cssClass="text" value="${ct}" />
 					<label for="CommentType_${ct}">${ct.displayName}</label><br/>
 					</td></tr>
 				</c:forEach>
@@ -119,7 +104,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" class="required">
-				<input name="commentXPath" type="text" maxlength="4000" style="width:350px;" value="${commentXPath}" />
+				<form:input path="commentXPath" maxlength="4000" cssStyle="width:350px;" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('SchemaComment.commentXPath')}">
 					<span style="color: Red">${validationErrors.getMessage('SchemaComment.commentXPath')}</span>
 				</c:if>
@@ -134,7 +119,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" class="required">
-				<input name="modifyXPath" type="text" maxlength="4000" style="width:350px;" value="${modifyXPath}" />
+				<form:input path="modifyXPath" maxlength="4000" cssStyle="width:350px;" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('SchemaComment.modifyXPath')}">
 					<span style="color: Red">${validationErrors.getMessage('SchemaComment.modifyXPath')}</span>
 				</c:if>
@@ -147,7 +132,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" class="required">
-				<textarea name="commentText" rows="5" cols="50" style="width:350px">${commentText}</textarea>
+				<form:textarea path="commentText" rows="5" cols="50" cssStyle="width:350px;" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('SchemaComment.commentText')}">
 					<span style="color: Red">${validationErrors.getMessage('SchemaComment.commentText')}</span>
 				</c:if>
@@ -160,7 +145,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" class="required">
-				<textarea name="suggestedChange" rows="5" cols="50" style="width:350px">${suggestedChange}</textarea>
+				<form:textarea path="suggestedChange" rows="5" cols="50" cssStyle="width:350px;" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('SchemaComment.suggestedChange')}">
 					<span style="color: Red">${validationErrors.getMessage('SchemaComment.suggestedChange')}</span>
 				</c:if>
@@ -173,7 +158,7 @@
 		</tr>
 		<tr>
 			<td colspan="2" class="required">
-				<textarea name="newAnnotations" rows="5" cols="50" style="width:350px">${newAnnotations}</textarea>
+				<form:textarea path="newAnnotations" rows="5" cols="50" cssStyle="width:350px;" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('SchemaComment.newAnnotations')}">
 					<span style="color: Red">${validationErrors.getMessage('SchemaComment.newAnnotations')}</span>
 				</c:if>
@@ -185,5 +170,5 @@
 			</td>
 		</tr>
 	</table>
-</form>
+</form:form>
 </div></div>

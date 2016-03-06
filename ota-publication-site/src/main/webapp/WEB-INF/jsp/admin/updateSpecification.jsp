@@ -15,19 +15,20 @@
     limitations under the License.
 
 --%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <h1>Update Specification</h1>
 
 <div id="editBox">
 <div id="formWpr">
-<form id="specUpdateForm" action="${config.localSiteUrl}/admin/DoUpdateSpecification.html" enctype="multipart/form-data" method="POST">
-	<input name="processUpdate" type="hidden" class="text" value="true" />
-	<input name="publicationId" type="hidden" class="text" value="${publication.id}" />
+<form:form id="specUpdateForm" action="${config.localSiteUrl}/admin/DoUpdateSpecification.html" enctype="multipart/form-data" method="POST" modelAttribute="specificationForm">
+	<form:hidden path="processForm" />
+	<form:hidden path="publicationId" />
 	<table border="0" cellpadding="0" cellspacing="0">
 		<tr>
 			<td class="required">* Publication Name: </td>
 			<td>
-				<input name="name" type="text" maxlength="10" value="${name}" />
+				<form:input path="name" maxlength="10" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('Publication.name')}">
 					<span style="color: Red">${validationErrors.getMessage('Publication.name')}</span>
 				</c:if>
@@ -39,19 +40,11 @@
 				<table class="checkList">
 					<tr>
 						<td>
-							<c:set var="checkedState" value="" />
-							<c:if test="${(specType != null) && (specType == 'OTA_1_0')}">
-								<c:set var="checkedState" value="checked" />
-							</c:if>
-							<input id="SpecType_10" name="specType" type="radio" class="text" value="OTA_1_0" ${checkedState} />
+							<form:radiobutton id="SpecType_10" path="specType" value="OTA_1_0"/>
 							<label for="SpecType_10">1.0</label>
 						</td>
 						<td>
-							<c:set var="checkedState" value="" />
-							<c:if test="${(specType != null) && (specType == 'OTA_2_0')}">
-								<c:set var="checkedState" value="checked" />
-							</c:if>
-							<input id="SpecType_20" name="specType" type="radio" class="text" value="OTA_2_0" ${checkedState} />
+							<form:radiobutton id="SpecType_20" path="specType" value="OTA_2_0"/>
 							<label for="SpecType_20">2.0</label>
 						</td>
 					</tr>
@@ -64,18 +57,9 @@
 		<tr>
 			<td class="required">* State: </td>
 			<td>
-				<select name="pubState">
-					<c:forEach var="ps" items="${publicationStates}">
-						<c:choose>
-							<c:when test="${pubState == ps}">
-								<option value="${ps}" selected>${ps.displayValue}</option>
-							</c:when>
-							<c:otherwise>
-								<option value="${ps}">${ps.displayValue}</option>
-							</c:otherwise>
-						</c:choose>
-					</c:forEach>
-				</select>
+				<form:select path="pubState">
+					<form:options items="${specificationForm.publicationStates}" itemLabel="displayValue" />
+				</form:select>
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('Publication.state')}">
 					<span style="color: Red">${validationErrors.getMessage('Publication.state')}</span>
 				</c:if>
@@ -97,6 +81,6 @@
 			</td>
 		</tr>
 	</table>
-</form>
+</form:form>
 </div>
 </div>
