@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,6 +48,7 @@ import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationGroup;
 import org.opentravel.pubs.model.PublicationItem;
 import org.opentravel.pubs.model.PublicationItemType;
+import org.opentravel.pubs.model.PublicationState;
 import org.opentravel.pubs.model.PublicationType;
 import org.opentravel.pubs.model.Registrant;
 import org.opentravel.pubs.model.SchemaComment;
@@ -78,329 +80,156 @@ public class PublicationController extends BaseController {
     private static final Logger log = LoggerFactory.getLogger( PublicationController.class );
     
     @RequestMapping({ "/Specifications.html", "/Specifications.htm", "/Specifications10.html", "/Specifications10.htm" })
-    public String specifications10Page(Model model, HttpSession session,
+    public String specifications10PublicPage(Model model, HttpSession session,
             @RequestParam(value = "spec", required = false) String spec,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
-    	String targetPage = "specification10Main";
-    	try {
-    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
-        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-        	Publication publication = null;
-        	
-        	if (spec != null) {
-        		publication = pDao.getPublication( spec, PublicationType.OTA_1_0 );
-        	}
-    		if (publication == null) {
-    			publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
-    		}
-    		
-        	model.addAttribute( "publication", publication );
-        	model.addAttribute( "registrationPage", "Specifications10.html" );
-        	
-        	if (newSession) session.removeAttribute( "registrantId" );
-        	handleRegistrantInfo( registrantForm, model, session );
-        	
-        	// If we processed the form successfully, clear our model so that its
-        	// attributes will not show up as URL parameters on redirect
-        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
-        		targetPage = "redirect:/specifications/Specifications10.html";
-        		model.asMap().clear();
-        	}
-        	specificationForm.setProcessForm( true );
-        	
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doSpecificationPage( model, session, spec, newSession, specificationForm,
+    			PublicationType.OTA_1_0, false, "specification10Main", "Specifications10.html" );
     }
     
     @RequestMapping({ "/Specifications20.html", "/Specifications20.htm" })
-    public String specifications20Page(Model model, HttpSession session,
+    public String specifications20PublicPage(Model model, HttpSession session,
             @RequestParam(value = "spec", required = false) String spec,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
-    	String targetPage = "specification20Main";
-    	try {
-    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
-        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-        	Publication publication = null;
-        	
-        	if (spec != null) {
-        		publication = pDao.getPublication( spec, PublicationType.OTA_2_0 );
-        	}
-    		if (publication == null) {
-    			publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
-    		}
-    		
-        	model.addAttribute( "publication", publication );
-        	model.addAttribute( "registrationPage", "Specifications20.html" );
-        	
-        	if (newSession) session.removeAttribute( "registrantId" );
-        	handleRegistrantInfo( registrantForm, model, session );
-        	
-        	// If we processed the form successfully, clear our model so that its
-        	// attributes will not show up as URL parameters on redirect
-        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
-        		targetPage = "redirect:/specifications/Specifications20.html";
-        		model.asMap().clear();
-        	}
-        	specificationForm.setProcessForm( true );
-        	
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doSpecificationPage( model, session, spec, newSession, specificationForm,
+    			PublicationType.OTA_2_0, false, "specification20Main", "Specifications20.html" );
+    }
+    
+    @RequestMapping({ "/members/Specifications.html", "/members/Specifications.htm",
+    				  "/members/Specifications10.html", "/members/Specifications10.htm" })
+    public String specifications10MemberPage(Model model, HttpSession session,
+            @RequestParam(value = "spec", required = false) String spec,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
+    	
+    	return doSpecificationPage( model, session, spec, newSession, specificationForm,
+    			PublicationType.OTA_1_0, true, "specification10MainMembers", "members/Specifications10.html" );
+    }
+    
+    @RequestMapping({ "/members/Specifications20.html", "/members/Specifications20.htm" })
+    public String specifications20MemberPage(Model model, HttpSession session,
+            @RequestParam(value = "spec", required = false) String spec,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
+    	
+    	return doSpecificationPage( model, session, spec, newSession, specificationForm,
+    			PublicationType.OTA_2_0, true, "specification20MainMembers", "members/Specifications20.html" );
     }
     
     @RequestMapping({ "/ReleaseNotes.html", "/ReleaseNotes.htm" })
-    public String releaseNotesPage(Model model, HttpSession session,
+    public String releaseNotesPublicPage(Model model, HttpSession session,
             @RequestParam(value = "spec", required = false) String spec,
     		@RequestParam(value = "specType", required = false) String specType) {
-		String targetPage = "specificationReleaseNotes";
-    	try {
-        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-    		PublicationType pubType = resolvePublicationType( specType );
-        	Publication publication = pDao.getPublication( spec, pubType );
-    		Registrant registrant = getCurrentRegistrant( session );
-    		
-        	model.addAttribute( "publication", publication );
-    		
-    		if (registrant == null) {
-    			targetPage = "specificationMain";
-    		}
-    		model.addAttribute( "releaseNotesText", getReleaseNotesText( publication ));
-    		
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doReleaseNotesPage( model, session, spec, specType,
+    			"specificationReleaseNotes", false );
+    }
+    
+    @RequestMapping({ "/members/ReleaseNotes.html", "/members/ReleaseNotes.htm" })
+    public String releaseNotesMemberPage(Model model, HttpSession session,
+            @RequestParam(value = "spec", required = false) String spec,
+    		@RequestParam(value = "specType", required = false) String specType) {
+    	
+    	return doReleaseNotesPage( model, session, spec, specType,
+    			"specificationReleaseNotesMembers", true );
     }
     
     @RequestMapping({ "/Comment10Spec.html", "/Comment10Spec.htm" })
-    public String comment10SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    public String comment10SpecPublicPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @ModelAttribute("commentForm") SchemaCommentForm commentForm) {
-    	String targetPage = "specificationComment10";
-		boolean commentSuccess = false;
-    	try {
-        	if (newSession) session.removeAttribute( "registrantId" );
-    		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
-    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
-    		
-    		registrantForm.setProcessForm( processRegistrant );
-        	handleRegistrantInfo( registrantForm, model, session );
-    		registrant = (Registrant) model.asMap().get( "registrant" );
-        	
-    		// If the registrant was created successfully, commit it and start a new
-    		// transaction for the comment
-    		if (processRegistrant && (registrant != null)) {
-    			DAOFactoryManager.getFactory().commitTransaction();
-    			DAOFactoryManager.getFactory().beginTransaction();
-    			registrant = getCurrentRegistrant( session );
-    		}
-    		
-        	if (commentForm.isProcessForm()) {
-        		commentSuccess = addSchemaComment( commentForm, registrant, model, session );
-        	}
-    		
-        	if (commentSuccess) {
-        		targetPage = "redirect:/specifications/CommentThankYou.html";
-        		redirectAttrs.addAttribute( "submitCommentsUrl", "/specifications/Comment10Spec.html" );
-        		model.asMap().clear();
-        		
-        	} else {
-            	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-            	Publication publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
-            	List<PublicationItem> publicationItems = new ArrayList<>();
-            	
-            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.WSDL ) );
-            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
-            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.JSON_SCHEMA ) );
-            	
-        		model.addAttribute( "publication", publication );
-        		model.addAttribute( "publicationItems", publicationItems );
-        		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
-        	}
-    		model.addAttribute( "submitCommentsUrl", "/specifications/Comment10Spec.html" );
-        	commentForm.setProcessForm( true );
-        	
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doCommentSpecPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_1_0, false, "specificationComment10",
+    			"/specifications/Comment10Spec.html" );
     }
     
     @RequestMapping({ "/Comment20Spec.html", "/Comment20Spec.htm" })
-    public String comment20SpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    public String comment20SpecPublicPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @ModelAttribute("commentForm") SchemaCommentForm commentForm) {
-    	String targetPage = "specificationComment20";
-		boolean commentSuccess = false;
-    	try {
-        	if (newSession) session.removeAttribute( "registrantId" );
-    		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
-    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
-    		
-    		registrantForm.setProcessForm( processRegistrant );
-        	handleRegistrantInfo( registrantForm, model, session );
-    		registrant = (Registrant) model.asMap().get( "registrant" );
-        	
-    		// If the registrant was created successfully, commit it and start a new
-    		// transaction for the comment
-    		if (processRegistrant && (registrant != null)) {
-    			DAOFactoryManager.getFactory().commitTransaction();
-    			DAOFactoryManager.getFactory().beginTransaction();
-    			registrant = getCurrentRegistrant( session );
-    		}
-        	
-        	if (commentForm.isProcessForm()) {
-        		commentSuccess = addSchemaComment( commentForm, registrant, model, session );
-        	}
-    		
-        	if (commentSuccess) {
-        		targetPage = "redirect:/specifications/CommentThankYou.html";
-        		redirectAttrs.addAttribute( "submitCommentsUrl", "/specifications/Comment20Spec.html" );
-        		model.asMap().clear();
-        		
-        	} else {
-            	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-            	Publication publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
-            	List<PublicationItem> publicationItems = new ArrayList<>();
-            	
-            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.WSDL ) );
-            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
-            	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.JSON_SCHEMA ) );
-            	
-        		model.addAttribute( "publication", publication );
-        		model.addAttribute( "publicationItems", publicationItems );
-        		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
-        	}
-    		model.addAttribute( "submitCommentsUrl", "/specifications/Comment20Spec.html" );
-        	commentForm.setProcessForm( true );
-    		
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doCommentSpecPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_2_0, false, "specificationComment20",
+    			"/specifications/Comment20Spec.html" );
+    }
+    
+    @RequestMapping({ "/members/Comment10Spec.html", "/members/Comment10Spec.htm" })
+    public String comment10SpecMemberPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("commentForm") SchemaCommentForm commentForm) {
+    	
+    	return doCommentSpecPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_1_0, true, "specificationComment10Members",
+    			"/specifications/members/Comment10Spec.html" );
+    }
+    
+    @RequestMapping({ "/members/Comment20Spec.html", "/members/Comment20Spec.htm" })
+    public String comment20SpecMemberPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("commentForm") SchemaCommentForm commentForm) {
+    	
+    	return doCommentSpecPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_2_0, true, "specificationComment20Members",
+    			"/specifications/members/Comment20Spec.html" );
     }
     
     @RequestMapping({ "/Comment10Artifact.html", "/Comment10Artifact.html" })
-    public String comment10ArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    public String comment10ArtifactPublicPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @ModelAttribute("commentForm") ArtifactCommentForm commentForm) {
-    	String targetPage = "artifactComment10";
-		boolean commentSuccess = false;
-    	try {
-        	if (newSession) session.removeAttribute( "registrantId" );
-    		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
-    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
-    		
-    		registrantForm.setProcessForm( processRegistrant );
-        	handleRegistrantInfo( registrantForm, model, session );
-    		registrant = (Registrant) model.asMap().get( "registrant" );
-        	
-    		// If the registrant was created successfully, commit it and start a new
-    		// transaction for the comment
-    		if (processRegistrant && (registrant != null)) {
-    			DAOFactoryManager.getFactory().commitTransaction();
-    			DAOFactoryManager.getFactory().beginTransaction();
-    			registrant = getCurrentRegistrant( session );
-    		}
-    		
-        	if (commentForm.isProcessForm()) {
-        		commentSuccess = addArtifactComment( commentForm, registrant, model, session );
-        	}
-    		
-        	if (commentSuccess) {
-        		targetPage = "redirect:/specifications/CommentThankYou.html";
-        		redirectAttrs.addAttribute( "submitCommentsUrl", "/specifications/Comment10Artifact.html" );
-        		model.asMap().clear();
-        		
-        	} else {
-            	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-            	Publication publication = pDao.getLatestPublication( PublicationType.OTA_1_0 );
-            	
-        		model.addAttribute( "publication", publication );
-        		model.addAttribute( "publicationItems",
-        				pDao.getPublicationItems( publication, PublicationItemType.ARTIFACT ) );
-        		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
-        	}
-    		model.addAttribute( "submitCommentsUrl", "/specifications/Comment10Artifact.html" );
-        	commentForm.setProcessForm( true );
-        	
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doCommentArtifactPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_1_0, false, "artifactComment10",
+    			"/specifications/Comment10Artifact.html" );
     }
     
     @RequestMapping({ "/Comment20Artifact.html", "/Comment20Artifact.htm" })
-    public String comment20ArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    public String comment20ArtifactPublicPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
             @RequestParam(value = "newSession", required = false) boolean newSession,
             @ModelAttribute("commentForm") ArtifactCommentForm commentForm) {
-    	String targetPage = "artifactComment20";
-		boolean commentSuccess = false;
-    	try {
-        	if (newSession) session.removeAttribute( "registrantId" );
-    		Registrant registrant = getCurrentRegistrant( session );
-    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
-    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
-    		
-    		registrantForm.setProcessForm( processRegistrant );
-        	handleRegistrantInfo( registrantForm, model, session );
-    		registrant = (Registrant) model.asMap().get( "registrant" );
-        	
-    		// If the registrant was created successfully, commit it and start a new
-    		// transaction for the comment
-    		if (processRegistrant && (registrant != null)) {
-    			DAOFactoryManager.getFactory().commitTransaction();
-    			DAOFactoryManager.getFactory().beginTransaction();
-    			registrant = getCurrentRegistrant( session );
-    		}
-    		
-        	if (commentForm.isProcessForm()) {
-        		commentSuccess = addArtifactComment( commentForm, registrant, model, session );
-        	}
-    		
-        	if (commentSuccess) {
-        		targetPage = "redirect:/specifications/CommentThankYou.html";
-        		redirectAttrs.addAttribute( "submitCommentsUrl", "/specifications/Comment20Artifact.html" );
-        		model.asMap().clear();
-        		
-        	} else {
-            	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-            	Publication publication = pDao.getLatestPublication( PublicationType.OTA_2_0 );
-            	
-        		model.addAttribute( "publication", publication );
-        		model.addAttribute( "publicationItems",
-        				pDao.getPublicationItems( publication, PublicationItemType.ARTIFACT ) );
-        		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
-        	}
-    		model.addAttribute( "submitCommentsUrl", "/specifications/Comment20Artifact.html" );
-        	commentForm.setProcessForm( true );
-        	
-    	} catch (Throwable t) {
-    		log.error("Error during publication controller processing.", t);
-            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
-    	}
-    	return applyCommonValues( model, targetPage );
+    	
+    	return doCommentArtifactPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_2_0, false, "artifactComment20",
+    			"/specifications/Comment20Artifact.html" );
+    }
+    
+    @RequestMapping({ "/members/Comment10Artifact.html", "/members/Comment10Artifact.html" })
+    public String comment10ArtifactMemberPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("commentForm") ArtifactCommentForm commentForm) {
+    	
+    	return doCommentArtifactPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_1_0, true, "artifactComment10Members",
+    			"/specifications/members/Comment10Artifact.html" );
+    }
+    
+    @RequestMapping({ "/members/Comment20Artifact.html", "/members/Comment20Artifact.htm" })
+    public String comment20ArtifactMemberPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("commentForm") ArtifactCommentForm commentForm) {
+    	
+    	return doCommentArtifactPage( model, session, redirectAttrs, newSession, commentForm,
+    			PublicationType.OTA_2_0, true, "artifactComment20Members",
+    			"/specifications/members/Comment20Artifact.html" );
     }
     
     @RequestMapping({ "/CommentThankYou.html", "/CommentThankYou.htm" })
-    public String commentThankYouPage(Model model,
+    public String commentThankYouPublicPage(Model model,
     		@RequestParam(value = "submitCommentsUrl", required = false) String submitCommentsUrl) {
     	model.addAttribute( "submitCommentsUrl", submitCommentsUrl );
     	return applyCommonValues( model, "commentThankYou" );
+    }
+    
+    @RequestMapping({ "/members/CommentThankYou.html", "/members/CommentThankYou.htm" })
+    public String commentThankYouMemberPage(Model model,
+    		@RequestParam(value = "submitCommentsUrl", required = false) String submitCommentsUrl) {
+    	model.addAttribute( "submitCommentsUrl", submitCommentsUrl );
+    	return applyCommonValues( model, "commentThankYouMembers" );
     }
     
     @RequestMapping({ "/ModelViewer.html", "/ModelViewer.htm" })
@@ -424,6 +253,11 @@ public class PublicationController extends BaseController {
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
     		List<Publication> publications10 = pDao.getAllPublications( PublicationType.OTA_1_0 );
     		List<Publication> publications20 = pDao.getAllPublications( PublicationType.OTA_2_0 );
+    		
+    		// This page is only available in the public area, so purge all member-review
+    		// specifications from the list
+    		purgeMemberReviewSpecifications( publications10 );
+    		purgeMemberReviewSpecifications( publications20 );
     		
         	model.addAttribute( "publications10", publications10 );
         	model.addAttribute( "publications20", publications20 );
@@ -478,6 +312,11 @@ public class PublicationController extends BaseController {
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
     		List<Publication> publications10 = pDao.getAllPublications( PublicationType.OTA_1_0 );
     		List<Publication> publications20 = pDao.getAllPublications( PublicationType.OTA_2_0 );
+    		
+    		// This page is only available in the public area, so purge all member-review
+    		// specifications from the list
+    		purgeMemberReviewSpecifications( publications10 );
+    		purgeMemberReviewSpecifications( publications20 );
     		
     		// Remove the first element of each list since it is the current specification
     		if (!publications10.isEmpty()) {
@@ -610,6 +449,300 @@ public class PublicationController extends BaseController {
     		@RequestParam(value = "filename") String filename) {
     	model.addAttribute( "filename", filename );
     	return applyCommonValues( model, "downloadNotFound" );
+    }
+    
+    /**
+     * Hanldes the processing for all of the view-specification page targets.
+     * 
+     * @param model  the UI model for the current request
+     * @param session  the HTTP session
+     * @param spec  indicates the name of the specification to view
+     * @param newSession  flag indicating that the user has requested to re-register in their session
+     * @param specificationForm  the form used to supply content when a new user registers
+     * @param pubType  the type of the publication to view (1.0/2.0)
+     * @param isMembersOnlyPage  flag indicating whether the page being viewed is a members-only page
+     * @param targetPage  the MVC name of the target page
+     * @param altPageLocation  the name of the alternate page location in case of registration or redirect
+     * @return String
+     */
+    private String doSpecificationPage(Model model, HttpSession session, String spec,
+    		boolean newSession, ViewSpecificationForm specificationForm, PublicationType pubType,
+    		boolean isMembersOnlyPage, String targetPage, String altPageLocation) {
+    	try {
+    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
+        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+        	Publication publication = null;
+        	
+        	if (spec != null) {
+        		publication = pDao.getPublication( spec, pubType );
+        	}
+    		if (publication == null) {
+    			publication = pDao.getLatestPublication(
+    					pubType, getAllowedStates( isMembersOnlyPage ) );
+    		}
+    		
+        	model.addAttribute( "publication", publication );
+        	model.addAttribute( "registrationPage", altPageLocation );
+        	model.addAttribute( "releaseNotesUrl", isMembersOnlyPage ?
+        			"/specifications/members/ReleaseNotes.html" : "/specifications/ReleaseNotes.html" );
+        	setupPublicationCheck( model, isMembersOnlyPage, pubType );
+        	
+        	if (newSession) session.removeAttribute( "registrantId" );
+        	handleRegistrantInfo( registrantForm, model, session );
+        	
+        	// If we processed the form successfully, clear our model so that its
+        	// attributes will not show up as URL parameters on redirect
+        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
+        		targetPage = "redirect:/specifications/" + altPageLocation;
+        		model.asMap().clear();
+        	}
+        	specificationForm.setProcessForm( true );
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    /**
+     * Hanldes the processing for all of the release notes page targets.
+     * 
+     * @param model  the UI model for the current request
+     * @param session  the HTTP session
+     * @param spec  indicates the name of the specification to view
+     * @param specType  the type of the publication to view (1.0/2.0)
+     * @param targetPage  the MVC name of the target page
+     * @param isMembersOnlyPage  flag indicating whether the page being viewed is a members-only page
+     * @return String
+     */
+    private String doReleaseNotesPage(Model model, HttpSession session, String spec, String specType,
+    		String targetPage, boolean isMembersOnlyPage) {
+    	try {
+        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+    		PublicationType pubType = resolvePublicationType( specType );
+        	Publication publication = pDao.getPublication( spec, pubType );
+    		Registrant registrant = getCurrentRegistrant( session );
+    		
+        	model.addAttribute( "publication", publication );
+    		
+    		if (registrant == null) {
+    			if (pubType == PublicationType.OTA_1_0) {
+        			targetPage = "specification10Main";
+    			} else {
+        			targetPage = "specification20Main";
+    			}
+    			if (isMembersOnlyPage) {
+    				targetPage += "Members";
+    			}
+    		}
+    		model.addAttribute( "releaseNotesText", getReleaseNotesText( publication ));
+        	setupPublicationCheck( model, isMembersOnlyPage, pubType );
+    		
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    /**
+     * Hanldes the processing for all of the schema comment page targets.
+     * 
+     * @param model  the UI model for the current request
+     * @param session  the HTTP session
+     * @param redirectAttrs  request attributes that must be available in case of a page redirect
+     * @param newSession  flag indicating that the user has requested to re-register in their session
+     * @param commentForm  the form used to supply the field values for the submitted comment
+     * @param pubType  the type of the publication to view (1.0/2.0)
+     * @param isMembersOnlyPage  flag indicating whether the page being viewed is a members-only page
+     * @param targetPage  the MVC name of the target page
+     * @param submitCommentsUrl  the URL location of the comment submission page
+     * @return String
+     */
+    private String doCommentSpecPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    		boolean newSession, SchemaCommentForm commentForm, PublicationType pubType,
+    		boolean isMembersOnlyPage, String targetPage, String submitCommentsUrl) {
+		boolean commentSuccess = false;
+    	try {
+        	if (newSession) session.removeAttribute( "registrantId" );
+    		Registrant registrant = getCurrentRegistrant( session );
+    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
+    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
+    		
+    		registrantForm.setProcessForm( processRegistrant );
+        	handleRegistrantInfo( registrantForm, model, session );
+    		registrant = (Registrant) model.asMap().get( "registrant" );
+        	
+    		// If the registrant was created successfully, commit it and start a new
+    		// transaction for the comment
+    		if (processRegistrant && (registrant != null)) {
+    			DAOFactoryManager.getFactory().commitTransaction();
+    			DAOFactoryManager.getFactory().beginTransaction();
+    			registrant = getCurrentRegistrant( session );
+    		}
+        	
+        	if (commentForm.isProcessForm()) {
+        		commentSuccess = addSchemaComment( commentForm, registrant, model, session );
+        	}
+    		
+        	if (commentSuccess) {
+        		if (isMembersOnlyPage) {
+            		targetPage = "redirect:/specifications/members/CommentThankYou.html";
+        		} else {
+            		targetPage = "redirect:/specifications/CommentThankYou.html";
+        		}
+        		redirectAttrs.addAttribute( "submitCommentsUrl", submitCommentsUrl );
+        		model.asMap().clear();
+        		
+        	} else {
+            	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+            	Publication publication = pDao.getLatestPublication(
+            			pubType, getAllowedStates( isMembersOnlyPage ) );
+            	List<PublicationItem> publicationItems = new ArrayList<>();
+            	
+            	if (publication != null) {
+                	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.WSDL ) );
+                	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.XML_SCHEMA ) );
+                	publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.JSON_SCHEMA ) );
+            	}
+            	
+        		model.addAttribute( "publication", publication );
+        		model.addAttribute( "publicationItems", publicationItems );
+        		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
+            	setupPublicationCheck( model, isMembersOnlyPage, pubType );
+        	}
+    		model.addAttribute( "submitCommentsUrl", submitCommentsUrl );
+        	commentForm.setProcessForm( true );
+    		
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    /**
+     * Hanldes the processing for all of the artifact comment page targets.
+     * 
+     * @param model  the UI model for the current request
+     * @param session  the HTTP session
+     * @param redirectAttrs  request attributes that must be available in case of a page redirect
+     * @param newSession  flag indicating that the user has requested to re-register in their session
+     * @param commentForm  the form used to supply the field values for the submitted comment
+     * @param pubType  the type of the publication to view (1.0/2.0)
+     * @param isMembersOnlyPage  flag indicating whether the page being viewed is a members-only page
+     * @param targetPage  the MVC name of the target page
+     * @param submitCommentsUrl  the URL location of the comment submission page
+     * @return String
+     */
+    private String doCommentArtifactPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    		boolean newSession, ArtifactCommentForm commentForm, PublicationType pubType,
+    		boolean isMembersOnlyPage, String targetPage, String submitCommentsUrl) {
+		boolean commentSuccess = false;
+    	try {
+        	if (newSession) session.removeAttribute( "registrantId" );
+    		Registrant registrant = getCurrentRegistrant( session );
+    		boolean processRegistrant = commentForm.isProcessForm() && (registrant == null);
+    		RegistrantForm registrantForm = commentForm.getRegistrantForm();
+    		
+    		registrantForm.setProcessForm( processRegistrant );
+        	handleRegistrantInfo( registrantForm, model, session );
+    		registrant = (Registrant) model.asMap().get( "registrant" );
+        	
+    		// If the registrant was created successfully, commit it and start a new
+    		// transaction for the comment
+    		if (processRegistrant && (registrant != null)) {
+    			DAOFactoryManager.getFactory().commitTransaction();
+    			DAOFactoryManager.getFactory().beginTransaction();
+    			registrant = getCurrentRegistrant( session );
+    		}
+    		
+        	if (commentForm.isProcessForm()) {
+        		commentSuccess = addArtifactComment( commentForm, registrant, model, session );
+        	}
+    		
+        	if (commentSuccess) {
+        		if (isMembersOnlyPage) {
+            		targetPage = "redirect:/specifications/members/CommentThankYou.html";
+        		} else {
+            		targetPage = "redirect:/specifications/CommentThankYou.html";
+        		}
+        		redirectAttrs.addAttribute( "submitCommentsUrl", submitCommentsUrl );
+        		model.asMap().clear();
+        		
+        	} else {
+            	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+            	Publication publication = pDao.getLatestPublication(
+            			pubType, getAllowedStates( isMembersOnlyPage ) );
+            	List<PublicationItem> publicationItems = new ArrayList<>();
+            	
+            	if (publication != null) {
+            		publicationItems.addAll( pDao.getPublicationItems( publication, PublicationItemType.ARTIFACT ) );
+            	}
+        		model.addAttribute( "publication", publication );
+        		model.addAttribute( "publicationItems", publicationItems );
+        		model.addAttribute( "commentTypes", Arrays.asList( CommentType.values() ) );
+            	setupPublicationCheck( model, isMembersOnlyPage, pubType );
+        	}
+    		model.addAttribute( "submitCommentsUrl", submitCommentsUrl );
+        	commentForm.setProcessForm( true );
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    /**
+     * Returns an array of allowed publication states depending upon whether the desired
+     * viewing should be publicly available or a members-only.
+     * 
+     * @param isMembersOnly  flag indicating whether the desired viewing is members-only
+     * @return PublicationState[]
+     */
+    private PublicationState[] getAllowedStates(boolean isMembersOnly) {
+    	PublicationState[] allowedStates;
+    	
+    	if (isMembersOnly) {
+    		allowedStates = new PublicationState[] { PublicationState.MEMBER_REVIEW };
+    		
+    	} else {
+    		allowedStates = new PublicationState[] {
+    				PublicationState.PUBLIC_REVIEW, PublicationState.RELEASED };
+    	}
+    	return allowedStates;
+    }
+    
+    /**
+     * Adds the required model attributes for the 'publicationCheck.jsp' page verification.
+     * 
+     * @param model  the UI model for the current request
+     * @param isMembersOnlyPage  flag indicating whether the page being viewed is a members-only page
+     * @param expectedPubType  the type of publication that expected to be available 
+     */
+    private void setupPublicationCheck(Model model, boolean isMembersOnly, PublicationType expectedPubType) {
+    	model.addAttribute( "isMembersOnly", isMembersOnly );
+    	model.addAttribute( "expectedPubType", expectedPubType );
+    }
+    
+    /**
+     * Removes all publications assigned to the <code>MEMBER_REVIEW</code> state from
+     * the given list.
+     * 
+     * @param specList  the list of publications to process
+     */
+    private void purgeMemberReviewSpecifications(List<Publication> specList) {
+    	Iterator<Publication> iterator = specList.iterator();
+    	
+    	while (iterator.hasNext()) {
+    		Publication p = iterator.next();
+    		
+    		if (p.getState() == PublicationState.MEMBER_REVIEW) {
+    			iterator.remove();
+    		}
+    	}
     }
     
     /**

@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -35,6 +36,7 @@ import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationGroup;
 import org.opentravel.pubs.model.PublicationItem;
 import org.opentravel.pubs.model.PublicationItemType;
+import org.opentravel.pubs.model.PublicationState;
 import org.opentravel.pubs.model.PublicationType;
 import org.opentravel.pubs.validation.ModelValidator;
 import org.opentravel.pubs.validation.ValidationException;
@@ -96,13 +98,22 @@ public class PublicationDAO extends AbstractDAO {
 	 * Returns the publication of the given type with the latest publication date value.
 	 * 
 	 * @param type  the type of publication to retrieve
+	 * @param allowedStates  the list of allowed states for the latest publication that is returned
 	 * @return Publication
 	 * @throws DAOException  thrown if an error occurs while retrieving the publication
 	 */
-	public Publication getLatestPublication(PublicationType type) throws DAOException {
-		TypedQuery<Publication> query = getEntityManager().createNamedQuery(
-				"publicationLatestByType", Publication.class );
+	public Publication getLatestPublication(PublicationType type, PublicationState... allowedStates)
+			throws DAOException {
+		TypedQuery<Publication> query;
 		
+		if ((allowedStates == null) || (allowedStates.length == 0)) {
+			query = getEntityManager().createNamedQuery(
+					"publicationLatestByType", Publication.class );
+		} else {
+			query = getEntityManager().createNamedQuery(
+					"publicationLatestByTypeStateFilter", Publication.class );
+			query.setParameter( "pStates", Arrays.asList( allowedStates ) );
+		}
 		query.setParameter( "pType", type );
 		
 		List<Publication> queryResults = query.getResultList();

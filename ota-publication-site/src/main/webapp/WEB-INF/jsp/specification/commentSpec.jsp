@@ -17,6 +17,8 @@
 --%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="publicationCheck.jsp" %>
+<c:if test="${publication != null}">
 <h1>Comment on the Latest ${publication.type.displayId} Specification</h1>
 
 <c:if test="${publication.state.toString() == 'MEMBER_REVIEW'}">
@@ -172,3 +174,4 @@
 	</table>
 </form:form>
 </div></div>
+</c:if>

@@ -46,11 +46,16 @@
 		<c:set var="firstRow" value="true"/>
 		<tr>
 		<c:forEach var="publication" items="${publications10}">
+			<c:if test="${publication.state == 'PUBLIC_REVIEW'}"><c:set var="pubStatus" value="&nbsp;(PR)"/></c:if>
+			<c:if test="${publication.state == 'MEMBER_REVIEW'}"><c:set var="pubStatus" value="&nbsp;(MR)"/></c:if>
+			<c:if test="${publication.state == 'RELEASED'}"><c:set var="pubStatus" value=""/></c:if>
 			<c:if test="${(currentRow % itemsPerColumn) == 0}">
 				<c:if test="${!firstRow}"></ul></td></c:if>
 				<td><ul>
 			</c:if>
-			<li><a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">${publication.name}</a></li>
+			<li>
+				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">${publication.name}${pubStatus}</a>
+			</li>
 			<c:set var="firstRow" value="false"/>
 			<c:set var="currentRow" value="${currentRow + 1}"/>
 		</c:forEach>
@@ -67,11 +72,16 @@
 		<c:set var="firstRow" value="true"/>
 		<tr>
 		<c:forEach var="publication" items="${publications20}">
+			<c:if test="${publication.state == 'PUBLIC_REVIEW'}"><c:set var="pubStatus" value="&nbsp;(PR)"/></c:if>
+			<c:if test="${publication.state == 'MEMBER_REVIEW'}"><c:set var="pubStatus" value="&nbsp;(MR)"/></c:if>
+			<c:if test="${publication.state == 'RELEASED'}"><c:set var="pubStatus" value=""/></c:if>
 			<c:if test="${(currentRow % itemsPerColumn) == 0}">
 				<c:if test="${!firstRow}"></ul></td></c:if>
-				<td><ul>
+				<td nowrap><ul>
 			</c:if>
-			<li><a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">${publication.name}</a></li>
+			<li>
+				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">${publication.name}${pubStatus}</a>
+			</li>
 			<c:set var="firstRow" value="false"/>
 			<c:set var="currentRow" value="${currentRow + 1}"/>
 		</c:forEach>

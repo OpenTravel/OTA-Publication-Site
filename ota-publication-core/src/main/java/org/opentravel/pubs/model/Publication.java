@@ -59,6 +59,10 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 		query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.name = "
 				+ "(SELECT MAX(p2.name) FROM Publication p2 WHERE p2.type = :pType)" ),
 	@NamedQuery(
+			name  = "publicationLatestByTypeStateFilter",
+			query = "SELECT p FROM Publication p WHERE p.type = :pType AND p.name = "
+					+ "(SELECT MAX(p2.name) FROM Publication p2 WHERE (p2.type = :pType) and (p2.state in (:pStates)))" ),
+	@NamedQuery(
 		name  = "publicationFindAll",
 		query = "SELECT p FROM Publication p WHERE p.type = :pType ORDER BY p.name DESC" ),
 })
