@@ -101,7 +101,7 @@ public class DownloadDAO extends AbstractDAO {
 	public InputStream getContent(PublicationItem item, Registrant registrant) throws DAOException {
 		InputStream contentStream = cacheManager.getContent( item );
 		
-		if (contentStream != null) {
+		if ((registrant != null) && (contentStream != null)) {
 			long registrantId = registrant.getId();
 			boolean alreadyDownloaded = false;
 			

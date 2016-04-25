@@ -42,7 +42,7 @@
 	<tr>
 		<th>Filename</th>
 		<th>Created</th>
-		<th>File Size</th>
+		<th colspan="2">File Size</th>
 	</tr>
 	<c:forEach var="item" items="${itemList}">
 	<c:if test="${!item.removed}">
@@ -50,6 +50,9 @@
 		<td><a href="${config.localSiteUrl}/content/specifications/downloads/${publication.name}/${urlPubType}/${item.itemFilename}">${item.itemFilename}</a></td>
 		<td>${formatter.formatDate( item.createDate )}</td>
 		<td class="fileSize">${formatter.formatFileSize( item.fileSize )}</td>
+		<td><a href="${config.localSiteUrl}/content/specifications/downloads/noregister/${publication.name}/${urlPubType}/${item.itemFilename}">
+			<img src="${config.localSiteUrl}/images/icons/link.png" title="Automated download link (no registration required)"/>
+		</a></td>
 	</tr>
 	</c:if>
 	</c:forEach>

@@ -16,6 +16,7 @@
 
 package org.opentravel.pubs.controllers;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -385,7 +386,6 @@ public class PublicationController extends BaseController {
     	String targetPath = null;
     	try {
     		Registrant registrant = getCurrentRegistrant( session );
-    		InputStream contentStream = null;
     		
     		if (registrant == null) {
     			model.asMap().clear();
@@ -395,46 +395,8 @@ public class PublicationController extends BaseController {
     			targetPath = "redirect:/specifications/DownloadRegister.html";
     			
     		} else {
-    			if ((pubName != null) && (type != null) && (filename != null)) {
-                	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
-                	DownloadDAO dDao = DAOFactoryManager.getFactory().newDownloadDAO();
-            		PublicationType pubType = resolvePublicationType( type );
-                	Publication publication = pDao.getPublication( pubName, pubType );
-        			
-                	if (publication != null) {
-                    	if (filename.equals( publication.getArchiveFilename() )) {
-                    		contentStream = dDao.getArchiveContent( publication, registrant );
-                    		
-                    	} else {
-                    		PublicationItem item = pDao.findPublicationItem( publication, filename );
-                    		
-                    		if (item != null) {
-                        		contentStream = dDao.getContent( item, registrant );
-                    		}
-                    	}
-                	}
-        		}
-    			
-        		if (contentStream != null) {
-        			try (OutputStream responseOut = response.getOutputStream()) {
-        				byte[] buffer = new byte[BUFFER_SIZE];
-        				int bytesRead;
-        				
-        				while ((bytesRead = contentStream.read( buffer, 0, buffer.length)) >= 0) {
-        					responseOut.write( buffer, 0, bytesRead );
-        				}
-        				
-        			} finally {
-        				try {
-        					contentStream.close();
-        				} catch (Throwable t) {}
-        			}
-        			
-        		} else {
-        			model.asMap().clear();
-        			redirectAttrs.addAttribute( "filename", request.getRequestURL() );
-        			targetPath = "redirect:/specifications/DownloadNotFound.html";
-        		}
+    			targetPath = doContentDownload( model, session, registrant, request, response,
+    					redirectAttrs, pubName, type, filename );
     		}
     		
     	} catch (Throwable t) {
@@ -444,11 +406,98 @@ public class PublicationController extends BaseController {
     	return applyCommonValues( model, targetPath );
     }
     
+    @RequestMapping({ "/downloads/noregister/{pubName}/{pubType}/{filename:.+}" })
+    public String downloadContentNoRegistration(Model model, HttpSession session,
+    		HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs,
+    		@PathVariable("pubName") String pubName, @PathVariable("pubType") String type,
+    		@PathVariable("filename") String filename) {
+    	String targetPath = null;
+		try {
+    		Registrant registrant = getCurrentRegistrant( session );
+    		
+    		// There is no requirement to register for this download link.  If the user HAS already
+    		// registered, however, we will associate this download with their registration identity.
+			targetPath = doContentDownload( model, session, registrant, request, response,
+					redirectAttrs, pubName, type, filename );
+			
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+		}
+    	return applyCommonValues( model, targetPath );
+    }
+    
     @RequestMapping({ "/DownloadNotFound.html", "/DownloadNotFound.htm" })
     public String downloadNotFoundPage(Model model,
     		@RequestParam(value = "filename") String filename) {
     	model.addAttribute( "filename", filename );
     	return applyCommonValues( model, "downloadNotFound" );
+    }
+    
+    /**
+     * Performs a download of the publication or publication item content specified by the URL
+     * parameters.
+     * 
+     * @param model  the UI model for the current request
+     * @param session  the HTTP session
+     * @param registrant  the web site registrant who is performing the download
+     * @param request  the HTTP request for the content download
+     * @param response  the HTTP response to which output should be directed
+     * @param redirectAttrs  request attributes that must be available in case of a page redirect
+     * @param pubName  the name of the publication from which content is being downloaded
+     * @param type  the type of the publication
+     * @param filename  the name of the content item that is being downloaded
+     * @return String
+     * @throws DAOException  thrown if an error occurs while accessing the content from persistent storage
+     * @throws IOException  thrown if the content cannot be streamed to the HTTP response
+     */
+    protected String doContentDownload(Model model, HttpSession session, Registrant registrant,
+    		HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs,
+    		String pubName, String type, String filename) throws DAOException, IOException {
+		InputStream contentStream = null;
+    	String targetPath = null;
+		
+		if ((pubName != null) && (type != null) && (filename != null)) {
+        	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+        	DownloadDAO dDao = DAOFactoryManager.getFactory().newDownloadDAO();
+    		PublicationType pubType = resolvePublicationType( type );
+        	Publication publication = pDao.getPublication( pubName, pubType );
+			
+        	if (publication != null) {
+            	if (filename.equals( publication.getArchiveFilename() )) {
+            		contentStream = dDao.getArchiveContent( publication, registrant );
+            		
+            	} else {
+            		PublicationItem item = pDao.findPublicationItem( publication, filename );
+            		
+            		if (item != null) {
+                		contentStream = dDao.getContent( item, registrant );
+            		}
+            	}
+        	}
+		}
+		
+		if (contentStream != null) {
+			try (OutputStream responseOut = response.getOutputStream()) {
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int bytesRead;
+				
+				while ((bytesRead = contentStream.read( buffer, 0, buffer.length)) >= 0) {
+					responseOut.write( buffer, 0, bytesRead );
+				}
+				
+			} finally {
+				try {
+					contentStream.close();
+				} catch (Throwable t) {}
+			}
+			
+		} else {
+			model.asMap().clear();
+			redirectAttrs.addAttribute( "filename", request.getRequestURL() );
+			targetPath = "redirect:/specifications/DownloadNotFound.html";
+		}
+		return targetPath;
     }
     
     /**

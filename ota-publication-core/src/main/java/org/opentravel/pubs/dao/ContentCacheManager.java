@@ -233,18 +233,13 @@ public class ContentCacheManager {
 		// If we could not gain access to a cached file for any reason, we will obtain the stream
 		// content directly from the database.
 		if (contentStream == null) {
-//			try {
-				FileContent contentRecord = contentAdapter.getFileContent();
-				byte[] contentBytes = (contentRecord == null) ? null : contentRecord.getFileBytes();
-				
-				if (contentBytes == null) {
-					throw new DAOException("No file content exists for the requested resource.");
-				}
-				contentStream = new InflaterInputStream( new ByteArrayInputStream( contentBytes ) );
-				
-//			} catch (IOException e) {
-//				throw new DAOException("Unable to obtain file content for the requested resource.");
-//			}
+			FileContent contentRecord = contentAdapter.getFileContent();
+			byte[] contentBytes = (contentRecord == null) ? null : contentRecord.getFileBytes();
+			
+			if (contentBytes == null) {
+				throw new DAOException("No file content exists for the requested resource.");
+			}
+			contentStream = new InflaterInputStream( new ByteArrayInputStream( contentBytes ) );
 		}
 		return contentStream;
 	}
