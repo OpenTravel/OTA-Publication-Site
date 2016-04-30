@@ -26,6 +26,9 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 
+import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
+import org.hibernate.validator.internal.engine.path.PathImpl;
+
 /**
  * Container for the <code>ConstraintViolations</code> detected during the validation
  * of a model object.
@@ -35,6 +38,11 @@ import javax.validation.Path;
 public class ValidationResults {
 	
 	private Map<String,List<ConstraintViolation<Object>>> violationMap = new HashMap<>();
+	
+	/**
+	 * Default constructor.
+	 */
+	public ValidationResults() {}
 	
 	/**
 	 * Constructor that provides the set of validation for the results.
@@ -87,6 +95,25 @@ public class ValidationResults {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Manually adds an error message that did not originate from commons validation
+	 * processing.
+	 * 
+	 * @param bean  the object where the error was detected
+	 * @param propertyName  the name of the property that caused the error
+	 * @param errorMessage  the error message
+	 */
+	@SuppressWarnings("unchecked")
+	public void add(Object bean, String propertyName, String errorMessage) {
+		ConstraintViolation<Object> violation = ConstraintViolationImpl.forBeanValidation(
+				null, null, errorMessage, (Class<Object>) bean.getClass(), bean, bean, null,
+				PathImpl.createPathFromString( propertyName ), null, null );
+		Set<ConstraintViolation<Object>> violations = new HashSet<>();
+		
+		violations.add( violation );
+		addAll( violations );
 	}
 	
 	/**

@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.persistence.TypedQuery;
 
+import org.opentravel.pubs.model.CodeList;
 import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationItem;
 import org.opentravel.pubs.model.Registrant;
@@ -123,6 +124,40 @@ public class DownloadDAO extends AbstractDAO {
 	}
 	
 	/**
+	 * Returns an input stream for the contents of the archive file for the given
+	 * code list.  This method will also log a download record for the code list
+	 * to the specified registrant.
+	 * 
+	 * @param codeList  the code list whose archive is to be downloaded
+	 * @param registrant  the registrant who is downloading the code list archive
+	 * @return InputStream
+	 * @throws DAOException  thrown if a stream to the archive content cannot obtained for any reason
+	 */
+	public InputStream getArchiveContent(CodeList codeList, Registrant registrant) throws DAOException {
+		InputStream contentStream = cacheManager.getArchiveContent( codeList );
+		
+		if (contentStream != null) {
+			long registrantId = registrant.getId();
+			boolean alreadyDownloaded = false;
+			
+			getEntityManager().flush();
+			getEntityManager().refresh( codeList );
+			
+			for (Registrant r : codeList.getDownloadedBy()) {
+				if (r.getId() == registrantId) {
+					alreadyDownloaded = true;
+					break;
+				}
+			}
+			if (!alreadyDownloaded) {
+				registrant.getDownloadedCodeLists().add( codeList );
+				DAOFactory.invalidateCollectionCache( CodeList.class, "downloadedBy", codeList.getId() );
+			}
+		}
+		return contentStream;
+	}
+	
+	/**
 	 * Returns the download history for the given publication and all of its constituent
 	 * publication items.
 	 * 
@@ -137,9 +172,9 @@ public class DownloadDAO extends AbstractDAO {
 		
 		// Start by finding the downloaders for the publication archive
 		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
-			pubQuery = getEntityManager().createNamedQuery( "registrantFindAllDownloaders", Registrant.class );
+			pubQuery = getEntityManager().createNamedQuery( "registrantFindAllPublicationDownloaders", Registrant.class );
 		} else {
-			pubQuery = getEntityManager().createNamedQuery( "registrantFindAllDownloadersByDateRange", Registrant.class );
+			pubQuery = getEntityManager().createNamedQuery( "registrantFindAllPublicationDownloadersByDateRange", Registrant.class );
 			pubQuery.setParameter( "rDate", dateRange.getRangeStart() );
 		}
 		pubQuery.setParameter( "publicationId", publication.getId() );
@@ -172,6 +207,27 @@ public class DownloadDAO extends AbstractDAO {
 	}
 	
 	/**
+	 * Returns the download history for the given code list.
+	 * 
+	 * @param codeList  the code list for which to return the download history
+	 * @param dateRange  the date range for comment submission relative to the current date
+	 * @return List<Registrant>
+	 */
+	public List<Registrant> getDownloaders(CodeList codeList, DateRangeType dateRange) {
+		TypedQuery<Registrant> query;
+		
+		// Start by finding the downloaders for the publication archive
+		if ((dateRange == null) || (dateRange == DateRangeType.ALL)) {
+			query = getEntityManager().createNamedQuery( "registrantFindAllCodeListDownloaders", Registrant.class );
+		} else {
+			query = getEntityManager().createNamedQuery( "registrantFindAllCodeListDownloadersByDateRange", Registrant.class );
+			query.setParameter( "rDate", dateRange.getRangeStart() );
+		}
+		query.setParameter( "codeListId", codeList.getId() );
+		return query.getResultList();
+	}
+	
+	/**
 	 * Deletes all locally-cached files that are associated with the given publication.
 	 * 
 	 * @param publication  the publication for which to purge cached content
@@ -182,14 +238,23 @@ public class DownloadDAO extends AbstractDAO {
 	}
 	
 	/**
+	 * Deletes all locally-cached files that are associated with the given code list.
+	 * 
+	 * @param codeList  the code list for which to purge cached content
+	 * @throws DAOException  thrown if the purge operation cannot be completed for any reason
+	 */
+	public void purgeCache(CodeList codeList) throws DAOException {
+		cacheManager.purgeCache( codeList );
+	}
+	
+	/**
 	 * Deletes all cache files from the local file system that are not associated with a
 	 * publication in persistent storage.
 	 * 
-	 * @param dao  the publication DAO that should be used to obtain data from persistent storage
 	 * @throws DAOException  thrown if the purge operation cannot be completed for any reason
 	 */
-	public void purgeOrphanedCacheFiles(PublicationDAO dao) throws DAOException {
-		cacheManager.purgeOrphanedCacheFiles( dao );
+	public void purgeOrphanedCacheFiles() throws DAOException {
+		cacheManager.purgeOrphanedCacheFiles( getFactory() );
 	}
 	
 }

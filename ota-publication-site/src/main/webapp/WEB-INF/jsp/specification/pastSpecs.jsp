@@ -78,6 +78,27 @@
 		</c:forEach>
 		</ul></td></tr>
 	</table>
+	<p/>
+</c:if>
+
+<c:if test="${!codeLists.isEmpty()}">
+	<p><b>OpenTravel Code Lists</b></p>
+	<table id="MemberRadioButtonList" class="checkList" border="0">
+		<c:set var="rowCount" value="${codeLists.size() / itemsPerColumn}"/>
+		<c:set var="currentRow" value="0"/>
+		<c:set var="firstRow" value="true"/>
+		<tr>
+		<c:forEach var="codeList" items="${codeLists}">
+			<c:if test="${(currentRow % itemsPerColumn) == 0}">
+				<c:if test="${!firstRow}"></ul></td></c:if>
+				<td><ul>
+			</c:if>
+			<li><a href="${config.localSiteUrl}/specifications/CodeLists.html?releaseDate=${codeList.releaseDateLabel}">${codeList.releaseDateLabel}</a></li>
+			<c:set var="firstRow" value="false"/>
+			<c:set var="currentRow" value="${currentRow + 1}"/>
+		</c:forEach>
+		</ul></td></tr>
+	</table>
 </c:if>
 
 	</div>

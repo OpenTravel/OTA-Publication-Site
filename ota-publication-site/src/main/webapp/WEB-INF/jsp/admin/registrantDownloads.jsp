@@ -78,7 +78,7 @@
 		<th width="30%">Category</th>
 	</tr>
 	<c:choose>
-		<c:when test="${!registrant.downloadedPublications.isEmpty() || !registrant.downloadedPublicationItems.isEmpty()}">
+		<c:when test="${!registrant.downloadedPublications.isEmpty() || !registrant.downloadedPublicationItems.isEmpty() || !registrant.downloadedCodeLists.isEmpty()}">
 			<c:forEach var="publication" items="${registrant.downloadedPublications}">
 				<tr>
 					<td>${publication.name}-${publication.type.displayId}</td>
@@ -92,6 +92,13 @@
 					<td>${publication.name}-${publication.type.displayId}</td>
 					<td>${item.itemFilename}</td>
 					<td>${item.owner.name}</td>
+				</tr>
+			</c:forEach>
+			<c:forEach var="item" items="${registrant.downloadedCodeLists}">
+				<tr>
+					<td>Code List Release ${item.releaseDateLabel}</td>
+					<td>${item.archiveFilename}</td>
+					<td>Code List Archive</td>
 				</tr>
 			</c:forEach>
 		</c:when>

@@ -15,7 +15,15 @@
  */
 package org.opentravel.pubs.dao;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.ZipInputStream;
+
 import javax.persistence.EntityManager;
+
+import org.opentravel.pubs.model.FileContent;
 
 /**
  * Base class for all DAO's that provides a number of commom methods.
@@ -55,6 +63,65 @@ public abstract class AbstractDAO {
 	 */
 	protected EntityManager getEntityManager() {
 		return factory.getEntityManager();
+	}
+	
+	/**
+	 * Creates and persists a new <code>FileContent</code> object.  This method
+	 * operates within the scope of the current entity manager's transaction and
+	 * does not commit or rollback after the file content has been persisted.
+	 * 
+	 * @param contentStream  the input stream from which the file content should be obtained
+	 * @return FileContent
+	 * @throws IOException  thrown if an error occurs while attempting to read from the given input stream
+	 */
+	protected FileContent persistFileContent(InputStream contentStream) throws IOException {
+		return persistFileContent( null, contentStream );
+	}
+	
+	/**
+	 * Creates or updates a <code>FileContent</code> object with the data provided from the
+	 * given input stream.  This method operates within the scope of the current entity manager's
+	 * transaction and does not commit or rollback after the file content has been persisted.
+	 * 
+	 * @param existingContent  the existing content record (if null, a new one will be created and persisted)
+	 * @param contentStream  the input stream from which the file content should be obtained
+	 * @return FileContent
+	 * @throws IOException  thrown if an error occurs while attempting to read from the given input stream
+	 */
+	protected FileContent persistFileContent(FileContent existingContent, InputStream contentStream) throws IOException {
+		try {
+			ByteArrayOutputStream contentBytes = new ByteArrayOutputStream();
+			FileContent fc;
+			
+			// Compress the content before storing it in the database BLOB
+			try (DeflaterOutputStream zipOut = new DeflaterOutputStream( contentBytes )) {
+				byte[] buffer = new byte[ BUFFER_SIZE ];
+				int bytesRead;
+				
+				while ((bytesRead = contentStream.read( buffer, 0, BUFFER_SIZE )) >= 0) {
+					zipOut.write( buffer, 0, bytesRead );
+				}
+				zipOut.flush();
+			}
+			
+			// Create and persist the file entity
+			fc = (existingContent == null) ? new FileContent() : existingContent;
+			fc.setFileBytes( contentBytes.toByteArray() );
+			
+			if (existingContent == null) {
+				getEntityManager().persist( fc );
+			}
+			return fc;
+			
+		} finally {
+			// Close the input stream unless it is a zip stream since we may be
+			// reading subsequent file content entries from the same stream.
+			if (!(contentStream instanceof ZipInputStream)) {
+				try {
+					contentStream.close();
+				} catch (IOException e) {}
+			}
+		}
 	}
 	
 }

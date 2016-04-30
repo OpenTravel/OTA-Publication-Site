@@ -31,6 +31,7 @@
 		<class>org.opentravel.pubs.model.Publication</class>
 		<class>org.opentravel.pubs.model.PublicationGroup</class>
 		<class>org.opentravel.pubs.model.PublicationItem</class>
+		<class>org.opentravel.pubs.model.CodeList</class>
 		<class>org.opentravel.pubs.model.Comment</class>
 		<class>org.opentravel.pubs.model.SchemaComment</class>
 		<class>org.opentravel.pubs.model.ArtifactComment</class>

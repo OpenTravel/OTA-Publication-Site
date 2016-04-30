@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -33,6 +34,7 @@ import javax.servlet.http.HttpSession;
 
 import org.opentravel.pubs.builders.ArtifactCommentBuilder;
 import org.opentravel.pubs.builders.SchemaCommentBuilder;
+import org.opentravel.pubs.dao.CodeListDAO;
 import org.opentravel.pubs.dao.CommentDAO;
 import org.opentravel.pubs.dao.DAOException;
 import org.opentravel.pubs.dao.DAOFactoryManager;
@@ -44,6 +46,7 @@ import org.opentravel.pubs.forms.RegistrantForm;
 import org.opentravel.pubs.forms.SchemaCommentForm;
 import org.opentravel.pubs.forms.ViewSpecificationForm;
 import org.opentravel.pubs.model.ArtifactComment;
+import org.opentravel.pubs.model.CodeList;
 import org.opentravel.pubs.model.CommentType;
 import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationGroup;
@@ -137,6 +140,51 @@ public class PublicationController extends BaseController {
     	
     	return doReleaseNotesPage( model, session, spec, specType,
     			"specificationReleaseNotesMembers", true );
+    }
+    
+    @RequestMapping({ "/CodeLists.html", "/CodeLists.htm" })
+    public String codeListPublicPage(Model model, HttpSession session,
+            @RequestParam(value = "releaseDate", required = false) String releaseDateStr,
+            @RequestParam(value = "newSession", required = false) boolean newSession,
+            @ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
+    	String targetPage = "codeListMain";
+    	
+    	try {
+    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
+        	CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+        	CodeList codeList = null;
+        	
+        	if ((releaseDateStr != null) && (releaseDateStr.trim().length() > 0)) {
+        		try {
+            		codeList = cDao.getCodeList( CodeList.labelFormat.parse( releaseDateStr.trim() ) );
+        			
+        		} catch (ParseException e) {
+        			setErrorMessage( "Invalid release date requested: \"" + releaseDateStr + "\"", model );
+        		}
+        	}
+    		if (codeList == null) {
+    			codeList = cDao.getLatestCodeList();
+    		}
+    		
+        	model.addAttribute( "codeList", codeList );
+        	model.addAttribute( "registrationPage", "CodeLists.html" );
+        	
+        	if (newSession) session.removeAttribute( "registrantId" );
+        	handleRegistrantInfo( registrantForm, model, session );
+        	
+        	// If we processed the form successfully, clear our model so that its
+        	// attributes will not show up as URL parameters on redirect
+        	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
+        		targetPage = "redirect:/specifications/CodeLists.html";
+        		model.asMap().clear();
+        	}
+        	specificationForm.setProcessForm( true );
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
     }
     
     @RequestMapping({ "/Comment10Spec.html", "/Comment10Spec.htm" })
@@ -311,8 +359,10 @@ public class PublicationController extends BaseController {
     public String pastSpecsPage(Model model) {
     	try {
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+        	CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
     		List<Publication> publications10 = pDao.getAllPublications( PublicationType.OTA_1_0 );
     		List<Publication> publications20 = pDao.getAllPublications( PublicationType.OTA_2_0 );
+    		List<CodeList> codeLists = cDao.getAllCodeLists();
     		
     		// This page is only available in the public area, so purge all member-review
     		// specifications from the list
@@ -326,8 +376,12 @@ public class PublicationController extends BaseController {
     		if (!publications20.isEmpty()) {
     			publications20.remove( 0 );
     		}
+    		if (!codeLists.isEmpty()) {
+    			codeLists.remove( 0 );
+    		}
         	model.addAttribute( "publications10", publications10 );
         	model.addAttribute( "publications20", publications20 );
+        	model.addAttribute( "codeLists", codeLists );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -342,7 +396,7 @@ public class PublicationController extends BaseController {
     }
     
     @RequestMapping({ "/DownloadRegister.html", "/DownloadRegister.htm" })
-    public String downloadRegisterPage(Model model, HttpSession session,
+    public String downloadPublicationRegisterPage(Model model, HttpSession session,
     		@RequestParam(value = "pubName", required = true) String pubName,
     		@RequestParam(value = "pubType", required = true) String type,
     		@RequestParam(value = "filename", required = true) String filename,
@@ -379,7 +433,7 @@ public class PublicationController extends BaseController {
     }
     
     @RequestMapping({ "/downloads/{pubName}/{pubType}/{filename:.+}" })
-    public String downloadContent(Model model, HttpSession session, HttpServletRequest request,
+    public String downloadPublication(Model model, HttpSession session, HttpServletRequest request,
     		HttpServletResponse response, RedirectAttributes redirectAttrs,
     		@PathVariable("pubName") String pubName, @PathVariable("pubType") String type,
     		@PathVariable("filename") String filename) {
@@ -395,7 +449,7 @@ public class PublicationController extends BaseController {
     			targetPath = "redirect:/specifications/DownloadRegister.html";
     			
     		} else {
-    			targetPath = doContentDownload( model, session, registrant, request, response,
+    			targetPath = doPublicationDownload( model, session, registrant, request, response,
     					redirectAttrs, pubName, type, filename );
     		}
     		
@@ -407,7 +461,7 @@ public class PublicationController extends BaseController {
     }
     
     @RequestMapping({ "/downloads/noregister/{pubName}/{pubType}/{filename:.+}" })
-    public String downloadContentNoRegistration(Model model, HttpSession session,
+    public String downloadPublicationNoRegistration(Model model, HttpSession session,
     		HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs,
     		@PathVariable("pubName") String pubName, @PathVariable("pubType") String type,
     		@PathVariable("filename") String filename) {
@@ -417,13 +471,78 @@ public class PublicationController extends BaseController {
     		
     		// There is no requirement to register for this download link.  If the user HAS already
     		// registered, however, we will associate this download with their registration identity.
-			targetPath = doContentDownload( model, session, registrant, request, response,
+			targetPath = doPublicationDownload( model, session, registrant, request, response,
 					redirectAttrs, pubName, type, filename );
 			
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
             setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
 		}
+    	return applyCommonValues( model, targetPath );
+    }
+    
+    @RequestMapping({ "/cl/DownloadRegister.html", "/cl/DownloadRegister.htm" })
+    public String downloadCodeListRegisterPage(Model model, HttpSession session,
+    		@RequestParam(value = "releaseDate", required = true) String releaseDateStr,
+    		@RequestParam(value = "filename", required = true) String filename,
+    		@ModelAttribute("specificationForm") ViewSpecificationForm specificationForm) {
+    	String targetPage = "downloadCodeListRegister";
+    	try {
+    		RegistrantForm registrantForm = specificationForm.getRegistrantForm();
+        	CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+    		try {
+            	CodeList codeList = cDao.getCodeList( CodeList.labelFormat.parse( releaseDateStr ) );
+            	
+            	handleRegistrantInfo( registrantForm, model, session );
+        		
+            	// If we processed the form successfully, clear our model so that its
+            	// attributes will not show up as URL parameters on redirect
+            	if (registrantForm.isProcessForm() && (model.asMap().get( "registrant" ) != null)) {
+            		targetPage = "redirect:/content/specifications/downloads/cl/" +
+            				releaseDateStr + "/" + filename;
+            		model.asMap().clear();
+            		
+            	} else {
+            		model.addAttribute( "codeList", codeList );
+            		model.addAttribute( "releaseDate", releaseDateStr );
+            		model.addAttribute( "filename", filename );
+            	}
+            	specificationForm.setProcessForm( true );
+            	
+    		} catch (ParseException e) {
+    			setErrorMessage( "Invalid release date requested: \"" + releaseDateStr + "\"", model );
+    		}
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    @RequestMapping({ "/downloads/cl/{releaseDate}/{filename:.+}" })
+    public String downloadCodeList(Model model, HttpSession session, HttpServletRequest request,
+    		HttpServletResponse response, RedirectAttributes redirectAttrs,
+    		@PathVariable("releaseDate") String releaseDateStr, @PathVariable("filename") String filename) {
+    	String targetPath = null;
+    	try {
+    		Registrant registrant = getCurrentRegistrant( session );
+    		
+    		if (registrant == null) {
+    			model.asMap().clear();
+    			redirectAttrs.addAttribute( "releaseDate", releaseDateStr );
+    			redirectAttrs.addAttribute( "filename", filename );
+    			targetPath = "redirect:/specifications/cl/DownloadRegister.html";
+    			
+    		} else {
+    			targetPath = doCodeListDownload( model, session, registrant, request, response,
+    					redirectAttrs, releaseDateStr, filename );
+    		}
+    		
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
     	return applyCommonValues( model, targetPath );
     }
     
@@ -451,7 +570,7 @@ public class PublicationController extends BaseController {
      * @throws DAOException  thrown if an error occurs while accessing the content from persistent storage
      * @throws IOException  thrown if the content cannot be streamed to the HTTP response
      */
-    protected String doContentDownload(Model model, HttpSession session, Registrant registrant,
+    protected String doPublicationDownload(Model model, HttpSession session, Registrant registrant,
     		HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs,
     		String pubName, String type, String filename) throws DAOException, IOException {
 		InputStream contentStream = null;
@@ -474,6 +593,69 @@ public class PublicationController extends BaseController {
                 		contentStream = dDao.getContent( item, registrant );
             		}
             	}
+        	}
+		}
+		
+		if (contentStream != null) {
+			try (OutputStream responseOut = response.getOutputStream()) {
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int bytesRead;
+				
+				while ((bytesRead = contentStream.read( buffer, 0, buffer.length)) >= 0) {
+					responseOut.write( buffer, 0, bytesRead );
+				}
+				
+			} finally {
+				try {
+					contentStream.close();
+				} catch (Throwable t) {}
+			}
+			
+		} else {
+			model.asMap().clear();
+			redirectAttrs.addAttribute( "filename", request.getRequestURL() );
+			targetPath = "redirect:/specifications/DownloadNotFound.html";
+		}
+		return targetPath;
+    }
+    
+    /**
+     * Performs a download of the publication or publication item content specified by the URL
+     * parameters.
+     * 
+     * @param model  the UI model for the current request
+     * @param session  the HTTP session
+     * @param registrant  the web site registrant who is performing the download
+     * @param request  the HTTP request for the content download
+     * @param response  the HTTP response to which output should be directed
+     * @param redirectAttrs  request attributes that must be available in case of a page redirect
+     * @param releaseDateStr  the release date of the code list archive being downloaded
+     * @param filename  the name of the content item that is being downloaded
+     * @return String
+     * @throws DAOException  thrown if an error occurs while accessing the content from persistent storage
+     * @throws IOException  thrown if the content cannot be streamed to the HTTP response
+     */
+    protected String doCodeListDownload(Model model, HttpSession session, Registrant registrant,
+    		HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttrs,
+    		String releaseDateStr, String filename) throws DAOException, IOException {
+		InputStream contentStream = null;
+    	String targetPath = null;
+		
+		if ((releaseDateStr != null) && (releaseDateStr.trim().length() > 0)) {
+        	CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+        	DownloadDAO dDao = DAOFactoryManager.getFactory().newDownloadDAO();
+        	
+        	try {
+            	CodeList codeList = cDao.getCodeList( CodeList.labelFormat.parse( releaseDateStr ) );
+    			
+            	if (codeList != null) {
+                	if (filename.equals( codeList.getArchiveFilename() )) {
+                		contentStream = dDao.getArchiveContent( codeList, registrant );
+                	}
+            	}
+            	
+        	} catch (ParseException e) {
+        		log.warn("Unreadable release date specified for code list download: \"" + releaseDateStr + "\"" );
         	}
 		}
 		

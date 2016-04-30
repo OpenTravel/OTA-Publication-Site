@@ -98,7 +98,7 @@
 			</c:forEach>
 		</c:when>
 		<c:otherwise>
-			<tr><td colspan="5">No downloads occurred within the requested time frame.</td></tr>
+			<tr><td colspan="7">No downloads occurred within the requested time frame.</td></tr>
 		</c:otherwise>
 	</c:choose>
 </table>

@@ -47,6 +47,19 @@
 		
 		<li>
 			<c:choose>
+				<c:when test="${(currentPage == 'uploadCodeList')}">
+					<a id="SideNavControl6_MenuHyperLink" class="current"
+						href="${config.localSiteUrl}/admin/UploadCodeList.html">Upload a New Code List</a>
+				</c:when>
+				<c:otherwise>
+					<a id="SideNavControl6_MenuHyperLink"
+						href="${config.localSiteUrl}/admin/UploadCodeList.html">Upload a New Code List</a>
+				</c:otherwise>
+			</c:choose>
+		</li>
+		
+		<li>
+			<c:choose>
 				<c:when test="${(currentPage == 'viewRegistrants')}">
 					<a id="SideNavControl3_MenuHyperLink" class="current"
 						href="${config.localSiteUrl}/admin/ViewRegistrants.html">View Web Site Registrants</a>
@@ -78,7 +91,7 @@
 						href="${config.localSiteUrl}/admin/ChangeAdminCredentials.html">Change Admin Login Credentials</a>
 				</c:when>
 				<c:otherwise>
-					<a id="SideNavControl6_MenuHyperLink"
+					<a id="SideNavControl5_MenuHyperLink"
 						href="${config.localSiteUrl}/admin/ChangeAdminCredentials.html">Change Admin Login Credentials</a>
 				</c:otherwise>
 			</c:choose>

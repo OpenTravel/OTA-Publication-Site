@@ -21,11 +21,14 @@
 <div id="editBox">
 	<div id="formWpr">
 
-<p>Click on one the specification links to view or edit an existing 1.0 or 2.0 specification, or select from one of the following actions.</p>
+<p>Click on one the specification links to view or edit an existing specification, or select from one of the following actions.</p>
 
 <ul>
 	<li>
 		<a href="${config.localSiteUrl}/admin/UploadSpecification.html">Upload a New Specification</a>
+	</li>
+	<li>
+		<a href="${config.localSiteUrl}/admin/UploadCodeList.html">Upload a New Code List</a>
 	</li>
 	<li>
 		<a href="${config.localSiteUrl}/admin/ViewRegistrants.html">View Web Site Registrants</a>
@@ -81,6 +84,29 @@
 			</c:if>
 			<li>
 				<a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">${publication.name}${pubStatus}</a>
+			</li>
+			<c:set var="firstRow" value="false"/>
+			<c:set var="currentRow" value="${currentRow + 1}"/>
+		</c:forEach>
+		</ul></td></tr>
+	</table>
+	<p/>
+</c:if>
+
+<c:if test="${!codeLists.isEmpty()}">
+	<p><b>OpenTravel Code Lists</b></p>
+	<table id="MemberRadioButtonList" class="checkList" border="0">
+		<c:set var="rowCount" value="${codeLists.size() / itemsPerColumn}"/>
+		<c:set var="currentRow" value="0"/>
+		<c:set var="firstRow" value="true"/>
+		<tr>
+		<c:forEach var="codeList" items="${codeLists}">
+			<c:if test="${(currentRow % itemsPerColumn) == 0}">
+				<c:if test="${!firstRow}"></ul></td></c:if>
+				<td nowrap><ul>
+			</c:if>
+			<li>
+				<a href="${config.localSiteUrl}/admin/ViewCodeList.html?releaseDate=${codeList.releaseDateLabel}">${codeList.releaseDateLabel}</a>
 			</li>
 			<c:set var="firstRow" value="false"/>
 			<c:set var="currentRow" value="${currentRow + 1}"/>

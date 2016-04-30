@@ -16,6 +16,7 @@
 
 package org.opentravel.pubs.controllers;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import org.opentravel.pubs.builders.PublicationBuilder;
 import org.opentravel.pubs.dao.AdminDAO;
 import org.opentravel.pubs.dao.ApplicationSettingsDAO;
+import org.opentravel.pubs.dao.CodeListDAO;
 import org.opentravel.pubs.dao.CommentDAO;
 import org.opentravel.pubs.dao.DAOFactoryManager;
 import org.opentravel.pubs.dao.DateRangeType;
@@ -31,9 +33,11 @@ import org.opentravel.pubs.dao.DownloadDAO;
 import org.opentravel.pubs.dao.DownloadHistoryItem;
 import org.opentravel.pubs.dao.PublicationDAO;
 import org.opentravel.pubs.dao.RegistrantDAO;
+import org.opentravel.pubs.forms.CodeListForm;
 import org.opentravel.pubs.forms.EmailSettingsForm;
 import org.opentravel.pubs.forms.SpecificationForm;
 import org.opentravel.pubs.model.AdminCredentials;
+import org.opentravel.pubs.model.CodeList;
 import org.opentravel.pubs.model.Comment;
 import org.opentravel.pubs.model.Publication;
 import org.opentravel.pubs.model.PublicationState;
@@ -72,11 +76,14 @@ public class AdminController extends BaseController {
     public String adminHomePage(HttpSession session, Model model) {
     	try {
         	PublicationDAO pDao = DAOFactoryManager.getFactory().newPublicationDAO();
+        	CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
     		List<Publication> publications10 = pDao.getAllPublications( PublicationType.OTA_1_0 );
     		List<Publication> publications20 = pDao.getAllPublications( PublicationType.OTA_2_0 );
+    		List<CodeList> codeLists = cDao.getAllCodeLists();
     		
         	model.addAttribute( "publications10", publications10 );
         	model.addAttribute( "publications20", publications20 );
+        	model.addAttribute( "codeLists", codeLists );
         	
     	} catch (Throwable t) {
     		log.error("Error during publication controller processing.", t);
@@ -126,6 +133,9 @@ public class AdminController extends BaseController {
             			
             		} else {
             			ValidationResults vResults = ModelValidator.validate( publication );
+            			
+            			// An archive file must be provided on initial creation of a publication
+            			vResults.add( publication, "archiveFilename", "Archive File is Required" );
             			
             			if (vResults.hasViolations()) {
             				throw new ValidationException( vResults );
@@ -330,6 +340,230 @@ public class AdminController extends BaseController {
             setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
     	}
     	return applyCommonValues( model, "specificationDownloads" );
+    }
+
+    @RequestMapping({ "/UploadCodeList.html", "/UploadCodeList.htm" })
+    public String uploadCodeListPage(HttpSession session, Model model,
+    		@ModelAttribute("codeListForm") CodeListForm codeListForm) {
+    	try {
+			codeListForm.setProcessForm( true );
+    		
+    	} catch (Throwable t) {
+    		log.error("Error during code list controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, "uploadCodeList" );
+    }
+    
+    @RequestMapping({ "/DoUploadCodeList.html", "/DoUploadCodeList.htm" })
+    public String doUploadCodeListPage(HttpSession session, Model model, RedirectAttributes redirectAttrs,
+    		@ModelAttribute("codeListForm") CodeListForm codeListForm,
+    		@RequestParam(value = "archiveFile", required = false) MultipartFile archiveFile) {
+    	String targetPage = "uploadCodeList";
+    	try {
+    		if (codeListForm.isProcessForm()) {
+    			CodeList codeList = new CodeList();
+    			
+    			try {
+        			codeList.setReleaseDate( CodeList.labelFormat.parse( codeListForm.getReleaseDateLabel() ) );
+        			
+            		if (!archiveFile.isEmpty()) {
+        				DAOFactoryManager.getFactory().newCodeListDAO().publishCodeList(
+        						codeList, archiveFile.getInputStream() );
+        				
+        				model.asMap().clear();
+        				redirectAttrs.addAttribute( "releaseDate", codeList.getReleaseDateLabel() );
+            			targetPage = "redirect:/admin/ViewCodeList.html";
+            			
+            		} else {
+            			ValidationResults vResults = ModelValidator.validate( codeList );
+            			
+            			// An archive file must be provided on initial creation of a publication
+            			vResults.add( codeList, "archiveFilename", "Archive File is Required" );
+            			
+            			if (vResults.hasViolations()) {
+            				throw new ValidationException( vResults );
+            			}
+            		}
+    				
+    			} catch (ParseException e) {
+    				ValidationResults vResult = new ValidationResults();
+    				
+    				vResult.add( codeList, "releaseDate", "Invalid release date" );
+    	    		addValidationErrors( vResult, model );
+    	    		
+    			} catch (ValidationException e) {
+    	    		addValidationErrors( e, model );
+    				
+    			} catch (Throwable t) {
+    				log.error("An error occurred while publishing the code list: ", t);
+    				setErrorMessage( t.getMessage(), model );
+    			}
+    		}
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+
+    @RequestMapping({ "/ViewCodeList.html", "/ViewCodeList.htm" })
+    public String viewCodeListPage(HttpSession session, Model model,
+    		 @RequestParam(value = "releaseDate", required = false) String releaseDateStr) {
+    	String targetPage = "viewCodeList";
+    	try {
+    		CodeList codeList = null;
+    		
+    		if ((releaseDateStr != null) && (releaseDateStr.trim().length() > 0)) {
+    			CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+    			
+    			codeList = cDao.getCodeList( CodeList.labelFormat.parse( releaseDateStr ) );
+    			model.addAttribute( "codeList", codeList );
+    			model.addAttribute( "formatter", ValueFormatter.getInstance() );
+    		}
+    		
+    		if (codeList == null) {
+    			targetPage = "redirect:/admin/index.html";
+    		}
+    		
+    	} catch (ParseException e) {
+            setErrorMessage( "Invalid release date: \"" + releaseDateStr + "\"", model );
+			targetPage = "redirect:/admin/index.html";
+            
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    @RequestMapping({ "/UpdateCodeList.html", "/UpdateCodeList.htm" })
+    public String updateCodeListPage(HttpSession session, Model model,
+    		@ModelAttribute("codeListForm") CodeListForm codeListForm,
+            @RequestParam(value = "codeListId", required = false) Long codeListId) {
+    	String targetPage = "updateCodeList";
+    	try {
+			CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+			CodeList codeList = cDao.getCodeList( codeListId );
+			
+			codeListForm.initialize( codeList );
+			codeListForm.setProcessForm( true );
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+
+    @RequestMapping({ "/DoUpdateCodeList.html", "/DoUpdateCodeList.htm" })
+    public String doUpdateCodeListPage(HttpSession session, Model model, RedirectAttributes redirectAttrs,
+    		@ModelAttribute("codeListForm") CodeListForm codeListForm,
+    		@RequestParam(value = "archiveFile", required = false) MultipartFile archiveFile) {
+    	String targetPage = "updateSpecification";
+    	try {
+    		if (codeListForm.isProcessForm()) {
+    			CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+    			CodeList codeList = cDao.getCodeList( codeListForm.getCodeListId() );
+    			
+    			try {
+        			codeList.setReleaseDate( CodeList.labelFormat.parse( codeListForm.getReleaseDateLabel() ) );
+        			
+        			ValidationResults vResults = ModelValidator.validate( codeList );
+        			
+        			// Before we try to update the contents of the spefication, validate the
+        			// publication object to see if there are any errors.
+        			if (vResults.hasViolations()) {
+        				throw new ValidationException( vResults );
+        			}
+        			
+            		if (!archiveFile.isEmpty()) {
+        				cDao.updateCodeList( codeList, archiveFile.getInputStream() );
+            		}
+    				model.asMap().clear();
+    				redirectAttrs.addAttribute( "releaseDate", codeList.getReleaseDateLabel() );
+        			targetPage = "redirect:/admin/ViewCodeList.html";
+    				
+    			} catch (ParseException e) {
+    				ValidationResults vResult = new ValidationResults();
+    				
+    				vResult.add( codeList, "releaseDate", "Invalid release date" );
+    	    		addValidationErrors( vResult, model );
+    	    		
+    			} catch (ValidationException e) {
+    	    		addValidationErrors( e, model );
+    				
+    			} catch (Throwable t) {
+    				log.error("An error occurred while updating the spec: ", t);
+    				setErrorMessage( t.getMessage(), model );
+    			}
+    		}
+    		
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    @RequestMapping({ "/DeleteCodeList.html", "/DeleteCodeList.htm" })
+    public String deleteCodeListPage(HttpSession session, Model model,
+            @RequestParam(value = "confirmDelete", required = false) boolean confirmDelete,
+            @RequestParam(value = "codeListId", required = false) Long codeListId) {
+    	String targetPage = "deleteCodeList";
+    	try {
+			CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+			CodeList codeList = cDao.getCodeList( codeListId );
+			
+			if (confirmDelete) {
+				cDao.deleteCodeList( codeList );
+    			targetPage = "redirect:/admin/index.html";
+				model.asMap().clear();
+				
+			} else {
+	    		model.addAttribute( "codeList", codeList );
+			}
+        	
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+
+    @RequestMapping({ "/CodeListDownloads.html", "/CodeListDownloads.htm" })
+    public String codeListDownloadsPage(HttpSession session, Model model,
+            @RequestParam(value = "releaseDate", required = false) String releaseDateStr,
+            @RequestParam(value = "dateRange", required = false) DateRangeType dateRange) {
+    	String targetPage = "codeListDownloads";
+    	
+    	try {
+			CodeListDAO cDao = DAOFactoryManager.getFactory().newCodeListDAO();
+			DownloadDAO dDao = DAOFactoryManager.getFactory().newDownloadDAO();
+			CodeList codeList = cDao.getCodeList( CodeList.labelFormat.parse( releaseDateStr ) );
+			List<Registrant> downloadedByList;
+			
+    		if (dateRange == null) {
+    			dateRange = DateRangeType.LAST_WEEK;
+    		}
+    		downloadedByList = dDao.getDownloaders( codeList, dateRange );
+    		
+    		model.addAttribute( "codeList", codeList );
+    		model.addAttribute( "downloadedByList", downloadedByList );
+    		model.addAttribute( "dateRange", dateRange );
+    		model.addAttribute( "dateRanges", Arrays.asList( DateRangeType.values() ) );
+			model.addAttribute( "formatter", ValueFormatter.getInstance() );
+        	
+    	} catch (ParseException e) {
+            setErrorMessage( "Invalid release date: \"" + releaseDateStr + "\"", model );
+			targetPage = "redirect:/admin/index.html";
+            
+    	} catch (Throwable t) {
+    		log.error("Error during publication controller processing.", t);
+            setErrorMessage( DEFAULT_ERROR_MESSAGE, model );
+    	}
+    	return applyCommonValues( model, targetPage );
     }
 
     @RequestMapping({ "/ViewRegistrants.html", "/ViewRegistrants.htm" })

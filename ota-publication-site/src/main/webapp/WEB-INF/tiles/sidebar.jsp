@@ -47,6 +47,19 @@
 
 		<li>
 			<c:choose>
+				<c:when test="${currentPage == 'codeListMain'}">
+					<a id="SideNavControl1b_MenuHyperLink" class="current"
+						href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+				</c:when>
+				<c:otherwise>
+					<a id="SideNavControl1b_MenuHyperLink"
+						href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+				</c:otherwise>
+			</c:choose>
+		</li>
+
+		<li>
+			<c:choose>
 				<c:when test="${currentPage == 'specificationComment10'}">
 					<a id="SideNavControl2_MenuHyperLink" class="current"
 						href="${config.localSiteUrl}/specifications/Comment10Spec.html">Comment on 1.0 Specification</a>

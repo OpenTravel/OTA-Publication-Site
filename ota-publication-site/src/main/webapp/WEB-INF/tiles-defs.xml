@@ -57,6 +57,11 @@
 		<put-attribute name="title" value="Specification Release Notes" />
 		<put-attribute name="body" value="/WEB-INF/jsp/specification/releaseNotes.jsp" />
 	</definition>
+	<definition name="codeListMain" extends="publicLayout">
+		<put-attribute name="title" value="Code Lists" />
+		<put-attribute name="licenseAgreement" value="/WEB-INF/jsp/specification/licenseAgreement.jsp" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/codeListMain.jsp" />
+	</definition>
 	<definition name="specificationComment10" extends="publicLayout">
 		<put-attribute name="title" value="Comment 1.0 Specification" />
 		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentSpec.jsp" />
@@ -90,8 +95,12 @@
 		<put-attribute name="body" value="/WEB-INF/jsp/specification/onlinePublicationDetails.jsp" />
 	</definition>
 	<definition name="downloadRegister" extends="publicLayout">
-		<put-attribute name="title" value="Browse Publications" />
+		<put-attribute name="title" value="Download Publications" />
 		<put-attribute name="body" value="/WEB-INF/jsp/specification/downloadRegister.jsp" />
+	</definition>
+	<definition name="downloadCodeListRegister" extends="publicLayout">
+		<put-attribute name="title" value="Download Publications" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/downloadCLRegister.jsp" />
 	</definition>
 	<definition name="downloadNotFound" extends="publicLayout">
 		<put-attribute name="title" value="Not Found" />
@@ -170,6 +179,26 @@
 	<definition name="specificationDownloads" extends="reportLayout">
 		<put-attribute name="title" value="Specification Downloads" />
 		<put-attribute name="body" value="/WEB-INF/jsp/admin/specificationDownloads.jsp" />
+	</definition>
+	<definition name="uploadCodeList" extends="adminLayout">
+		<put-attribute name="title" value="Upload Code List" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/uploadCodeList.jsp" />
+	</definition>
+	<definition name="viewCodeList" extends="adminLayout">
+		<put-attribute name="title" value="View Code List" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/viewCodeList.jsp" />
+	</definition>
+	<definition name="updateCodeList" extends="adminLayout">
+		<put-attribute name="title" value="Update Code List" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/updateCodeList.jsp" />
+	</definition>
+	<definition name="deleteCodeList" extends="adminLayout">
+		<put-attribute name="title" value="Delete Code List" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/deleteCodeList.jsp" />
+	</definition>
+	<definition name="codeListDownloads" extends="reportLayout">
+		<put-attribute name="title" value="Code List Downloads" />
+		<put-attribute name="body" value="/WEB-INF/jsp/admin/codeListDownloads.jsp" />
 	</definition>
 	<definition name="viewRegistrants" extends="adminLayout">
 		<put-attribute name="title" value="Web Site Registrants" />
