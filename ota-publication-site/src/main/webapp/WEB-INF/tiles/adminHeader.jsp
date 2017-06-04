@@ -17,18 +17,18 @@
 --%>
 <div id="header" class="clear">
 	<h1>
-		<a href="${config.mainSiteUrl}/Default.aspx" class="mainlogo">
+		<a href="${config.mainSiteUrl}" class="mainlogo">
 			<img src="${config.mainSiteUrl}/Images/Logos/logo.png" alt="OpenTravel setting the standard" />
 		</a>
 	</h1>
 	<ul id="superNav">
 		<li><a href="${config.localSiteUrl}/specifications/Specifications.html" class="buttonBlue"><span>download specs</span></a></li>
-		<li><a href="${config.mainSiteUrl}/Join/Default.aspx" class="buttonBlue"><span>join</span></a></li>
-		<li><a class="link" href="${config.mainSiteUrl}/search.aspx">search</a></li>
-		<li><a class="link rightDivider" href="${config.mainSiteUrl}/default.aspx">home</a></li>
+		<li><a href="${config.mainSiteUrl}/join" class="buttonBlue"><span>join</span></a></li>
+		<li><a class="link" href="${config.mainSiteUrl}/search">search</a></li>
+		<li><a class="link rightDivider" href="${config.mainSiteUrl}">home</a></li>
 	</ul>
 	<ul id="mainNav">
-		<li><a href="${config.mainSiteUrl}/default.aspx">OpenTravel.com site</a></li>
+		<li><a href="${config.mainSiteUrl}">OpenTravel.com site</a></li>
 		<li><a href="${config.localSiteUrl}/admin/index.html">administration</a></li>
 		<li></li>
 	</ul>

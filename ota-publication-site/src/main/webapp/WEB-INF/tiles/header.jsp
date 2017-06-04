@@ -17,24 +17,24 @@
 --%>
 <div id="header" class="clear">
 	<h1>
-		<a href="${config.mainSiteUrl}/Default.aspx" class="mainlogo">
+		<a href="${config.mainSiteUrl}" class="mainlogo">
 			<img src="${config.mainSiteUrl}/Images/Logos/logo.png" alt="OpenTravel setting the standard" />
 		</a>
 	</h1>
 	<ul id="superNav">
 		<li><a href="${config.localSiteUrl}/specifications/Specifications.html" class="buttonBlue"><span>download specs</span></a></li>
-		<li><a href="${config.mainSiteUrl}/Join/Default.aspx" class="buttonBlue"><span>join</span></a></li>
-		<li><a class="link" href="${config.mainSiteUrl}/search.aspx">search</a></li>
-		<li><a class="link rightDivider" href="${config.mainSiteUrl}/default.aspx">home</a></li>
+		<li><a href="${config.mainSiteUrl}/join" class="buttonBlue"><span>join</span></a></li>
+		<li><a class="link" href="${config.mainSiteUrl}/search">search</a></li>
+		<li><a class="link rightDivider" href="${config.mainSiteUrl}">home</a></li>
 	</ul>
 	<ul id="mainNav">
-		<li><a href="${config.mainSiteUrl}/AboutUs/Default.aspx">about us</a></li>
+		<li><a href="${config.mainSiteUrl}/about-us">about us</a></li>
 		<li><a href="${config.localSiteUrl}/specifications/Specifications.html">specifications</a></li>
 		<li><a href="http://www.opentravelcommunityforum.com/forum/">forum</a></li>
-		<li><a href="${config.mainSiteUrl}/Activities/Default.aspx">activities</a></li>
-		<li><a href="${config.mainSiteUrl}/OpenTravelResources/Default.aspx">resources</a></li>
-		<li><a href="${config.mainSiteUrl}/News/Default.aspx">press</a></li>
-		<li><a href="${config.mainSiteUrl}/Contact/Default.aspx">contact us</a></li>
+		<li><a href="${config.mainSiteUrl}/events">activities</a></li>
+		<li><a href="${config.mainSiteUrl}/resources">resources</a></li>
+		<li><a href="${config.mainSiteUrl}/press">press</a></li>
+		<li><a href="${config.mainSiteUrl}/contact-us">contact us</a></li>
 		<li></li>
 	</ul>
 </div>

@@ -250,6 +250,7 @@ public class PublicationDAO extends AbstractDAO {
 			}
 		}
 		processSpecificationArchive( publication, archiveContent );
+		getFactory().newDownloadDAO().purgeCache( publication );
 	}
 	
 	/**

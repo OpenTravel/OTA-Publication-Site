@@ -74,7 +74,8 @@
 			
 			<!--imagecontainer2-->
 			<div id="imagecontainer2" class="sideImage">
-				<img id="ctl00_ctl00_ContentPlaceHolder1_RotatingSideImage1_SideImage" src="${sidebarImageUrl}" style="border-width: 0px;" />
+				&nbsp;
+				<!--img id="ctl00_ctl00_ContentPlaceHolder1_RotatingSideImage1_SideImage" src="${sidebarImageUrl}" style="border-width: 0px;" /-->
 			</div>
 			<!--end imagecontainer2-->
 		</div>
