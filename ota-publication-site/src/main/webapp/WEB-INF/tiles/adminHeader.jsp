@@ -22,10 +22,10 @@
 		</a>
 	</h1>
 	<ul id="superNav">
-		<li><a href="${config.localSiteUrl}/specifications/Specifications.html" class="buttonBlue"><span>download specs</span></a></li>
-		<li><a href="${config.mainSiteUrl}/join" class="buttonBlue"><span>join</span></a></li>
-		<li><a class="link" href="${config.mainSiteUrl}/search">search</a></li>
-		<li><a class="link rightDivider" href="${config.mainSiteUrl}">home</a></li>
+		<li><a href="${config.localSiteUrl}/specifications/Specifications.html" class="buttonBlue"><span>Download Specs</span></a></li>
+		<li><a href="${config.mainSiteUrl}/join" class="buttonBlue"><span>Join</span></a></li>
+		<li><a class="link" href="${config.mainSiteUrl}/search">Search</a></li>
+		<li><a class="link rightDivider" href="${config.mainSiteUrl}">Some</a></li>
 	</ul>
 	<ul id="mainNav">
 		<li><a href="${config.mainSiteUrl}">OpenTravel.com site</a></li>
