@@ -15,21 +15,42 @@
     limitations under the License.
 
 --%>
-<div id="header" class="clear">
-	<h1>
-		<a href="${config.mainSiteUrl}" class="mainlogo">
-			<img src="${config.mainSiteUrl}/Images/Logos/logo.png" alt="OpenTravel setting the standard" />
-		</a>
-	</h1>
-	<ul id="superNav">
-		<li><a href="${config.localSiteUrl}/specifications/Specifications.html" class="buttonBlue"><span>Download Specs</span></a></li>
-		<li><a href="${config.mainSiteUrl}/join" class="buttonBlue"><span>Join</span></a></li>
-		<li><a class="link" href="${config.mainSiteUrl}/search">Search</a></li>
-		<li><a class="link rightDivider" href="${config.mainSiteUrl}">Some</a></li>
-	</ul>
-	<ul id="mainNav">
-		<li><a href="${config.mainSiteUrl}">OpenTravel.com site</a></li>
-		<li><a href="${config.localSiteUrl}/admin/index.html">administration</a></li>
-		<li></li>
-	</ul>
+<div class="container-fluid topMenu">
+	<div class="container">
+		<div class="menu-top-menu-container">
+			<ul id="menu-top-menu" class="topMenu">
+				<li id="menu-item-88" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home menu-item-88"><a href="${config.mainSiteUrl}/">Home</a></li>
+				<li id="menu-item-90" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-90"><a href="${config.mainSiteUrl}/search/">Search</a></li>
+				<li id="menu-item-92" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-92"><a href="${config.mainSiteUrl}/join/"><span class="red-btn">Join</span></a></li>
+				<li id="menu-item-93" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-93"><a href="${config.localSiteUrl}/specifications/Specifications.html"><span class="red-btn">Download Specs</span></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="container-fluid mainMenu">
+	<div class="container dmbs-container">
+		<div class="row dmbs-header">
+			<div class="col-md-3 col-sm-12 dmbs-header-img">
+				<a href="${config.mainSiteUrl}/"><img src="${config.localSiteUrl}/images/OpenTravel-logo.png" alt="" class="logo" width="254" height="63"></a>
+			</div>
+			<div class="col-md-9 col-sm-12">
+				<div class="row topMenuRow"></div>
+				<div class="row">
+					<nav class="navbar navbar-default" role="navigation">
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-1-collapse">
+								<span class="sr-only"> Toggle navigation </span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+							</button>
+						</div>
+						<div class="collapse navbar-collapse navbar-1-collapse">
+							<ul id="menu-menu-1" class="nav navbar-nav navbar-right">
+								<li id="menu-item-23" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-23"><a title="Forum" href="${config.mainSiteUrl}">OpenTravel.com site</a></li>
+								<li id="menu-item-22" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-13 current_page_item menu-item-17 active"><a title="Specifications" href="${config.localSiteUrl}/admin/index.html">Administration</a></li>
+							</ul>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

@@ -18,13 +18,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:if test="${publication == null}">
 	<c:if test="${isMembersOnly}">
-		<h2>No version of the OpenTravel
+		<h2 class="sub-title">No version of the OpenTravel
 			<c:if test="${expectedPubType != 'OTA_2_0'}">1.0</c:if><c:if test="${expectedPubType == 'OTA_2_0'}">2.0</c:if>
 			specification is available for member review at this time.
 		</h2>
 	</c:if>
 	<c:if test="${!isMembersOnly}">
-		<h2>The requested specification is not available.</h2>
+		<h2 class="sub-title">The requested specification is not available.</h2>
 	</c:if>
 	<p/><br/>
 	<p/><br/>

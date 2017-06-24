@@ -16,7 +16,7 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<h1>Not Found</h1>
+<h2 class="sub-title">Not Found</h2>
 
 <p>The requested file could not be located:</p>
 <p><code>${filename}</code>

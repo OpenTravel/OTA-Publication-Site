@@ -16,15 +16,15 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1 class="h1short">Download History for Code List Release ${codeList.releaseDateLabel}</h1>
+<h2 class="sub-title">Download History for Code List Release ${codeList.releaseDateLabel}</h2>
 
-<div id="formWpr">
+<br/>
 <form id="reportForm" action="${config.localSiteUrl}/admin/CodeListDownloads.html" method="GET">
 	<input name="releaseDate" type="hidden" class="text" value="${codeList.releaseDateLabel}" />
-	<table>
+	<table class="formTable">
 		<tr>
 			<td>
-				<br>Date Range: 
+				Date Range: 
 				<select name="dateRange">
 					<c:forEach var="dr" items="${dateRanges}">
 						<c:choose>
@@ -39,7 +39,7 @@
 				</select>
 			</td>
 			<td>
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.reportForm.submit();"><span>Refresh</span></a>
+				<a id="submitButton" class="buttonRed" href="javascript:document.forms.reportForm.submit();">Refresh</a>
 			</td>
 			<td>
 				<a href="${config.localSiteUrl}/admin/ViewCodeList.html?releaseDate=${codeList.releaseDateLabel}">Back to Overview</a>
@@ -47,7 +47,6 @@
 		</tr>
 	</table>
 </form>
-</div>
 
 <table id="reporttable">
 	<tr>

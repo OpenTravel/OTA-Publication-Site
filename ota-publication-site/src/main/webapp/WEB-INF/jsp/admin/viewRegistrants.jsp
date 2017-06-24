@@ -16,14 +16,14 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1 class="h1short">Web Site Registrants</h1>
+<h2 class="sub-title">Web Site Registrants</h2>
 
 <div id="formWpr">
 <form id="reportForm" action="${config.localSiteUrl}/admin/ViewRegistrants.html" method="GET">
 	<table>
 		<tr>
 			<td>
-				<br>Date Range: 
+				Date Range: 
 				<select name="dateRange">
 					<c:forEach var="dr" items="${dateRanges}">
 						<c:choose>
@@ -38,7 +38,7 @@
 				</select>
 			</td>
 			<td>
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.reportForm.submit();"><span>Refresh</span></a>
+				<a id="submitButton" class="buttonRed" href="javascript:document.forms.reportForm.submit();">Refresh</a>
 			</td>
 		</tr>
 	</table>
@@ -81,6 +81,7 @@
 		</c:otherwise>
 	</c:choose>
 </table>
+<br/><br/>
 
 <div class="tblwrap">
 <c:if test="${registrantList.size() < 3}">

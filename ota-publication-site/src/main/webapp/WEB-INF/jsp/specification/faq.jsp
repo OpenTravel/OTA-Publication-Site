@@ -16,7 +16,7 @@
 
 --%>
 <div id="content2" class="twocolumns">
-	<h1>Frequently Asked Questions about OpenTravel Specifications</h1>
+	<h2 class="sub-title">Frequently Asked Questions about OpenTravel Specifications</h2>
 	<h5>What&#8217;s the best way to get started with the
 		specification?</h5>
 	<p>OpenTravel publishes specifications twice a year, and the

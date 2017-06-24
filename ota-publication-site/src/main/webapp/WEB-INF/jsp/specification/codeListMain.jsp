@@ -16,17 +16,14 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<span style="color: #274683; font-family: 'times new roman', serif; font-size: 32px; line-height: 37px;">
-	Download Release ${codeList.releaseDateLabel} of the OpenTravel Code List</span>
+<h2 class="sub-title">Download Release ${codeList.releaseDateLabel} of the OpenTravel Code List</h2>
 <p>
-<div>
-	<c:if test="${registrant == null}">
-	<p>
-		Please complete the form below and accept the license agreement to download
-		Release ${codeList.releaseDateLabel} of the OpenTravel Code List.<br/>
-	</p>
-	</c:if>
-</div>
+<c:if test="${registrant == null}">
+<p>
+	Please complete the form below and accept the license agreement to download
+	Release ${codeList.releaseDateLabel} of the OpenTravel Code List.<br/>
+</p>
+</c:if>
 
 <%@ include file="registrationForm.jsp" %>
 

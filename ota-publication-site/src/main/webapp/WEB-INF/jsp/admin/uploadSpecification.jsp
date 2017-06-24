@@ -17,13 +17,12 @@
 --%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Upload a New Specification</h1>
+<h2 class="sub-title">Upload a New Specification</h2>
 
-<div id="editBox">
-<div id="formWpr">
+<br/>
 <form:form id="specUploadForm" action="${config.localSiteUrl}/admin/DoUploadSpecification.html"  enctype="multipart/form-data" method="POST" modelAttribute="specificationForm">
 	<form:hidden path="processForm" />
-	<table border="0" cellpadding="0" cellspacing="0">
+	<table  class="formTable">
 		<tr>
 			<td class="required">* Publication Name: </td>
 			<td>
@@ -36,7 +35,7 @@
 		<tr>
 			<td class="required">* Type: </td>
 			<td>
-				<table class="checkList">
+				<table class="radioList">
 					<tr>
 						<td>
 							<form:radiobutton id="SpecType_10" path="specType" value="OTA_1_0"/>
@@ -75,10 +74,8 @@
 		</tr>
 		<tr>
 			<td colspan="2">
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.specUploadForm.submit();"><span>Upload Specification</span></a>
+				<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.specUploadForm.submit();">Upload Specification</a>
 			</td>
 		</tr>
 	</table>
 </form:form>
-</div>
-</div>

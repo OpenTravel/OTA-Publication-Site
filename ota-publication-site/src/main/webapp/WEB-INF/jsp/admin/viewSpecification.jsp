@@ -16,11 +16,10 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>View Specification ${publication.name}-${publication.type.displayId}</h1>
+<h2 class="sub-title">View Specification ${publication.name}-${publication.type.displayId}</h2>
 
-<div id="editBox">
-<div id="formWpr">
-<table>
+<br/>
+<table class="formTable">
 	<tr>
 		<td width="1%" nowrap><b>Publication Status: </b></td>
 		<td>${publication.state.displayValue}</td>
@@ -47,5 +46,3 @@
 		</td>
 	</tr>
 </table>
-</div>
-</div>

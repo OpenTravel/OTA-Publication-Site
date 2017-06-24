@@ -16,11 +16,10 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>View Code List Release ${codeList.releaseDateLabel}</h1>
+<h2 class="sub-title">View Code List Release ${codeList.releaseDateLabel}</h2>
 
-<div id="editBox">
-<div id="formWpr">
-<table>
+<br/>
+<table class="formTable">
 	<tr>
 		<td width="1%" nowrap><b>Release Date: </b></td>
 		<td>${codeList.releaseDateLabel}</td>
@@ -41,5 +40,3 @@
 		</td>
 	</tr>
 </table>
-</div>
-</div>

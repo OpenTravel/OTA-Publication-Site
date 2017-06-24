@@ -15,7 +15,7 @@
     limitations under the License.
 
 --%>
-<h1>OpenTravel Model Viewer</h1>
+<h2 class="sub-title">OpenTravel Model Viewer</h2>
 <p>
 	The OpenTravel Model Viewer, built in conjunction with PilotFish
 	Technology, is a schema documentation application that transforms plain

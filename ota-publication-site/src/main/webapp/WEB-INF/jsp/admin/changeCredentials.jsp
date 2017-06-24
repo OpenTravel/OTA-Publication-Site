@@ -16,12 +16,12 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Change Admin Login Credentials</h1>
+<h2 class="sub-title">Change Admin Login Credentials</h2>
 
-<div id="formWpr">
+<br/>
 <form id="credentialsForm" action="${config.localSiteUrl}/admin/ChangeAdminCredentials.html" method="POST">
 	<input name="processUpdate" type="hidden" class="text" value="true" />
-	<table>
+	<table class="formTable">
 		<tr>
 			<td class="required">User ID: </td>
 			<td>
@@ -41,11 +41,10 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="right">
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.credentialsForm.submit();"><span>Change Credentials</span></a>
-				<br/><a href="${config.localSiteUrl}/admin/index.html">Cancel</a>
+			<td colspan="2">
+				<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.credentialsForm.submit();">Change Credentials</a>
+				&nbsp; <a href="${config.localSiteUrl}/admin/index.html">Cancel</a>
 			</td>
 		</tr>
 	</table>
 </form>
-</div>

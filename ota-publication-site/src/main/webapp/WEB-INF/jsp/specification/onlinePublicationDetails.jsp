@@ -17,7 +17,7 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="urlPubType" value="${publication.type.displayId.replaceAll('\\\\.', '_')}" />
-<h1>Browse the ${publication.name}-${publication.type.displayId} Publication</h1>
+<h2 class="sub-title">Browse the ${publication.name}-${publication.type.displayId} Publication</h2>
 
 <div class="tblwrap">
 <table id="grouptable" align="left">
@@ -51,7 +51,7 @@
 		<td>${formatter.formatDate( item.createDate )}</td>
 		<td class="fileSize">${formatter.formatFileSize( item.fileSize )}</td>
 		<td><a href="${config.localSiteUrl}/content/specifications/downloads/noregister/${publication.name}/${urlPubType}/${item.itemFilename}">
-			<img src="${config.localSiteUrl}/images/icons/link.png" title="Automated download link (no registration required)"/>
+			<img src="${config.localSiteUrl}/images/link.png" title="Automated download link (no registration required)"/>
 		</a></td>
 	</tr>
 	</c:if>

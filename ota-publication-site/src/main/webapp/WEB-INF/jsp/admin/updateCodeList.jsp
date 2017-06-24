@@ -17,16 +17,15 @@
 --%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Update Code List</h1>
+<h2 class="sub-title">Update Code List</h2>
 
-<div id="editBox">
-<div id="formWpr">
+<br/>
 <form:form id="codeListUpdateForm" action="${config.localSiteUrl}/admin/DoUpdateCodeList.html" enctype="multipart/form-data" method="POST" modelAttribute="codeListForm">
 	<form:hidden path="processForm" />
 	<form:hidden path="codeListId" />
-	<table border="0" cellpadding="0" cellspacing="0">
+	<table class="formTable">
 		<tr>
-			<td class="required" align="right">* Release Date:<br/><i>(yyyy-mm-dd)</i></td>
+			<td class="required">* Release Date:<br/><i>(yyyy-mm-dd)</i></td>
 			<td>
 				<form:input path="releaseDateLabel" maxlength="10" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('CodeList.releaseDate')}">
@@ -44,9 +43,9 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="right">
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.codeListUpdateForm.submit();"><span>Update Code List</span></a>
-				<br/><a href="${config.localSiteUrl}/admin/ViewCodeList.html?releaseDate=${codeListForm.releaseDateLabel}">Cancel</a>
+			<td colspan="2">
+				<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.codeListUpdateForm.submit();">Update Code List</a>
+				&nbsp; <a href="${config.localSiteUrl}/admin/ViewCodeList.html?releaseDate=${codeListForm.releaseDateLabel}">Cancel</a>
 			</td>
 		</tr>
 	</table>
@@ -56,6 +55,3 @@
 <p/><br/>
 <p/><br/>
 <p/><br/>
-
-</div>
-</div>

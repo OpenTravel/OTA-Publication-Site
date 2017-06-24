@@ -16,14 +16,12 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Delete Code List ${codeList.releaseDateLabel}</h1>
+<h2 class="sub-title">Delete Code List ${codeList.releaseDateLabel}</h2>
 
-<div id="editBox">
-<div id="formWpr">
 <form id="codeListDeleteForm" action="${config.localSiteUrl}/admin/DeleteCodeList.html" method="POST">
 	<input name="confirmDelete" type="hidden" class="text" value="true" />
 	<input name="codeListId" type="hidden" class="text" value="${codeList.id}" />
-	<table border="0" cellpadding="0" cellspacing="0"><tr><td>
+	<table class="formTable"><tr><td>
 		<h2><span style="color: #CC0000;">Are you sure you want to delete Code List Release ${codeList.releaseDateLabel}?</span></h2>
 		
 		<p>The following information will also be deleted from the OpenTravel web site:
@@ -32,10 +30,8 @@
 			<li>All associated download history.</li>
 		</ul>
 	</td></tr>
-	<tr><td align="right">
-		<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.codeListDeleteForm.submit();"><span>Delete Code List</span></a>
-		<br/><a href="${config.localSiteUrl}/admin/ViewCodeList.html?releaseDate=${codeList.releaseDateLabel}">Cancel</a>
+	<tr><td>
+		<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.codeListDeleteForm.submit();">Delete Code List</a>
+		&nbsp; <a href="${config.localSiteUrl}/admin/ViewCodeList.html?releaseDate=${codeList.releaseDateLabel}">Cancel</a>
 	</td></tr></table>
 </form>
-</div>
-</div>

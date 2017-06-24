@@ -16,10 +16,7 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Administration Home</h1>
-
-<div id="editBox">
-	<div id="formWpr">
+<h2 class="sub-title">Administration Home</h2>
 
 <p>Click on one the specification links to view or edit an existing specification, or select from one of the following actions.</p>
 
@@ -114,6 +111,3 @@
 		</ul></td></tr>
 	</table>
 </c:if>
-
-	</div>
-</div>

@@ -1,0 +1,22 @@
+/* Enter Your Custom CSS Here */
+
+html body.news-template-default.single.single-news.postid-137.logged-in.admin-bar.customize-support div.sub-page div.container div.row div.col-sm-8 h2.sub-title{font-size:25px;}
+
+div.sub-page div.container div.row div.col-sm-8 h2{
+  color: #102348;
+    font-family: "Noto Sans",sans-serif!important;
+  font-size:25px;
+  font-weight: lighter!important;
+}
+div.sub-page div.container div.row div.col-sm-8 h3{
+  color: #102348;
+    font-family: "Noto Sans",sans-serif!important;
+    font-weight: lighter!important;
+  font-size:20px;
+}
+div.insights-list a{color:#102348!important;}
+
+td.gsc-search-button input.gsc-search-button.gsc-search-button-v2{width: 35px; height: 25px;}
+td#gs_tti50.gsib_a input#gsc-i-id1.gsc-input{border:0;}
+
+.quoteSect{display:none;}

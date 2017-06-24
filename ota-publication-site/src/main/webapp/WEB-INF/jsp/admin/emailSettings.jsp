@@ -17,12 +17,12 @@
 --%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Email Notification Settings</h1>
+<h2 class="sub-title">Email Notification Settings</h2>
 
-<div id="formWpr">
+<br/>
 <form:form id="credentialsForm" action="${config.localSiteUrl}/admin/EmailSettings.html" method="POST" modelAttribute="emailSettings" autocomplete="off">
 	<form:hidden path="processForm" />
-	<table>
+	<table class="formTable">
 		<tr>
 			<td class="required aligntop">Enable Email Notifications: </td>
 			<td>
@@ -123,14 +123,14 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2" align="right">
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.credentialsForm.submit();"><span>Update Settings</span></a>
-				<br/><a href="${config.localSiteUrl}/admin/index.html">Cancel</a>
+			<td colspan="2">
+				<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.credentialsForm.submit();">Update Settings</a>
+				&nbsp; <a href="${config.localSiteUrl}/admin/index.html">Cancel</a>
 			</td>
 		</tr>
 	</table>
 </form:form>
-</div>
+
 <script type="text/javascript">
 
 formFields = [

@@ -16,13 +16,12 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Registrant Details</h1>
+<h2 class="sub-title">Registrant Details</h2>
 
-<div id="formWpr">
 <table><tr>
 	<td>
 		<h3>Registrant Information:</h3>
-		<table>
+		<table class="formTable">
 			<tr>
 				<td class="required">Name: </td>
 				<td>${registrant.firstName} ${registrant.lastName}</td>
@@ -69,7 +68,6 @@
 	<p/>
 	<h3>Submitted Comments:</h3>
 </td></tr></table>
-</div>
 
 <table id="reporttable" align="left" style="margin-left:20px;">
 	<tr>

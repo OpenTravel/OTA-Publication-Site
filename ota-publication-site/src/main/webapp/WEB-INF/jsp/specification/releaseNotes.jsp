@@ -15,7 +15,7 @@
     limitations under the License.
 
 --%>
-<h3>${publication.name}-${publication.type.displayId} Publication Release Notes</h3>
+<h2 class="sub-title">${publication.name}-${publication.type.displayId} Publication Release Notes</h2>
 <p>
 	<b>Download ${publication.name}-${publication.type.displayId} Publication:</b>
 	<a href="${config.localSiteUrl}/content/specifications/downloads/${publication.name}/${publication.type}/${publication.archiveFilename}">${publication.archiveFilename}</a>

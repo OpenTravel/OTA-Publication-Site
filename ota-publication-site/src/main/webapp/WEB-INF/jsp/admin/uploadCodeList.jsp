@@ -17,15 +17,14 @@
 --%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Upload a New Code List</h1>
+<h2 class="sub-title">Upload a New Code List</h2>
 
-<div id="editBox">
-<div id="formWpr">
+<br/>
 <form:form id="codeListUploadForm" action="${config.localSiteUrl}/admin/DoUploadCodeList.html"  enctype="multipart/form-data" method="POST" modelAttribute="codeListForm">
 	<form:hidden path="processForm" />
-	<table border="0" cellpadding="0" cellspacing="0">
+	<table  class="formTable">
 		<tr>
-			<td class="required" align="right">* Release Date:<br/><i>(yyyy-mm-dd)</i></td>
+			<td class="required">* Release Date:<br/><i>(yyyy-mm-dd)</i></td>
 			<td nowrap>
 				<form:input path="releaseDateLabel" maxlength="10" />
 				<c:if test="${(validationErrors != null) && validationErrors.hasViolation('CodeList.releaseDate')}">
@@ -44,7 +43,7 @@
 		</tr>
 		<tr>
 			<td colspan="2">
-				<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.codeListUploadForm.submit();"><span>Upload Code List</span></a>
+				<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.codeListUploadForm.submit();">Upload Code List</a>
 			</td>
 		</tr>
 	</table>
@@ -54,6 +53,3 @@
 <p/><br/>
 <p/><br/>
 <p/><br/>
-
-</div>
-</div>

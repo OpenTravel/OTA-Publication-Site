@@ -76,7 +76,7 @@
 		Is your company a member<br />of the OpenTravel Alliance?
 	</td>
 	<td>
-		<table id="MemberRadioButtonList" class="checkList" border="0">
+		<table class="radioList" border="0">
 			<tr>
 				<td>
 					<form:radiobutton id="MemberRadioButtonList_Yes" path="registrantForm.otaMember" value="true"/>

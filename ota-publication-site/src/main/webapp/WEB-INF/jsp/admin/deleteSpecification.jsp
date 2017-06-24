@@ -16,14 +16,12 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<h1>Delete Specification ${publication.name}-${publication.type.displayId}</h1>
+<h2 class="sub-title">Delete Specification ${publication.name}-${publication.type.displayId}</h2>
 
-<div id="editBox">
-<div id="formWpr">
 <form id="specDeleteForm" action="${config.localSiteUrl}/admin/DeleteSpecification.html" method="POST">
 	<input name="confirmDelete" type="hidden" class="text" value="true" />
 	<input name="publicationId" type="hidden" class="text" value="${publication.id}" />
-	<table border="0" cellpadding="0" cellspacing="0"><tr><td>
+	<table class="formTable"><tr><td>
 		<h2><span style="color: #CC0000;">Are you sure you want to delete Specification ${publication.name}-${publication.type.displayId}?</span></h2>
 		
 		<p>The following information will also be deleted from the OpenTravel web site:
@@ -34,9 +32,7 @@
 		</ul>
 	</td></tr>
 	<tr><td align="right">
-		<a id="submitButton" class="buttonBlue marginRight10" href="javascript:document.forms.specDeleteForm.submit();"><span>Delete Specification</span></a>
-		<br/><a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">Cancel</a>
+		<br/><a id="submitButton" class="buttonRed" href="javascript:document.forms.specDeleteForm.submit();">Delete Specification</a>
+		&nbsp; <a href="${config.localSiteUrl}/admin/ViewSpecification.html?publication=${publication.name}&specType=${publication.type}">Cancel</a>
 	</td></tr></table>
 </form>
-</div>
-</div>

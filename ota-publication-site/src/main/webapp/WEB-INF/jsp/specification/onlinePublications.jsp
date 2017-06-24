@@ -16,7 +16,7 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<h1>Browse Publications</h1>
+<h2 class="sub-title">Browse Publications</h2>
 <p>
 	These pages provide a central location by which each OpenTravel schema
 	can be accessed via its own, unique URL. For instance, entering
@@ -35,11 +35,9 @@
 	OpenTravel retains the right to change these URL addresses at any time
 	with no public notice.<br />
 </p>
-<div id="editBox">
-	<div id="formWpr">
-
 <c:set var="itemsPerColumn" value="6"/>
 
+<br/>
 <c:if test="${!publications10.isEmpty()}">
 	<p><b>OpenTravel 1.0 Specifications</b></p>
 	<table id="MemberRadioButtonList" class="checkList" border="0">
@@ -58,7 +56,6 @@
 		</c:forEach>
 		</ul></td></tr>
 	</table>
-	<p/>
 </c:if>
 
 <c:if test="${!publications20.isEmpty()}">
@@ -80,6 +77,3 @@
 		</ul></td></tr>
 	</table>
 </c:if>
-
-	</div>
-</div>

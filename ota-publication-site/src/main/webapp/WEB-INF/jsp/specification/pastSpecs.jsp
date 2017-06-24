@@ -16,8 +16,8 @@
 
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<h1>Past Specification</h1>
-<h2>OpenTravel Members - Don't Forget about the Implementation Guide!</h2>
+<h2 class="sub-title">Past Specification</h2>
+<h3>OpenTravel Members - Don't Forget about the Implementation Guide!</h3>
 <p>
 	<span>The OpenTravel Implementation Guide provides invaluable
 		information to both analysts and implementers of the OpenTravel
@@ -40,7 +40,7 @@
 <c:set var="itemsPerColumn" value="6"/>
 
 <c:if test="${!publications10.isEmpty()}">
-	<p><b>OpenTravel 1.0 Specifications</b></p>
+	<br/><p><b>OpenTravel 1.0 Specifications</b></p>
 	<table id="MemberRadioButtonList" class="checkList" border="0">
 		<c:set var="rowCount" value="${publications10.size() / itemsPerColumn}"/>
 		<c:set var="currentRow" value="0"/>
