@@ -29,8 +29,9 @@
 		<%@ include file="registrantInfoForm.jsp" %>
 		<tr>
 			<td colspan="2">
-				<h5>Terms of Service</h5> <textarea style="width: 500px" rows="9"
-					cols="40" readonly="true"><%@ include file="licenseAgreement.txt" %></textarea></td>
+				<h5>Terms of Service</h5>
+				<textarea class="licenseTextarea" style="width: 500px" rows="9" cols="40" readonly="true"><%@ include file="licenseAgreement.txt" %></textarea>
+			</td>
 		</tr>
 		<tr>
 			<td colspan="2" style="padding-left: 465px;">

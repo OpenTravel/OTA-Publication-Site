@@ -25,15 +25,20 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opentravel.pubs.builders.ArtifactCommentBuilder;
 import org.opentravel.pubs.builders.SchemaCommentBuilder;
+import org.opentravel.pubs.dao.ApplicationSettingsDAO;
 import org.opentravel.pubs.dao.CodeListDAO;
 import org.opentravel.pubs.dao.CommentDAO;
 import org.opentravel.pubs.dao.DAOException;
@@ -43,6 +48,7 @@ import org.opentravel.pubs.dao.PublicationDAO;
 import org.opentravel.pubs.dao.RegistrantDAO;
 import org.opentravel.pubs.forms.ArtifactCommentForm;
 import org.opentravel.pubs.forms.RegistrantForm;
+import org.opentravel.pubs.forms.RepositoryAccessForm;
 import org.opentravel.pubs.forms.SchemaCommentForm;
 import org.opentravel.pubs.forms.ViewSpecificationForm;
 import org.opentravel.pubs.model.ArtifactComment;
@@ -56,6 +62,8 @@ import org.opentravel.pubs.model.PublicationState;
 import org.opentravel.pubs.model.PublicationType;
 import org.opentravel.pubs.model.Registrant;
 import org.opentravel.pubs.model.SchemaComment;
+import org.opentravel.pubs.notification.EmailConfigBuilder;
+import org.opentravel.pubs.notification.NotificationManager;
 import org.opentravel.pubs.util.StringUtils;
 import org.opentravel.pubs.util.ValueFormatter;
 import org.opentravel.pubs.validation.ModelValidator;
@@ -279,6 +287,49 @@ public class PublicationController extends BaseController {
     		@RequestParam(value = "submitCommentsUrl", required = false) String submitCommentsUrl) {
     	model.addAttribute( "submitCommentsUrl", submitCommentsUrl );
     	return applyCommonValues( model, "commentThankYouMembers" );
+    }
+    
+    @RequestMapping({ "/OTMRepositoryAccess.html", "/OTMRepositoryAccess.htm" })
+    public String otmRepositoryAccessPage(Model model, HttpSession session, RedirectAttributes redirectAttrs,
+    		@ModelAttribute("repositoryForm") RepositoryAccessForm repositoryForm) {
+    	String targetPage = "otmRepositoryAccess";
+    	
+    	if (repositoryForm.isProcessForm()) {
+    		ValidationResults vResults = ModelValidator.validate( repositoryForm );
+    		
+    		if (vResults.hasViolations()) {
+    			addValidationErrors( vResults, model );
+    			
+    		} else {
+    			try {
+        			ApplicationSettingsDAO settingsDAO = DAOFactoryManager.getFactory().newApplicationSettingsDAO();
+        			final Properties emailConfig = settingsDAO.getSettings( EmailConfigBuilder.EMAIL_CONFIG_SETTINGS );
+    				InternetAddress recipient = new InternetAddress(
+    						emailConfig.getProperty( EmailConfigBuilder.SENDER_ADDRESS_PROPERTY ), 
+    						emailConfig.getProperty( EmailConfigBuilder.SENDER_NAME_PROPERTY ) );
+        			Map<String,Object> contentMap = new HashMap<>();
+        			
+        			contentMap.put( "accessForm", repositoryForm );
+        			NotificationManager.getInstance().sendNotification(
+        					NotificationManager.OTM_REPOSITORY_SUBJECT_TEMPLATE,
+        					NotificationManager.OTM_REPOSITORY_MESSAGE_TEMPLATE, contentMap, recipient );
+        			targetPage = "redirect:/specifications/OTMRepositoryThankYou.html";
+    				
+    			} catch (Exception e) {
+    				log.error("Error while attempting to send email notification.", e);
+    	            setErrorMessage( "An error occurred while processing your request, please try again later.", model );
+    			}
+    		}
+    		
+    	} else {
+    		repositoryForm.setProcessForm( true );
+    	}
+    	return applyCommonValues( model, targetPage );
+    }
+    
+    @RequestMapping({ "/OTMRepositoryThankYou.html", "/OTMRepositoryThankYou.htm" })
+    public String otmRepositoryThankYouPage(Model model) {
+    	return applyCommonValues( model, "otmRepositoryThankYou" );
     }
     
     @RequestMapping({ "/ModelViewer.html", "/ModelViewer.htm" })

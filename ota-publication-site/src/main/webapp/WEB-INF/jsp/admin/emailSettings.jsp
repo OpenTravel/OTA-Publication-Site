@@ -26,7 +26,7 @@
 		<tr>
 			<td class="required aligntop">Enable Email Notifications: </td>
 			<td>
-				<form:checkbox id="enableNotification" path="enableNotification" onchange="updateEnabledState( this );" />
+				<form:checkbox id="enableNotification" style="width:10px; display:inline; text-align:left;" path="enableNotification" onchange="updateEnabledState( this );" />
 			</td>
 		</tr>
 		<tr><td colspan="2"><hr align="center" width="80%" /></td></tr>
@@ -107,19 +107,19 @@
 		<tr>
 			<td class="required aligntop">Enable SSL: </td>
 			<td>
-				<form:checkbox id="sslEnable" path="sslEnable" maxlength="50" />
+				<form:checkbox id="sslEnable" style="width:10px; display:inline; text-align:left;" path="sslEnable" maxlength="50" />
 			</td>
 		</tr>
 		<tr>
 			<td class="required aligntop">Enable Authorization: </td>
 			<td>
-				<form:checkbox id="authEnable" path="authEnable" maxlength="50" />
+				<form:checkbox id="authEnable" style="width:10px; display:inline; text-align:left;" path="authEnable" maxlength="50" />
 			</td>
 		</tr>
 		<tr>
 			<td class="required aligntop">Enable TLS: </td>
 			<td>
-				<form:checkbox id="startTlsEnable" path="startTlsEnable" maxlength="50" />
+				<form:checkbox id="startTlsEnable" style="width:10px; display:inline; text-align:left;" path="startTlsEnable" maxlength="50" />
 			</td>
 		</tr>
 		<tr>

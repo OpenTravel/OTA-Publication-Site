@@ -51,6 +51,8 @@ public class NotificationManager {
     public static final String SCHEMA_COMMENT_SUBJECT_TEMPLATE   = "schema-comment-subject.vm";
     public static final String ARTIFACT_COMMENT_MESSAGE_TEMPLATE = "artifact-comment-message.vm";
     public static final String ARTIFACT_COMMENT_SUBJECT_TEMPLATE = "artifact-comment-subject.vm";
+    public static final String OTM_REPOSITORY_MESSAGE_TEMPLATE   = "otm-repository-message.vm";
+    public static final String OTM_REPOSITORY_SUBJECT_TEMPLATE   = "otm-repository-subject.vm";
     
     private static final Logger log = LoggerFactory.getLogger( NotificationManager.class );
     private static final int MAX_RETRIES = 5;

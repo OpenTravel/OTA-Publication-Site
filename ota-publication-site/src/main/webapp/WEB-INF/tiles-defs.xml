@@ -82,6 +82,14 @@
 		<put-attribute name="title" value="Thank You" />
 		<put-attribute name="body" value="/WEB-INF/jsp/specification/commentThankYou.jsp" />
 	</definition>
+	<definition name="otmRepositoryAccess" extends="publicLayout">
+		<put-attribute name="title" value="Request OTM Repository Access" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/otmRepositoryAccess.jsp" />
+	</definition>
+	<definition name="otmRepositoryThankYou" extends="publicLayout">
+		<put-attribute name="title" value="Thank You" />
+		<put-attribute name="body" value="/WEB-INF/jsp/specification/otmRepositoryThankYou.jsp" />
+	</definition>
 	<definition name="modelViewer" extends="publicLayout">
 		<put-attribute name="title" value="Model Viewer" />
 		<put-attribute name="body" value="/WEB-INF/jsp/specification/modelViewer.jsp" />

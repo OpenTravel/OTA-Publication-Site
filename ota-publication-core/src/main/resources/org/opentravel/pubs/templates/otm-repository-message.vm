@@ -1,0 +1,44 @@
+<table width="100%" style="border-collapse: collapse;">
+	<tr>
+		<td colspan="2" align="center"><h3>Request for OTM Repository Access</h3></td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Name:</td>
+		<td style="padding-bottom: 1em;">$accessForm.firstName $accessForm.lastName</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Company:</td>
+		<td style="padding-bottom: 1em;">$accessForm.company</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Primary Company Contact:</td>
+		<td style="padding-bottom: 1em;">$accessForm.companyContact</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Email:</td>
+		<td style="padding-bottom: 1em;"><a href="mailto:$comment.submittedBy.email">$accessForm.email</a></td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Phone:</td>
+		<td style="padding-bottom: 1em;">$accessForm.phone</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Address:</td>
+		<td style="padding-bottom: 1em;"><pre>$accessForm.address</pre></td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Is Member?</td>
+		<td style="padding-bottom: 1em;">#if ($accessForm.otaMember) Yes #else No #end</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Wants Model Development Info:</td>
+		<td style="padding-bottom: 1em;">#if ($accessForm.wantModelDevelopmentInfo) Yes #else No #end</td>
+	</tr>
+	<tr>
+		<td width="10%" nowrap="true" style="padding-bottom: 1em; padding-right: 1em;">Wants Working Group Info:</td>
+		<td style="padding-bottom: 1em;">#if ($accessForm.wantWorkgroupInfo) Yes #else No #end</td>
+	</tr>
+</table>

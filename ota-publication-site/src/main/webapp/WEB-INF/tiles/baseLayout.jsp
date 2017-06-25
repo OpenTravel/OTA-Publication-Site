@@ -92,6 +92,9 @@
 				<c:if test="${errorMessage != null}">
 					<div><span style="color: Red">${errorMessage}</span></div>
 				</c:if>
+				<c:if test="${statusMessage != null}">
+					<div><span style="color: Green">${statusMessage}</span></div>
+				</c:if>
 				<div class="col-sm-9">
 					<tiles:insertAttribute name="body" />
 				</div>

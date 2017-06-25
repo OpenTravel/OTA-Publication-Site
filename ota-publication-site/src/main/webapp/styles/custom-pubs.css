@@ -21,6 +21,7 @@
 .commentheader { text-decoration:underline; }
 .commentspacing { margin-bottom:4px; }
 .aligntop { vertical-align:top; }
+.licenseTextarea { width:500px; font-size:10px; }
 .buttonRed { font: bold 11px Arial; text-decoration: none; background-color: #87152c; color: #FFFFFF; padding: 5px 6px 5px 6px;}
 
 .formTable {border-collapse:collapse; border-spacing:0; width: 75%;}
@@ -30,12 +31,11 @@
 .formTable input, .formTable textarea {width:250px;}
 .formTable select { display: inline; }
 .formTable input, .formTable textarea { display: block; }
-.formTable textarea { font-size: 10px; }
 .formTable label { margin: 0px 0px 15px 0px; font: normal 14px/16px arial; color: #2A2A2A;}
-.formTable span { display: block; clear: left; }
+.formTable span { display: block; text-align: left; }
 .formTable span input { display: inline; height: 12px; border: none; background-color: Transparent; }
-.formTable span label { display: inline; vertical-align: top; font-size: 12px; }
-.radioList {border-collapse:collapse; border-spacing:0; width: 50%; border: 1 solid red;}
+.formTable span label { display: inline; vertical-align: top; font-size: 15px; }
+.radioList {border-collapse:collapse; border-spacing:0; width:50%;}
 .radioList tr td label { display: block; float: left; line-height: 100%; vertical-align: bottom; margin: 5px 10px 0px 0px; font: normal 12px/14px arial; text-transform: none; }
 .radioList tr td input { display: block; float: left; height: 15px; width: 15px; margin: 5px 5px 0px 0px; background-color: Transparent; border: none; }
 .checkList tr td { height: 25px; vertical-align: top; }
