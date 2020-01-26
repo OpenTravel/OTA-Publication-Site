@@ -1,0 +1,14 @@
+# Eclipse 
+.classpath
+.project
+.settings/
+velocity.log
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Maven
+target/
+*/target/
