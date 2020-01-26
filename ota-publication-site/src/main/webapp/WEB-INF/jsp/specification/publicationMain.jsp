@@ -33,7 +33,7 @@ both analysts and implementers of the OpenTravel specification on how
 to more easily understand and build software systems that are
 interoperable with other travel systems using the OpenTravel
 schema.&nbsp; Non-members,
-<a href="http://ec2-52-27-163-193.us-west-2.compute.amazonaws.com:8080/docs/OpenTravel_ImplementationGuide_v1.2_ExecSum.pdf">click here for the executive summary</a>
+<a href="${config.localSiteUrl}/docs/OpenTravel_ImplementationGuide_v1.2_ExecSum.pdf">click here for the executive summary</a>
 <p>To download the document, please visit the
 <a href="http://www.opentraveldevelopersnetwork.com/implementation-guide">OpenTravel Developers Network</a>
 <p>(you must have member rights to access the document).</span>

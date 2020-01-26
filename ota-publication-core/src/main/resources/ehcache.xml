@@ -22,25 +22,22 @@
 
 	<diskStore path="java.io.tmpdir/ehcache" />
 
-	<defaultCache maxEntriesLocalHeap="10000" eternal="false"
+	<defaultCache eternal="false"
 		timeToIdleSeconds="1800" timeToLiveSeconds="3600" diskSpoolBufferSizeMB="30"
-		maxEntriesLocalDisk="1000000" diskExpiryThreadIntervalSeconds="120"
+		diskExpiryThreadIntervalSeconds="120"
 		memoryStoreEvictionPolicy="LRU" statistics="true">
-		<persistence strategy="localTempSwap" />
 	</defaultCache>
 
-	<cache name="daoCache" maxEntriesLocalHeap="10000" eternal="false"
+	<cache name="daoCache" eternal="false"
 		timeToIdleSeconds="1800" timeToLiveSeconds="3600" diskSpoolBufferSizeMB="30"
-		maxEntriesLocalDisk="1000000" diskExpiryThreadIntervalSeconds="120"
+		diskExpiryThreadIntervalSeconds="120"
 		memoryStoreEvictionPolicy="LRU" statistics="true">
-		<persistence strategy="localTempSwap" />
 	</cache>
 	
-	<cache name="collectionCache" maxEntriesLocalHeap="10000" eternal="false"
+	<cache name="collectionCache" eternal="false"
 		timeToIdleSeconds="1800" timeToLiveSeconds="3600" diskSpoolBufferSizeMB="30"
-		maxEntriesLocalDisk="1000000" diskExpiryThreadIntervalSeconds="120"
+		diskExpiryThreadIntervalSeconds="120"
 		memoryStoreEvictionPolicy="LRU" statistics="true">
-		<persistence strategy="localTempSwap" />
 	</cache>
 	
 </ehcache>
