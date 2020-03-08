@@ -21,29 +21,40 @@
 		<ul>
 
 			<li><c:choose>
-					<c:when test="${(currentPage == 'specification10Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_1_0'))}">
-						<a id="SideNavControl1_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Specifications.html">1.0 Specification</a>
-					</c:when>
-					<c:otherwise>
-						<a id="SideNavControl1_MenuHyperLink" href="${config.localSiteUrl}/specifications/Specifications.html">1.0 Specification</a>
-					</c:otherwise>
-				</c:choose></li>
-
-			<li><c:choose>
 					<c:when test="${(currentPage == 'specification20Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_2_0'))}">
-						<a id="SideNavControl1a_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Specifications20.html">2.0 Specification</a>
+						<a id="SideNavControl1a_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Specifications.html">2.0 Specification</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl1a_MenuHyperLink" href="${config.localSiteUrl}/specifications/Specifications20.html">2.0 Specification</a>
+						<a id="SideNavControl1a_MenuHyperLink" href="${config.localSiteUrl}/specifications/Specifications.html">2.0 Specification</a>
 					</c:otherwise>
 				</c:choose></li>
 
 			<li><c:choose>
-					<c:when test="${currentPage == 'codeListMain'}">
-						<a id="SideNavControl1b_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+					<c:when test="${currentPage == 'specificationComment20'}">
+						<a id="SideNavControl4_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Comment20Spec.html">Comment on 2.0 Specification</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl1b_MenuHyperLink" href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+						<a id="SideNavControl4_MenuHyperLink" href="${config.localSiteUrl}/specifications/Comment20Spec.html">Comment on 2.0 Specification</a>
+					</c:otherwise>
+				</c:choose></li>
+
+			<li><c:choose>
+					<c:when test="${currentPage == 'artifactComment20'}">
+						<a id="SideNavControl5_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Comment20Artifact.html">Comment on 2.0 Artifact</a>
+					</c:when>
+					<c:otherwise>
+						<a id="SideNavControl5_MenuHyperLink" href="${config.localSiteUrl}/specifications/Comment20Artifact.html">Comment on 2.0 Artifact</a>
+					</c:otherwise>
+				</c:choose></li>
+				
+			<li>&nbsp;</li>
+
+			<li><c:choose>
+					<c:when test="${(currentPage == 'specification10Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_1_0'))}">
+						<a id="SideNavControl1_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Specifications10.html">1.0 Specification</a>
+					</c:when>
+					<c:otherwise>
+						<a id="SideNavControl1_MenuHyperLink" href="${config.localSiteUrl}/specifications/Specifications10.html">1.0 Specification</a>
 					</c:otherwise>
 				</c:choose></li>
 
@@ -65,23 +76,7 @@
 					</c:otherwise>
 				</c:choose></li>
 
-			<li><c:choose>
-					<c:when test="${currentPage == 'specificationComment20'}">
-						<a id="SideNavControl4_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Comment20Spec.html">Comment on 2.0 Specification</a>
-					</c:when>
-					<c:otherwise>
-						<a id="SideNavControl4_MenuHyperLink" href="${config.localSiteUrl}/specifications/Comment20Spec.html">Comment on 2.0 Specification</a>
-					</c:otherwise>
-				</c:choose></li>
-
-			<li><c:choose>
-					<c:when test="${currentPage == 'artifactComment20'}">
-						<a id="SideNavControl5_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Comment20Artifact.html">Comment on 2.0 Artifact</a>
-					</c:when>
-					<c:otherwise>
-						<a id="SideNavControl5_MenuHyperLink" href="${config.localSiteUrl}/specifications/Comment20Artifact.html">Comment on 2.0 Artifact</a>
-					</c:otherwise>
-				</c:choose></li>
+			<li>&nbsp;</li>
 
 			<li><c:choose>
 					<c:when test="${currentPage == 'otmRepositoryAccess'}">
@@ -98,6 +93,17 @@
 					</c:when>
 					<c:otherwise>
 						<a id="SideNavControl6_MenuHyperLink" href="${config.localSiteUrl}/specifications/ModelViewer.html">OpenTravel Model Viewer</a>
+					</c:otherwise>
+				</c:choose></li>
+
+			<li>&nbsp;</li>
+
+			<li><c:choose>
+					<c:when test="${currentPage == 'codeListMain'}">
+						<a id="SideNavControl1b_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+					</c:when>
+					<c:otherwise>
+						<a id="SideNavControl1b_MenuHyperLink" href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
 					</c:otherwise>
 				</c:choose></li>
 

@@ -23,7 +23,17 @@
 		<span style="font-weight: bold;">All fields are required.</span>
 	</p>
 </div>
-<form:form id="registrationForm" action="${config.localSiteUrl}/specifications/${registrationPage}" method="POST" modelAttribute="specificationForm">
+
+<c:choose>
+	<c:when test="${spec == null}">
+		<c:set var="specAttr" value="" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="specAttr" value="?spec=${spec}" />
+	</c:otherwise>
+</c:choose>
+
+<form:form id="registrationForm" action="${config.localSiteUrl}/specifications/${registrationPage}${specAttr}" method="POST" modelAttribute="specificationForm">
 	<form:hidden path="processForm" />
 	<table class="formTable">
 		<%@ include file="registrantInfoForm.jsp" %>
