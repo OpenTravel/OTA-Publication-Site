@@ -27,8 +27,8 @@
 		<link rel="pingback" href="${config.mainSiteUrl}/scripts/xmlrpc.php">
 		<title><tiles:insertAttribute name="title" ignore="true" /></title>
 		<link rel="dns-prefetch" href="http://s.w.org/">
-		<link rel="alternate" type="application/rss+xml" title="Open Travel » Feed" href="${config.mainSiteUrl}/feed/">
-		<link rel="alternate" type="application/rss+xml" title="Open Travel » Comments Feed" href="${config.mainSiteUrl}/comments/feed/">
+		<link rel="alternate" type="application/rss+xml" title="Open Travel Â» Feed" href="${config.mainSiteUrl}/feed/">
+		<link rel="alternate" type="application/rss+xml" title="Open Travel Â» Comments Feed" href="${config.mainSiteUrl}/comments/feed/">
 		<script src="${config.localSiteUrl}/scripts/analytics.js"></script>
 		<script type="text/javascript">
 					window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/opentravel.org\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.7.5"}};
@@ -136,5 +136,8 @@ $(function(){
   ga('send', 'pageview');
 
 </script>
+<!-- Start of HubSpot Embed Code -->
+<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/7043387.js"></script>
+<!-- End of HubSpot Embed Code -->
 </body>
 </html>
