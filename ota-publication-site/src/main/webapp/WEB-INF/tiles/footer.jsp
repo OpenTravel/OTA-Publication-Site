@@ -24,7 +24,6 @@
 						<li id="menu-item-149" class="menu-item menu-item-type-post_type menu-item-object-page current-page-ancestor menu-item-149"><a title="About Us" href="${config.mainSiteUrl}/about-us/">About Us</a></li>
 						<li id="menu-item-150" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-150"><a title="Specifications" href="${config.localSiteUrl}/specifications/Specifications.html">Specifications</a></li>
 						<li id="menu-item-151" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-151"><a title="Forum" target="_blank" href="http://www.opentravelcommunityforum.com/forum/">Forum</a></li>
-						<li id="menu-item-152" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-152"><a title="Activities" href="${config.mainSiteUrl}/activities/">Activities</a></li>
 						<li id="menu-item-153" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-153"><a title="Resources" href="${config.mainSiteUrl}/resources/">Resources</a></li>
 						<li id="menu-item-154" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-154"><a title="Press" href="${config.mainSiteUrl}/press/">Press</a></li>
 					</ul>
