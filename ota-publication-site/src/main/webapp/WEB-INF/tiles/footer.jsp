@@ -44,8 +44,8 @@
 				<div class="col-md-3" id="text-2">
 					<h3 class="bottom-title">Follow Us On:</h3>
 					<div class="textwidget">
-						<span class="socialmedia"> <a href="https://www.linkedin.com/groups/1053987/" target="blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></span> <span class="socialmedia"> <a href="https://twitter.com/OpenTravel/"
-							target="blank"><i class="fa fa-twitter" aria-hidden="true"></i></a><span></span></span>
+						<span class="socialmedia"> <a href="https://www.linkedin.com/groups/1053987/" target="blank" style="color:#0a2451"><i class="fab fa-linkedin" aria-hidden="true"></i></a></span>
+						<span class="socialmedia"> <a href="https://twitter.com/OpenTravel/" target="blank" style="color:#0a2451"><i class="fab fa-twitter"></i></a><span></span></span>
 					</div>
 				</div>
 			</div>
@@ -55,7 +55,7 @@
 <div class="footer">
 	<div class="container">
 		<div class="row">
-			<div class="col-md-12 copy">Copyright OpenTravel Alliance Â© 2020. all rights reserved</div>
+			<div class="col-md-12 copy">Copyright OpenTravel © 2020. all rights reserved</div>
 		</div>
 	</div>
 </div>

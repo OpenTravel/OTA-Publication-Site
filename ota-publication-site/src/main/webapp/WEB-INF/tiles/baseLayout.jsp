@@ -51,7 +51,7 @@
 			<link rel="stylesheet" id="wgs-css" href="${config.localSiteUrl}/styles/wgs.css" type="text/css" media="all">
 		<link rel="stylesheet" id="bootstrap-style-css" href="${config.localSiteUrl}/styles/bootstrap_002.css" type="text/css" media="all">
 		<link rel="stylesheet" id="bootstraptheme-css" href="${config.localSiteUrl}/styles/bootstrap-theme.css" type="text/css" media="all">
-		<link rel="stylesheet" id="fontawesome-style-css" href="${config.localSiteUrl}/styles/font-awesome.css" type="text/css" media="all">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 		<link rel="stylesheet" id="style.css-css" href="${config.localSiteUrl}/styles/style.css" type="text/css" media="all">
 		<link rel="stylesheet" id="custom.css-css" href="${config.localSiteUrl}/styles/custom.css" type="text/css" media="all">
 		<link rel="stylesheet" id="custom-pubs.css-css" href="${config.localSiteUrl}/styles/custom-pubs.css" type="text/css" media="all">
