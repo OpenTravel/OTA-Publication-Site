@@ -24,7 +24,6 @@
 						<li id="menu-item-149" class="menu-item menu-item-type-post_type menu-item-object-page current-page-ancestor menu-item-149"><a title="About Us" href="${config.mainSiteUrl}/about-us/">About Us</a></li>
 						<li id="menu-item-150" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-150"><a title="Specifications" href="${config.localSiteUrl}/specifications/Specifications.html">Specifications</a></li>
 						<li id="menu-item-151" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-151"><a title="Forum" target="_blank" href="http://www.opentravelcommunityforum.com/forum/">Forum</a></li>
-						<li id="menu-item-152" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-152"><a title="Activities" href="${config.mainSiteUrl}/activities/">Activities</a></li>
 						<li id="menu-item-153" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-153"><a title="Resources" href="${config.mainSiteUrl}/resources/">Resources</a></li>
 						<li id="menu-item-154" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-154"><a title="Press" href="${config.mainSiteUrl}/press/">Press</a></li>
 					</ul>
@@ -45,7 +44,7 @@
 				<div class="col-md-3" id="text-2">
 					<h3 class="bottom-title">Follow Us On:</h3>
 					<div class="textwidget">
-						<span class="socialmedia"> <a href="http://www.linkedin.com/groups/OpenTravel-Alliance-1053987?mostPopular=&amp;gid=1053987" target="blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></span> <span class="socialmedia"> <a href="https://twitter.com/#%21/OpenTravel/"
+						<span class="socialmedia"> <a href="https://www.linkedin.com/groups/1053987/" target="blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></span> <span class="socialmedia"> <a href="https://twitter.com/OpenTravel/"
 							target="blank"><i class="fa fa-twitter" aria-hidden="true"></i></a><span></span></span>
 					</div>
 				</div>
@@ -56,7 +55,7 @@
 <div class="footer">
 	<div class="container">
 		<div class="row">
-			<div class="col-md-12 copy">Copyright Open Travel © 2020. all rights reserved</div>
+			<div class="col-md-12 copy">Copyright OpenTravel Alliance Â© 2020. all rights reserved</div>
 		</div>
 	</div>
 </div>
