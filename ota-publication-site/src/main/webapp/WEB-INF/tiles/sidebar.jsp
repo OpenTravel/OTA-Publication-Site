@@ -80,10 +80,10 @@
 
 			<li><c:choose>
 					<c:when test="${currentPage == 'otmRepositoryAccess'}">
-						<a id="SideNavControl10_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/OTMRepositoryAccess.html">Request OTM Repository Access</a>
+						<a id="SideNavControl10_MenuHyperLink" class="current" href="https://opentravel.org/request-otm-access/">Request OTM Repository Access</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl10_MenuHyperLink" href="${config.localSiteUrl}/specifications/OTMRepositoryAccess.html">Request OTM Repository Access</a>
+						<a id="SideNavControl10_MenuHyperLink" href="https://opentravel.org/request-otm-access/">Request OTM Repository Access</a>
 					</c:otherwise>
 				</c:choose></li>
 
