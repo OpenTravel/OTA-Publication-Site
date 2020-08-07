@@ -22,10 +22,10 @@
 
 			<li><c:choose>
 					<c:when test="${(currentPage == 'specification20Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_2_0'))}">
-						<a id="SideNavControl1a_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Specifications.html">2.0 Specification</a>
+						<a id="SideNavControl1a_MenuHyperLink" class="current" href="https://opentravel.org/download-the-opentravel-specification/">2.0 Specification</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl1a_MenuHyperLink" href="${config.localSiteUrl}/specifications/Specifications.html">2.0 Specification</a>
+						<a id="SideNavControl1a_MenuHyperLink" href="https://opentravel.org/download-the-opentravel-specification/">2.0 Specification</a>
 					</c:otherwise>
 				</c:choose></li>
 
@@ -51,10 +51,10 @@
 
 			<li><c:choose>
 					<c:when test="${(currentPage == 'specification10Main') || ((currentPage == 'specificationReleaseNotes') && (publication.type == 'OTA_1_0'))}">
-						<a id="SideNavControl1_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/Specifications10.html">1.0 Specification</a>
+						<a id="SideNavControl1_MenuHyperLink" class="current" href="https://opentravel.org/download-the-opentravel-specification/">1.0 Specification</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl1_MenuHyperLink" href="${config.localSiteUrl}/specifications/Specifications10.html">1.0 Specification</a>
+						<a id="SideNavControl1_MenuHyperLink" href="https://opentravel.org/download-the-opentravel-specification/">1.0 Specification</a>
 					</c:otherwise>
 				</c:choose></li>
 
@@ -80,10 +80,10 @@
 
 			<li><c:choose>
 					<c:when test="${currentPage == 'otmRepositoryAccess'}">
-						<a id="SideNavControl10_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/OTMRepositoryAccess.html">Request OTM Repository Access</a>
+						<a id="SideNavControl10_MenuHyperLink" class="current" href="https://opentravel.org/request-otm-access/">Request OTM Repository Access</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl10_MenuHyperLink" href="${config.localSiteUrl}/specifications/OTMRepositoryAccess.html">Request OTM Repository Access</a>
+						<a id="SideNavControl10_MenuHyperLink" href="https://opentravel.org/request-otm-access/">Request OTM Repository Access</a>
 					</c:otherwise>
 				</c:choose></li>
 
@@ -100,10 +100,10 @@
 
 			<li><c:choose>
 					<c:when test="${currentPage == 'codeListMain'}">
-						<a id="SideNavControl1b_MenuHyperLink" class="current" href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+						<a id="SideNavControl1b_MenuHyperLink" class="current" href="https://opentravel.org/download-the-opentravel-code-list/">Code List</a>
 					</c:when>
 					<c:otherwise>
-						<a id="SideNavControl1b_MenuHyperLink" href="${config.localSiteUrl}/specifications/CodeLists.html">Code List</a>
+						<a id="SideNavControl1b_MenuHyperLink" href="https://opentravel.org/download-the-opentravel-code-list/">Code List</a>
 					</c:otherwise>
 				</c:choose></li>
 
