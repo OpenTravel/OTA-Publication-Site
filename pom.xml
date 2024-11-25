@@ -30,7 +30,7 @@
 		<javax.mail.version>1.5.5</javax.mail.version>
 		<velocity.version>1.7</velocity.version>
 		<hibernate.version>5.0.6.Final</hibernate.version>
-		<hibernate.validator.version>5.2.2.Final</hibernate.validator.version>
+		<hibernate.validator.version>5.3.6.Final</hibernate.validator.version>
 		<ehcache.version>2.10.1</ehcache.version>
 		<mysql.version>5.1.38</mysql.version>
 		<slf4j.version>1.7.10</slf4j.version>
